@@ -1,0 +1,622 @@
+\chapter{Der Präprozessor} \label{chp:Preprocessor}
+\epigraph{Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are–by definition–not smart enough to debug it.}
+{Brian Kernighan}
+
+Bisher haben wir uns damit beschäftigt, wie Code in Maschinensprache übersetzt wird. Der C-Standard sieht aber auch ein Konzept vor, das noch vor dieser Übersetzung angreift, und Ersetzungen auf Code-Ebene durchführt. Dieses Konzept wird vom \emph{Präprozessor} behandelt, der im \texttt{gcc} integriert ist. Wir können uns vorstellen, dass unser Code durch Copy/Paste-Anweisungen verändert wird, bevor das eigentliche Kompilieren stattfindet. Zu diesem Zweck steht ein eigens (sehr kleines) Set an \emph{Präprozessor-Direktiven} zur Verfügung, die alle mit einer Raute \texttt{\#} beginnen. 
+
+Tatsächlich haben Sie schon im ersten Kapitel die erste solche Präprozessor-Direktive kennen gelernt: \mintinline{c}{#include} verändert Ihren Quellcode, bevor das Kompilieren beginnt, indem eine Header-Datei an die Stelle kopiert wird, an der in Ihrem Original-Code \mintinline{c}{#include} steht.
+
+\begin{hintbox}[Kommandozeilenoption \texttt{-E}: Nur Präprozessor]
+Um zu sehen, welche Ersetzungen der Präprozessor macht, können Sie mit dem folgenden Kommandozeilenbefehl den \enquote{tatsächlichen} C-Code sehen, der kompiliert wird:
+
+\begin{cmdbox}[]
+gcc -E ./myProgram.c
+\end{cmdbox}
+
+Die Ausgabe dieser sogenannten \emph{Code-Expansion} erfolgt direkt auf dem Bildschirm. 
+
+Üblicherweise enthält Ihr Code \mintinline{c}{#include}-Zeilen, die in diesem Schritt durch den Dateiinhalt ersetzt werden. Da die Ausgabe dadurch sehr lang werden kann, ist es ggf. günstiger, die Ausgabe in eine Datei umzuleiten. Dies können Sie mit der folgenden Zeile bewerkstelligen:
+
+\begin{cmdbox}[]
+gcc -E ./myProgram.c > ./myPreprocessedCode.c
+\end{cmdbox}
+
+Die Datei \texttt{myPreprocessedCode.c} enthält dann Ihren Code, mit sämtlichen Ersetzungen, die durch die Präprozessor-Direktiven vorgegeben wurden.
+\end{hintbox}
+
+\begin{warnbox}[Trend: Abwendung von Präprozessor-Lösungen]
+Der Präprozessor ist fester Bestandteil des C/C++-Standards. Jedoch bringt dieses Element eine Reihe von Nachteilen mit sich, wegen derer inzwischen von der Verwendung des Präprozessors weitgehend abgeraten wird. Um mit Library-Lösungen umzugehen müssen Sie die Funktionsweise des Präprozessors kennen; wo möglich sollten Sie aber auf die bereits bekannten Mittel zurück greifen.
+
+Selbstverständlich sind nicht alle Einsatzgebiete des Präprozessors ersetzbar. Der Befehl 
+\mintinline{c}{#include} beispielsweise hat keine Entsprechung und wird in den Sprachen C und C++ immer von Bedeutung bleiben. Wo die hier gezeigten Techniken immer noch sinnvoll sind, wird besonders darauf hingewiesen.
+\end{warnbox}
+
+\section{Konstante Ausdrücke und vordefinierte Symbole}
+\subsection{Konstante Ausdrücke}
+Der Befehl \mintinline{c}{#define} wird dazu verwendet, eine einfache Ersetzungen zu machen. Die Syntax lautet:
+
+\begin{codebox}[Syntax: \texttt{\#define}]
+\begin{minted}{c}
+#define SYMBOL Ersetzung
+\end{minted}
+\end{codebox}
+
+Dabei ist \texttt{SYMBOL} eine beliebige Folge von alphanumerischen Zeichen inclusive des Unterstrichs \texttt{\_}, die bis zu 40 Zeichen umfassen darf. Nach dem ersten Leerzeichen rechnet der Compiler alle folgenden Zeichen bis zum Zeilenende als Teil von \texttt{Ersetzung}. Alles, was hier steht, wird vom  Präprozessor anstelle von \texttt{Symbol} eingefügt.
+
+\mintinline{c}{#define}-Symbole werden auch \texttt{Macros} genannt.
+
+Sie können \mintinline{c}{#define} beispielsweise benutzen, um Naturkonstanten zu definieren. Dies ist immer noch gängige Praxis für das Programmieren in C:
+
+\begin{codebox}[Beispiel: \texttt{\#define} für Naturkonstanten]
+\begin{minted}{c}
+#define PI 3.141592653589793238462643383279502884197169399375
+\end{minted}
+\end{codebox}
+
+\begin{hintbox}[Konvention: Konstante Ausdrücke in Großbuchstaben]
+Konstanten verhalten sich anders als Variablen, sind aber im Code nicht mehr auf Anhieb von diesen zu unterscheiden. Es hat sich daher durchgesetzt, Macros in Großbuchstaben zu setzen.
+\end{hintbox}
+
+Häufig wird \mintinline{c}{#define} auch eingesetzt, um wiederkehrenden Werten ein klareres Symbol zu geben. Dies ermöglicht es, mit einer einzigen Änderung im Code das gesamte Verhalten des Programms zu ändern und sorgt \idR für besser lesbaren Code. Beispielsweise können Sie für eine wissenschaftliche Simulation ein Symbol \texttt{SYSTEMGROESSE} definieren und mehrfach schnell hintereinander Ergebnisse für verschiedene Systeme erhalten, ohne Ihren gesamten Code durchsuchen zu müssen.
+
+Der Text in \texttt{Ersetzung} darf mehr als ein einzelnes \enquote{Wort} sein, \ie darf auch Leerzeichen enthalten. Es ist möglich, damit ganze \enquote{Mini-Befehle} zu schreiben:
+
+\begin{codebox}[Beispiel: Komplexer Ausdruck mit \texttt{\#define}]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+#define COUNT_TO_TEN for(unsigned int i=1; i<11; i++) {printf("%i ", i);}
+
+int main () {
+  COUNT_TO_TEN;
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Komplexer Ausdruck mit \texttt{\#define}]
+1 2 3 4 5 6 7 8 9 10
+\end{cmdbox}
+
+\begin{warnbox}[Keine Semikolons nach Präprozessor-Direktiven]
+Nach dem Macro wird die gesamte folgende Zeile als Teil von \texttt{Ersetzung} aufgefasst. Ein Abschließendes Leerzeichen ist \emph{nicht} nötig. Setzt man diess trotzdem, wird der Code teilweise richtig umgesetzt, oft führt dies aber zu Problemen. Sehen Sie sich dazu das folgende Beispiel an:
+
+\begin{codebox}[\texttt{\#define} mit Semikolon]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+#define N 10;
+
+int main () {
+  int x = N;
+  
+  printf("%d", x);
+  printf("%d", N);
+}
+\end{minted}
+\end{codebox}
+
+Beim Versuch, diesen Code zu Kompilieren wirft \texttt{gcc} eine Fehlermeldung:
+
+\begin{cmdbox}[Compiler-Fehlermeldung]
+\begin{minted}{text}
+myProgram.c: In function ‘main’:
+myProgram.c:3:13: error: expected ‘)’ before ‘;’ token
+ #define N 10;
+             ^
+myProgram.c:9:16: note: in expansion of macro ‘N’
+   printf("%d", N);
+\end{minted}
+\end{cmdbox}
+
+Der Fehler wird klar, wenn wir uns die Umsetzung des Macros \texttt{N} (die \emph{Expansion}) in Zeile 9 anzeigen lassen:
+\begin{codebox}[Expansion des Symbols \texttt{N} in Zeile 9]
+\mint{c}{printf("%d", 10;);}
+\end{codebox}
+
+Offensichtlich ist das Semikolon hinter der \texttt{10} hier zuviel!
+
+In Zeile 6 dagegen gibt dies keine Probleme:
+\begin{codebox}[Expansion des Symbols \texttt{N} in Zeile 6]
+\mint{c}{x = 10;;}
+\end{codebox}
+Das doppelte Semikolon wird wie eine Leerzeile interpretiert und ignoriert.
+
+Um unerwartete Fehler zu vermeiden, setzen Sie \emph{keine} Semikolons in Präprozessor-Direktiven.
+\end{warnbox}
+
+\begin{warnbox}[Kein Zuweisungsoperator in der \texttt{\#define}-Direktive]
+Beachten Sie, dass Sie \emph{kein} Gleicheitszeichen \texttt{=} bei der Definition von Macros brauchen. Zeilen wie
+
+\begin{center}
+\mintinline{c}{#define N = 10}
+\end{center}
+
+sind zwar gültiger C-Code, im allgmeinen aber unsinnig. Das Symbol \texttt{N} wird hier durch den gesamten Text \enquote{\texttt{= 10}} ersetzt.
+\end{warnbox}
+
+\begin{warnbox}[Ausdrücke in Klammern]
+Manchmal will man zwar einen konstanten Ausdruck in seinem Programm verwenden, der allerdings aus mehreren Komponenten besteht. Beispielsweise könnte \texttt{SYSTEMGROESSE} in einer Simulation die Summe aus \texttt{RANDSTUECK} und \texttt{KERN} sein. Es bietet sich also an, die Konstante als genau diese Summe zu definieren.
+
+In diesem Fall aber müssen Sie immer bedenken, dass das Symbol nicht durch einen Wert, sondern durch seinen Code-Text ersetzt wird. Betrachten Sie folgendes Beispiel\footnote{Frei nach Douglas Adams.}:
+
+\begin{codebox}[Beispiel: Summen in \texttt{\#define}-Symbolen]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+#define SIX  1 + 5
+#define NINE 8 + 1
+
+int main () {
+  printf("SIX multiplied by NINE equals %d.\n", SIX * NINE);
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Summen in \texttt{\#define}-Symbolen]
+SIX multiplied by NINE equals 42.
+\end{cmdbox}
+
+Das Problem wird wieder klar, wenn wir uns die Expansion der Symbole \texttt{SIX} und \texttt{NINE} in Zeile 7 ansehen:
+
+\begin{codebox}[Expansion von Zeile 7]
+\begin{minted}{c}
+  printf("SIX multiplied by NINE equals %d.\n", 1 + 5 * 8 + 1);
+\end{minted}
+\end{codebox}
+
+Wie bekannt beachtet der Compiler Punkt vor Strich und berechnet somit einen unerwarteten Wert. Um diesem Problem zu entgehen, sollten Sie also ihre Symbole mit Klammern definieren:
+
+\begin{codebox}[Beispiel: Summen in \texttt{\#define}-Symbolen]
+\begin{minted}[linenos]{c}
+#define SIX  (1 + 5)
+#define NINE (8 + 1)
+\end{minted}
+\end{codebox}
+\end{warnbox}
+
+Sie können die Wirkung von Macros begrenzen. Mit der Direktive \mintinline{c}{#undef} setzen Sie einen Endpunkt, ab dem ein zuvor definiertes Macro nicht mehr durch anderen Code ersetzt wird.
+
+\begin{codebox}[Beispiel: \texttt{\#define} und \texttt{\#undef}]
+\begin{minted}[linenos]{c}
+#define PI 3.14159265359
+// ... normaler C-Code...
+
+#undef PI
+// printf("%lf\n", PI);  -- Fehler: PI nicht (mehr) definiert
+
+#define PI 3
+// ... unnormaler C-Code ...
+\end{minted}
+\end{codebox}
+
+\begin{warnbox}[Direktiven mit Variablen]
+Prinzipiell können Sie in Direktiven auch Variablen aus ihrem Code verwenden. Dies sorgt aber für undurchsichtigen Code und ist generell zu vermeiden. Betrachten Sie das folgende Beispiel:
+
+\begin{codebox}[Beispiel: Direktiven mit Variablen]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+#define COUNT_AND_TELL i++; printf("Zähler: %d\n", i)
+
+void foo() {
+  for (int i=0; i<10; i++) {
+    printf("i = %d\n", i);
+    COUNT_AND_TELL;
+  }
+}
+
+void bar() {
+  COUNT_AND_TELL;
+}
+
+int main () {
+  int i=0;
+  
+  foo();
+  COUNT_AND_TELL;
+  
+  bar();
+  COUNT_AND_TELL;
+}
+\end{minted}
+\end{codebox}
+
+Zunächst einmal können Sie dieses Beispiel gar nicht erst kompilieren, da in der Funktion \texttt{bar} keine Variable \texttt{i} existiert, die durch \texttt{COUNT\_AND\_TELL} benutzt werden könnte. Doch selbst, wenn wir auf die Verwendung von \texttt{COUNT\_AND\_TELL} in Zeile 13 verzichten, erhalten wir ein unerwartetes Verhalten: Die Schleife in \texttt{foo} wird nur fünfmal durchlaufen, da \texttt{COUNT\_AND\_TELL} jedes Mal die Zählvariable \texttt{i} mit erhöht. Dies ist aus dem Symbolnamen nicht sofort ersichtlich, und liefert so schlecht wartbaren Code.
+
+Verzichten Sie daher auf die Verwendung von Variablen in Macros.
+\end{warnbox}
+
+\begin{hintbox}[Empfehlung: globale \texttt{const}-Variablen]
+Macros haben keinen explizit zugeordneten Datentyp. Das bedeutet, dass der Compiler keine Prüfung auf die \enquote{Sinnhaftigkeit} der Verwendung unserer Symbole machen kann. 
+
+In modernen Lehrbüchern wird daher empfohlen, konstante Ausdrücke als \mintinline{c}{const}-Variablen zu speichern. Ein weiterer Vorteil ist, dass in diesem Fall wirklich mit einem Wert gerechnet wird; Probleme mit Klammersetzung ergeben sich also nicht mehr. Für manche Ausdrücke kann dies sogar Rechenzeit sparen, da der Ausdruck nur einmal ausgewertet werden muss, nicht jedes Mal, wenn das Symbol benutzt wird.
+
+Im folgenden Beispiel greifen wir wieder den Code mit \texttt{SIX * NINE} auf. Zusätzlich ersetzen wir zur Veranschaulichung den Wert \texttt{1} durch \texttt{cos(0)}, was zu \texttt{1} ausgewertet wird.
+
+\begin{codebox}[Beispiel: \texttt{const}-Ausdrücke]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+#include <math.h>
+
+const int ONE  = cos(0);
+const int SIX  = ONE + 5;
+const int NINE = 8 + ONE;
+
+int main () {
+  printf("SIX multiplied by NINE equals %d.\n", SIX * NINE);
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: \texttt{const}-Ausdrücke]
+SIX multiplied by NINE equals 54.
+\end{cmdbox}
+
+Zunächst bemerken wir, dass der korrekte Wert berechnet wird, obwohl die Definition von \texttt{SIX} und \texttt{NINE} ohne Klammern gesetzt wurde. In Zeile 9 wird tatsächlich mit den Werten \texttt{6} und \texttt{9} gerechnet.
+
+Die Berechnung des Cosinus ist relativ aufwendig und kostet merkbar viel Zeit, wenn dies häufig geschehen soll. Obwohl sowohl in \texttt{SIX} als auch in \texttt{NINE} der Ausdruck \texttt{ONE} vorkommt, der ja gleich \texttt{cos(0)} ist, wird diese Berechnung nur ein einziges Mal ausgeführt, gleich wie oft im folgenden Code die Symbole \texttt{ONE}, \texttt{SIX} oder \texttt{NINE} vorkommen: Das \emph{Ergebnis} ist in \texttt{ONE} gespeichert.
+
+Das Schlüsselwort \mintinline{c}{const} sorgt hier lediglich dafür, zu verhindern, dass die Ausdrücke \texttt{ONE}, \texttt{SIX} oder \texttt{NINE} versehentlich überschrieben werden. Zeilen wie
+\begin{center}
+\mintinline{c}{ONE = 2;}
+\end{center}
+werden vom Compiler als unzulässig erkannt und erzeugen eine Fehlermeldung.
+\end{hintbox}
+
+\begin{hintbox}[Empfehlung: \texttt{inline}-Funktionen]
+Macros, die für kleine Code-Stücke stehen werden manchmal benutzt, um die Codeeffizienz zu steigern. Wie wir wissen wird bei einem Funktionsaufruf einiger Overhead betrieben. Wird der Code dagegen über ein Macro direkt eingefügt, ersparen wir dem Prozessor diese zusätzlichen Verwaltungsschritte. Wir haben aber bereits einige Nachteile der Methode gesehen.
+
+Besser ist es, solchen Code stattdessen in \mintinline{c}{inline}-Funktionen auszulagern. Dies wurde bereits in Abschnitt \ref{sec:inline} gezeigt.
+\end{hintbox}
+
+
+\subsection{Mehrzeilige Symbole}
+Macros enden mit einem Zeilenumbruch. Wo sich diese Ausdrücke über mehrere Zeilen erstrecken sollen, muss in der Präprozessordirektive mit einem Backslash \texttt{\textbackslash} markiert werden, dass der Ersetzungstext fortgesetzt wird. Im Ersetzungstext wird dieser Backslash dann durch einen Zeilenumbruch ersetzt.
+
+\begin{codebox}[Beispiel: Mehrzeilige Präprozessor-Direktive]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+#define PRINT_HEADLINE \
+  printf("+----------------------+\n"); \
+  printf("| headline             |\n"); \
+  printf("+----------------------+\n")
+  
+int main () {
+  PRINT_HEADLINE;
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Mehrzeilige Präprozessor-Direktive]
+\begin{minted}{text}
++----------------------+
+| headline             |
++----------------------+
+\end{minted}
+\end{cmdbox}
+
+\subsection{Vordefinierte Symbole}
+Unabhängig davon, welche Header Sie in Ihren Code einbinden, stellt der \texttt{gcc} einige weitere Symbole zur Verfügung, die Ihnen Informationen über den Compilierprozess bieten. Einige Symbole von besonderer Bedeutung sind im Anhang in Tabelle \ref{tab:predefinedMacros} aufgeführt.
+
+Eine ausführliche Liste finden Sie hier: \url{https://gcc.gnu.org/onlinedocs/cpp/Predefined-Macros.html}. Weitere Symbole, die nur von manchen C-Compilern unterstützt werden, sind unter \url{http://nadeausoftware.com/articles/2012/01/c_c_tip_how_use_compiler_predefined_macros_detect_operating_system} aufgelistet.
+
+\begin{hintbox}[Konvention: Unterstrich nicht als erstes Zeichen]
+Vordefinierte Symbole beginnen \idR mit einem Unterstrich \texttt{\_}. Da der Sprachumfang von C und C++ beständig erweitert wird, kann es sein, dass in einigen Jahren neue vordefinierte Symbole hinzugefügt werden. Um zukünftige Namens-Kollisionen zu vermeiden, sollten Sie ihre Macro-Namen nicht mit einem Unterstrich beginnen lassen.
+\end{hintbox}
+
+\section{Bedingte Kompilierung} \label{sec:PreprocIF}
+Die Präprozessor-Direktive \mintinline{c}{#if...#endif} kann dazu benutzt werden, Code-Passagen nur unter bestimmten Bedingungen zu kompilieren. Alles, was zwischen diesen beiden Direktiven steht, wird vom Compiler nur \enquote{gesehen}, wenn eine bestimmte Bedingung erfüllt ist. Wie schon bei \mintinline{c}{if} ist die Bedingung ein Ausdruck, der in einen Wahrheitswert übersetzt werden kann. Im Ausdruck dürfen jedoch keine \enquote{normalen Variablen} vorkommen, sondern nur Konstanten sowie mit \mintinline{c}{#define} definierte Symbole (sowie auch die vom Compiler vordefinierten Symbole). Anders als bei \mintinline{c}{if} muss die Bedingung nicht in Klammern gesetzt werden, und die geschweiften Klammern entfallen ebenfalls.
+
+\begin{codebox}[Beispiel: Debug-Modus (1)]
+\begin{minted}[linenos]{c}
+// #define DEBUG 1   
+/* Debug-Modus aktivieren durch entfernen des Kommentar-Zeichens Zeile oben */
+
+#include <stdio.h>
+
+int main () {
+#if DEBUG == 1
+  printf("Debug-Modus aktiviert\n");
+#endif
+  
+  // ... normaler Code ...
+}   
+\end{minted}
+\end{codebox}
+
+\mintinline{c}{#if...#endif} kann noch um \mintinline{c}{#else} und \mintinline{c}{#elif}-Blocks erweitert werden. \mintinline{c}{#else} funktioniert dabei wie schon von \mintinline{c}{if} bekannt; \mintinline{c}{#elif} ist eine Kurzform von \mintinline{c}{else if} und funktioniert wie diese.
+
+Bedingungs-Direktiven werden oft mit dem Operator \mintinline{c}{defined} eingesetzt. Dieser wird zu \emph{true} ausgewertet, wenn ein Symbol existiert; ansonsten ist das Ergebnis \emph{false}. Das obige Beispiel lässt sich damit auch so formen:
+
+\begin{codebox}[Beispiel: Debug-Modus (2)]
+\begin{minted}[linenos]{c}
+// #define DEBUG
+/* Debug-Modus aktivieren durch entfernen des Kommentar-Zeichens Zeile oben */
+
+#include <stdio.h>
+
+int main () {
+#if defined(DEBUG)
+  printf("Debug-Modus aktiviert\n");
+#endif
+  
+  // ... normaler Code ...
+}   
+\end{minted}
+\end{codebox}
+
+Eine häufige Anwendung ist die Adaption von Code für bestimmte Betriebssysteme:
+
+\begin{codebox}[Beispiel: Betriebssystem-Spezifische Passagen]
+\begin{minted}[linenos]{c}
+#if   defined(__linux__)
+  // Linux-spezifischer Code
+#elif defined(__APPLE__)
+  // Apple-spezifischer Code
+#elif defined(__WIN64__) or defined(__WIN32__)
+  // Windows-spezifischer Code
+#else
+  #error Betriebssystem nicht unterstützt.
+#endif
+\end{minted}
+\end{codebox}
+
+(Die Direktive \mintinline{c}{#error} sorgt dafür, dass der Kompiliervorgang abgebrochen wird und der nachfolgende Text als Fehlermeldung ausgegeben wird.)
+
+Für \mintinline{c}{#if defined(x)} und \mintinline{c}{#if !defined(x)} existieren die Kurzformen \mintinline{c}{#ifdef(x)} und \mintinline{c}{#ifndef(x)}.
+
+\begin{hintbox}[\texttt{\#include}-Sperre]
+Schon mittelgroße Projekte benutzen oft viele Module. Damit verbunden ist auch die Notwendigkeit, \mintinline{c}{#include}-Zeilen zu verwenden. Manchmal ergeben sich aus einer solchen Aufteilung aber auch Gegenseitige Abhängigkeiten: Modul A benötigt Definitionen aus B, während aber Modul B auf Definitionen von A aufbaut. Das bedeutet, dass der Header von A ein \mintinline{c}{#include "B.h"} benötigt, während der Header von B ein \mintinline{c}{#include "A.h"} enthalten wird. Dies alleine würde zu einer Endlosschleife im Präprozessor führen (bzw. zu doppelten Definitionen, sobald der von A includierte Header \texttt{B.h} wieder auf \mintinline{c}{#include "A.h"} trifft).
+
+Ein Ausweg aus dieser Situation ist die Einführung von \emph{Include-Sperren}: In der ersten Zeile des Headers wird mit \mintinline{c}{#if} geprüft, ob ein Sperrsymbol noch nicht definiert wurde.
+Die zweite Zeile definiert gerade dieses Sperrsymbol mit \mintinline{c}{#define}. Das 
+\mintinline{c}{#if} umfasst den kompletten Code des Headers. Wird nun versucht, denselben Header zweimal (oder öfter) in ein Modul zu inkludieren, so wird nur das erste \mintinline{c}{#include} umgesetzt; alle folgenden solchen direktiven scheitern am \mintinline{c}{#if} im Header:
+
+\begin{codebox}[Beispiel: \texttt{\#include}-Sperre im Header \texttt{my\_header.h}]
+\begin{minted}[linenos]{c}
+#ifndef(MY_HEADER_H)
+#define MY_HEADER_H
+
+// Header-Code
+
+#endif
+\end{minted}
+\end{codebox}
+
+Diese Technik wird noch heute genutzt und ist auch in C++-Projekten üblich.
+\end{hintbox}
+
+\section{Parametrisierte Macros}
+Wir haben die Direktive \mintinline{c}{#define} bereits für einfache Ersetzungen kennen gelernt. Es ist möglich, diese Ersetzungen von einem oder mehreren Parametern abhängig zu machen. Statt immer denselben Ersetzungstext zu erzeugen wird ein Symbol dann durch Code ersetzt, der einen Parameter enthält.
+
+\begin{codebox}[Syntax: \texttt{\#define} mit Parametern]
+\begin{minted}{c}
+#define SYMBOL(Parameterliste) Ersetzung_mit_Parametern
+\end{minted}
+\end{codebox}
+
+Das folgende Bespiel Definiert ein Macro, das die größere von zwei Zahlen zurück gibt:
+\begin{codebox}[Syntax: \texttt{\#define} mit Parametern]
+\begin{minted}{c}
+#include <stdio.h>
+
+#define MAX(a, b) (a > b  ?  a  :  b)
+
+int main () {
+  int    i = 8  , j = 7;
+  double x = 8.0, y = 7.0;  
+
+  printf("%d\n" , MAX(i, j));
+  printf("%lf\n", MAX(x, y));
+}
+\end{minted}
+\end{codebox}
+
+\begin{warnbox}[Macros mit komplexeren Argumenten]
+Während Macros schnelle Lösungen für kleine Probleme erlauben, ist ihre Anwendung wie so häufig eine Gefahrenquelle. Betrachten Sie das folgende Beispiel:
+\begin{codebox}[Beispiel: Direktiven mit Variablen]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+#define MAX(a, b) (a > b  ?  a  :  b)
+
+int main () {
+  int i = 8, j = 7;
+  printf("MAX: %2d\n" , MAX(i++, j++));
+  printf(" i : %2d\n", i);
+  printf(" j : %2d\n", j);
+}
+\end{minted}
+\end{codebox}
+
+Naiv könnte man annehmen, dass die Ausgabe dieser Codezeilen 7 und 8 beide Male \texttt{9} sein sollte. Tatsächlich aber lautet die Ausgabe:
+
+\begin{cmdbox}[Ausgabebeispiel: Direktiven mit Variablen]
+\begin{minted}{text}
+MAX:  9
+ i : 10
+ j :  8
+\end{minted}
+\end{cmdbox}
+
+Um dies zu verstehen betrachten wir die Expansion des Macros:
+\begin{codebox}[Expansion von Zeile 7]
+\begin{minted}[linenos, firstnumber=7]{c}
+  printf("%d\n" , (i++ > j++  ?  i++  :  j++));
+\end{minted}
+\end{codebox}
+
+Sowohl \texttt{i} als auch \texttt{j} werden miteinander verglichen \emph{und dann} inkrementiert. Da \texttt{i} vor der Inkrementierung größer als \texttt{j} vor der Inkrementierung ist (\texttt{8 > 7}) wird der erste Teil des ternären Operators ausgewertet, also \texttt{i++}. Der \emph{Rückgabewert} dieser Operation ist der Wert von \texttt{i} vor dem Inkrement; gleichzeitig wird aber der Wert von \texttt{i} erhöht.
+
+Sie sehen also wieder, dass in der Expansion von Macros auch Nebenwirkungen in der Anwendung von Paramtern stecken können.
+\end{warnbox}
+
+\begin{warnbox}[Macros in Blockstrukturen]
+Ein weiteres Beispiel soll Sie auf eine unerwartete Wechselwirkung von Macros mit Blockstrukturen wie \mintinline{c}{if} aufmerksam machen:
+
+\begin{codebox}[Beispiel: Macro in \texttt{if}-Block]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+#define SAFE_DIVIDE(result, x, y)   if (y) result = x/y
+
+int main () {
+  int a = 1, b = 0, x = 0;
+  int something = 1;
+  
+  if (something) SAFE_DIVIDE(x, a, b);
+  else printf("Something is not set...\n");
+  
+  printf("x = %d\n", x);
+}
+\end{minted}
+\end{codebox}
+
+Naiverweise würde man davon ausgehen, dass \texttt{SAFE\_DIVIDE} dafür sorgt, dass die Division 
+\texttt{a / b} verhindert wird, wenn \texttt{b==0}. Da hier \texttt{something == 1} gilt, sollte die \mintinline{c}{else}-Zeile nicht ausgeführt werden. Stattdessen aber lautet die Ausgabe:
+
+\begin{cmdbox}[Ausgabebeispiel: Macro in \texttt{if}-Block]
+Something is not set...\\
+x = 0
+\end{cmdbox}
+
+Wir erkennen das Problem wieder, wenn wir uns die Expansion des Macros ansehen:
+
+\begin{codebox}[Expansion: Macro in \texttt{if}-Block]
+\begin{minted}[linenos, firstnumber=9]{c}
+  if (something) if (y) x = a/b;
+  else printf("Something is not set...\n");
+\end{minted}
+\end{codebox}
+
+Die \mintinline{c}{else}-Zeile wird der Bedingung \texttt{y != 0} zugeordnet und gehört nicht mehr zu\texttt{something}.
+
+An dieser Stelle kann das Problem umgangen werden, indem der Macro-Code in \{geschweifte Klammern\} gesetzt wird:
+\begin{center}
+\begin{minted}{c}
+#define SAFE_DIVIDE(result, x, y)   {if (y) result = x/y;}
+\end{minted}
+\end{center}
+
+Besser jedoch ist es, auf Macro-Lösungen dieser Form komplett zu verzichten.
+\end{warnbox}
+
+\begin{hintbox}[Alternative zu Macros: \texttt{inline}-Funktionen]
+Wie bereits mehrfach erwähnt sind Funktionen Macros vorzuziehen. Wo es auf Geschwindigkeit ankommt, kann das Schlüsselwort \mintinline{c}{inline} verwendet werden. Die beiden obigen Beispiele (Maximum und sichere Division) lassen sich folgendermaßen umsetzen:
+
+\begin{codebox}[Beispiel: \texttt{inline}-Funktionen für Maximum und sichere Division]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+inline double max        (double x, double y);
+       double max        (double x, double y) {return x > y  ?  x  :  y;}
+inline double save_divide(double x, double y);
+       double save_divide(double x, double y) {return y  ?  x / y  :  0;}
+
+int main () {
+  double a = 1, b = 0, x = -1;
+  int something = 1;
+  
+  if (something) {x = save_divide(a, b);}
+  else           {printf("Something is not set...\n");}
+  
+  printf("x = %lf\n", x);
+  printf("Maximum : %lf\n", max(a++, b++));
+  printf("(a, b) = (%lf, %lf)\n", a, b);
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: \texttt{inline}-Funktionen für Maximum und sichere Division]
+x = 0.000000\\
+Maximum : 1.000000\\
+(a, b) = (2.000000, 1.000000)
+\end{cmdbox}
+
+\end{hintbox}
+
+\section{Stringify-Operator \texttt{\#}}
+Der Operator \texttt{\#} verwandelt einen nachfolgenden Ausdruck in einen String, und kann zu Debug-Zwecken genutzt werden:
+
+\begin{codebox}[Beispiel: Stringify-Operator]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+#define DebugInt(x) printf("%s = %d\n", #x, x)
+
+int main () {
+  int myInt = 5;
+
+  DebugInt(myInt);
+  DebugInt(myInt + 7);
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Stringify-Operator]
+\begin{minted}{text}
+myInt = 5
+myInt + 7 = 12
+\end{minted}
+\end{cmdbox}
+
+
+\section{Concatenation-Operator \texttt{\#\#}}
+Mit dem Concatenation-Operator (Englisch: \emph{to concatenate}, aneinanderreihen) kann man zwei Code-Elemente zu einem einzigen Ausdruck aneinander hängen. Ein Anwendungsfall erspart etwas Tipparbeit:
+
+Stellen Sie sich vor, Sie wollen ein Menüsystem umsetzen. Jeder Menüeintrag hat einen Titel und eine zugeordnete Aktion. Die Aktion wird von einer Funktion ausgeführt, die wir als Funktionszeiger speichern. Alle Menüeinträge legen wir in einem Array ab. Wir können also den folgenden Code setzen:
+
+\begin{codebox}[Beispiel: Menü-Infrastruktur (1)]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+  char * name;
+  void (*function)(void);
+} command;
+
+void proc_Beenden() {exit(0);}
+void proc_Hilfe() {printf("Hilfetext...\n");}
+
+int main () {
+  command menuItems[] = {
+    {"Beenden", proc_Beenden},
+    {"Hilfe"  , proc_Hilfe}
+  }; 
+}
+\end{minted}
+\end{codebox}
+
+Hier sind nur zwei Menüeinträge gezeigt. Wir können uns aber auch beliebig große Menüs vorstellen. Wenn jeweils Titel und Funktionsname sich jeweils nur um den Präfix \texttt{proc\_} unterscheiden, bedeutet das, dass wir viel Code doppelt tippen müssen. Stattdessen können wir mit dem Concatenation-Operator ein Code-Template erstellen:
+
+\begin{codebox}[Beispiel: Menü-Infrastruktur (2)]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+#include <stdlib.h>
+
+#define COMMAND(X) {#X, proc_ ## X}
+\end{minted}
+\end{codebox}
+%
+\begin{codebox}[]
+\begin{minted}[linenos, firstnumber=last]{c}
+typedef struct {
+  char * name;
+  void (*function)(void);
+} command;
+
+void proc_Beenden() {exit(0);}
+void proc_Hilfe() {printf("Hilfetext...\n");}
+
+int main () {
+  command menuItems[] = {
+    COMMAND(Beenden),
+    COMMAND(Hilfe)
+  }; 
+}
+\end{minted}
+\end{codebox}
+
+Hier wird wieder derselbe Code erzeugt. In den Augen mancher ProgrammiererInnen ist die letzte Form mit Macro übersichtlicher. Natürlich wird verborgen, dass eine Verbindung zu \texttt{proc\_X} besteht, und eine Trennung von Namen des Menüeintrags und Funktionsnamen ist nicht mehr möglich. Außerdem lassen sich leicht Fälle konstruieren, in denen das Macro unbrauchbaren Code erzeugt. Kommt im Macro-Parameter \texttt{X} beispielsweise ein Leerzeichen vor, so ist dieses zwar im Menütitel enthalten, gehört aber natürlich nicht zum Namen der aufzurufenden Funktion.

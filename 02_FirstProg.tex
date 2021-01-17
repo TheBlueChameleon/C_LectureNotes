@@ -1,0 +1,520 @@
+\chapter{Ein erstes Programm}
+\epigraph{The secret to getting ahead is getting started.}{Mark Twain}
+In diesem Kapitel werden wir zunächst ein sogenanntes \emph{Hello World} besprechen: Dieses Programm gibt einen kurzen Text auf dem Bildschirm aus und enthält sonst \enquote{nur} den Grundaufbau eines C-Programms\footnote{Der Begriff \emph{Hello World} wird auch im Kontext anderer Sprachen benutzt und bedeutet dort dasselbe.}. Im Weiteren betrachten wir auch Möglichkeiten, die Sprache C für einfache Rechnungen zu verwenden.
+
+\section{Hello World}
+Die folgenden Zeilen zeigen ein Programm, das den Text \texttt{Hello World!} auf dem Bildschirm ausgibt.
+\begin{codebox}
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main() {
+   printf("Hello World!\n");
+}
+\end{minted}
+\end{codebox}
+Betrachten wir den Code Zeile für Zeile.
+
+Es wurde bereits angesprochen, dass häufig wiederkehrende Aufgaben in Bibliotheken ausgelagert werden können und so in vielen Projekten zur Verfügung stehen. Eine solche Bibliothek stellt Routinen zur Ein-und Ausgabe bereit und trägt den Namen \texttt{stdio} (\emph{standard in/output}). Um die Routinen im Code nutzbar zu machen, müssen diese einmalig \emph{deklariert} werden. Mit dem Befehl \mintinline{c}{#include} wird die Datei \texttt{stdio.h} in den Code mit eingebunden\footnote{Die Datei befindet sich in einem Standard-Verzeichnis, das bei der Installlation des gcc angelegt und voreingestellt wird.}. Diese Datei wird ein \emph{Header} genannt und enthält alle notwendigen Deklarationen für die Textein- und Ausgabe. In Kapitel \ref{chp:modules} werden wir hierauf zurück kommen. Für den Moment reicht es zu wissen, dass die \mintinline{c}{#include}-Zeile notwendig ist, um Ein/Ausgabe-Befehle benutzen zu können.
+
+Programme sind in funktionelle Einheiten (\enquote{Funktionen}) gegliedert, die von \{geschweiften Klammern\} eingefasst werden. Zeile 3 deklariert eine solche Funktion mit Namen \texttt{main}, die bis Zeile 5 reicht. Ein Programm kann beliebig viele solcher Funktionen besitzen, die sich jeweils im Namen unterscheiden müssen. Groß- und Kleinschreibung wird beachtet, \texttt{main} ist also von \texttt{Main} verschieden. Die Funktion \texttt{main} ist das Hauptprogramm; nur dieses wird automatisch ausgeführt. Auch hierzu werden wir in Kapitel \ref{chp:funcs} vertiefen (insbeseondere die Bedeutung von \mintinline{c}{int} und den Klammern). Für unsere ersten Programme können wir diese Zeile einfach kopieren.
+
+Zeile 4 enthält den Befehl \texttt{printf}. Dieser Befehl gibt Text auf dem Bildschirm aus. (Das \texttt{f} in \texttt{printf} steht dabei für \emph{formatted}. In Abschnitt \ref{sec:formattedOutput} werden wir einige Details hierzu kennen lernen.) Welcher Text das ist, wird als \emph{Parameter} übergeben, \ie in Klammern hinter den Befehl selbst gestellt. Hier also ist der Parameter zu \texttt{printf} der Ausdruck \texttt{"Hello World!\textbackslash n"}. Um Texte von restlichem Code abzugrenzen muss der Text in \texttt{"}doppelte Anführungszeichen\texttt{"} gesetzt werden. Dieser Text enthält auch einen Zeilenumbruch, codiert als \texttt{\textbackslash n} (n für \emph{new line}).
+
+Wichtig ist das Semikolon (;) am Ende der Zeile -- hiermit wird ein Befehl abgeschlossen. Jeder Befehl muss mit einem Semikolon abgeschlossen werden. Fehlt dieses, gibt der Compiler eine Fehlermeldung aus und bricht die Kompilation ab. Mehrere Befehle dürfen in derselben Zeile stehen, solange diese von einem Semikolon voneinander abgetrennt sind.
+
+Wir können beliebig Leerzeichen, Tabulatoren oder Zeilenumbrüche in den Code einfügen, um diesem eine optische Struktur zu geben. Nur die \emph{Schlüsselwörter} (\eg Befehle, bzw. die \enquote{Worte} des Codes) dürfen nicht zertrennt werden. Einrückungen werden verwendet, um \enquote{Hierarchieebenen} zu verdeutlichen und machen den Code besser les- und wartbar. Ich empfehle, gleich von Anfang an Einrückungen wie in diesem Script gezeigt zu verwenden. Vom Compiler werden Leerzeilen komplett ignoriert und können zur Abgrenzung von Codeblöcken beliebig eingefügt werden.
+
+Der folgende Code erzeugt dasselbe Ergebnis wie oben und soll nur verdeutlichen, wo Leerzeichen eingefügt werden können.
+\begin{codebox}
+\begin{minted}[linenos]{c}
+  #include     <stdio.h>
+  int    main   (   )    {
+      printf   (   "Hello World!\n"   )   ;
+   }
+\end{minted}
+\end{codebox}
+
+Code wird vom Compiler von oben nach unten gelesen und bearbeitet. Die Reihenfolge der einzelnen Anweisungen ist also von großer Bedeutung. Verschiebt man beispielsweise die \mintinline{c}{#include}-Zeile an das Ende des Codes, so erhält man Fehlermeldungen, da der Befehl \texttt{printf} deklariert werden muss (durch Einbinden der Datei \texttt{stdio.h}) \emph{bevor} er zum ersten Mal aufgerufen wird.
+
+\section{Variablen, Datentypen, Operatoren} \label{sec:expressions}
+Nützliche Programme entwickeln sich über die Zeit, berechnen also \eg ein Ergebnis oder reagieren auf Benutzereingaben. Um dies zu ermöglichen, existieren in C \emph{Variablen}, also Symbole, die einen Wert beschreiben, der sich über die \emph{Laufzeit} eines Programmes ändern.
+
+\subsection{Variablen}
+Eine Variable hat einen Namen, einen \emph{Datentyp} und einen Wert.
+
+Der Name einer Variablen ist eine beliebige Kombination aus \emph{alphanumerischen Zeichen}\footnote{Die Buchstaben a-z, A-Z, die Ziffern 0-9 sowie der Unterstrich (\_), jedoch keine Umlaute, Sonderzeichen oder das scharfe ß.}. Er muss mit einem Buchstaben beginnen, darf keine Leerzeichen enthalten und kann bis zu 40 Zeichen lang sein. Auch hier wird zwischen Groß- und Kleinschreibung unterschieden. Variablennamen müssen \emph{eindeutig} sein, \ie es darf keine zwei Variablen mit demselben Namen geben. Auch Funktionsnamen gelten als \enquote{verbraucht}; wir können keine Variable \texttt{main} nennen.
+
+Anfänger neigen dazu, sehr kurze, nichtssagende Variablennamen zu vergeben. Um Programme gut les- und wartbar zu machen (und um somit Fehler zu vermeiden) sollte der Variablenname bereits ihre Funktion im Code angeben. Statt \texttt{a, b, c} also lieber \texttt{elementCount, averageNote, currentIndex}.
+
+Unter \emph{Datentyp} versteht man die Art der Information, die in der Variablen gespeichert wird, \eg Ganzzahl, Kommazahl oder Text. Dies ist notwendig, da der Computer intern nur Einsen und Nullen speichern kann. Ohne Kontext ist es also nicht möglich, zu erkennen, wie eine Bit-Folge zu interpretieren ist. Dieser Kontext ist durch Zuweisung eines Datentyps gegeben.
+
+Der Wert einer Variablen kann schließlich alles sein, was ihrem Datentypen entspricht; eine Variable kann \eg eine einzelne Zahl oder ein ganzes Bild speichern.
+
+\subsection{Variablen Deklarieren} \label{sec:DeclareVars}
+Um Variablen zu benutzen müssen diese zuerst \emph{deklariert} werden. Dies geschieht in der Form
+\begin{codebox}[Syntax: Variablen Deklarieren]
+\texttt{Datentyp VariablenName;}
+\end{codebox}
+Mehrere Variablen können in einem Schritt deklariert werden, indem man sie durch Kommata voneinander abtrennt.
+
+Für den Moment wollen wir uns auf die Datentypen \mintinline{c}{int} (Ganzzahlen) und \mintinline{c}{double} (Kommazahlen) beschränken. Mit diesen können wir also folgende Variablen deklarieren:
+\begin{codebox}[Beispiel: Deklaration von mehreren Variablen]
+\begin{minted}[linenos]{c}
+int main () {
+   int    Ganzzahl;
+   double Kommazahl, andereZahl;
+}
+\end{minted}
+\end{codebox}
+Variablen werden also \emph{innerhalb von Funktionen} deklariert\footnote{In Abschnitt \ref{sec:globals} werden wir hierzu mehr hören; für den Moment beschränken wir uns auf den Fall, dass alle Variablen am Anfang der Funktion \texttt{main} deklariert werden.}.
+
+Ihnen mag die Ähnlichkeit zwischen der Deklaration von Ganzzahl-Variablen und der Funktion \texttt{main} aufgefallen sein. Dies ist kein Zufall. Tatsächlich ist formell die Funktion \texttt{main} die Vorschrift einen \mintinline{c}{int}-Wert zu berechnen. Das Symbol \texttt{main} ist eine Variable, die auf diese Vorschrift verweist. Hierzu mehr in Kapitel \ref{chp:OS-Link}.
+
+\subsection{Wertezuweisung} \label{sec:valueAssignment}
+Werte können über den \emph{Operator} = zugewiesen werden:
+\begin{codebox}[Beispiel: Wertzuweisung]
+\begin{minted}[linenos]{c}
+int main () {
+  int    Ganzzahl;
+  double Kommazahl, andereZahl;
+  
+  Ganzzahl   = 7;
+  Ganzzahl   = 8;
+\end{minted}
+\end{codebox}
+
+\begin{codebox}[]
+\begin{minted}[linenos, firstnumber=last]{c}
+   Kommazahl  = 4.3;
+   andereZahl = 5.0;
+}
+\end{minted}
+\end{codebox}
+
+In Zeile 5 wird also der Variablen \texttt{Ganzzahl} der Wert 7 zugewiesen. In der folgenden Zeile 6 überschreiben wir diesen Wert mit dem Wert 8.
+
+In den Zeilen 7 und 8 erhalten die beiden \mintinline{c}{double}-Variablen ebenfalls Werte. Wir bemerken, dass hier ein \emph{Dezimalpunkt} gesetzt wird, also kein Komma.
+
+Deklaration und Wertzuweisung können auch in einem einzigen Schritt geschehen:
+\begin{codebox}[Beispiel: Kombinierte Deklaration und Wertzuweisung]
+\begin{minted}[linenos]{c}
+int main () {
+   int    Ganzzahl   = 8;
+   double Kommazahl  = 4.3,
+          andereZahl = 5.0;
+}
+\end{minted}
+\end{codebox}
+
+\begin{hintbox}[Nicht-Initialisierte Variablen]
+Wenn eine Variable deklariert wird, sorgt der Compiler lediglich dafür, dass genug Platz im Speicher reserviert wird, um diesen Wert zu erfassen. Im Allgemeinen wird aber kein bestimmter \enquote{Startwert} festgelegt. Die neue Variable startet mit dem Wert, den das Bitmuster an der Stelle festlegt, an der Platz für die Variable reserviert wurde. Dies ist ein zufälliger Wert! Programme, die mit einem solchen Zufallswert weiterarbeiten haben generell \emph{undefiniertes} Verhalten und können abstürzen oder sogar Schaden anrichten. Es ist daher also ratsam, allen Variablen bei der Deklaration gleich einen sinnvollen oder sicheren Startwert zuzuweisen.
+\end{hintbox}
+
+\begin{hintbox}[Fließkommazahlen ohne Nachkommastelle]
+In der Mathematik gilt $5 = 5.0$. Ein Computer arbeitet zwar nach mathematischen Prinzipien; streng genommen gilt diese Gleichheit für den Prozessor aber nicht. Wie wir in Abschnitt \ref{sec:DataRepresentation} sehen werden kann dieselbe (mathematische) Zahl auf verschiedene Weisen binär dargestellt werden. Insbesondere zwischen Ganzzahlen und Kommazahlen bestehen große Unterschiede in der Binär-Darstellung. Der gcc kann zwar Umwandlungen automatisch durchführen, und würde auch
+\begin{codebox}[Beispiel: Implizite Typumwandlung von Ganzzahl zu Fließkommazahl]
+\begin{minted}[linenos]{c}
+int main () {
+   double Kommazahl = 5;
+}
+\end{minted}
+\end{codebox}
+\enquote{korrekt} umsetzen. Hier wird versucht, die \emph{Ganzzahl} \texttt{5} in der \mintinline{c}{double}-Variablen \texttt{Kommazahl} zu speichern. Da dies direkt nicht möglich ist, wandelt der gcc diese Ganzzahl zuerst in die Fließkommazahl \texttt{5.0} um und speichert dann diese. Eine solche \emph{implizite Typumwandlung} kann aber unbeabsichtigte Nebeneffekte haben und sollte daher vermieden werden. Als Beispiel für solche Nebeneffekte möchte ich Ihnen das folgende Beispiel geben:
+\end{hintbox}
+%
+\begin{hintbox}[]
+\begin{codebox}[Beispiel: Implizite Typumwandlung von Fließkommazahl zu Ganzzahl]
+\begin{minted}[linenos]{c}
+int main () {
+   int Ganzzahl = 5.5;
+}
+\end{minted}
+\end{codebox}
+Analog zum Beispiel oben wird nun implizit die Zahl \texttt{5.5} zu einer Ganzzahl konvertiert. Natürlich ist Ihnen bewusst, dass es keine ganze Zahl gibt, die gleich $5.5$ ist. Es wird also gerundet. Im Gegensatz zur menschlichen Intuition rundet der gcc hier aber \emph{ab}. Außerdem können die \enquote{fehlenden} $0.5$ das Verhalten des Programms in der Laufzeit gegenüber der Erwartung verändern.
+
+Damit der Datentyp (und damit das Verhalten des Programms) immer ersichtlich ist, sollten daher \enquote{ganzzahlige Fließkommawerte} als Kommawert (\eg \texttt{5.0}) gesetzt werden.
+\end{hintbox}
+
+\subsection{Rechnen mit Variablen -- Operatoren}\label{sec:OperatorsArithmetic}
+Mit Variablen kann auch gerechnet werden. Hierzu stehen 6 \enquote{Grundrechenarten} zur Verfügung (siehe Tabelle \ref{tab:OperatorsArithmetic}). Mehrere solche Rechenoperationen können hintereinander geschaltet werden. Es gilt wie üblich Punkt-vor-Strich; Klammern können gesetzt werden um eine andere Reihenfolge festzulegen.
+\begin{table}[h!]
+	\newcolumntype{C}{>{\ttfamily\centering\arraybackslash} p{.2\linewidth}}
+\begin{center}
+\begin{tabularx}
+	{.95\linewidth}
+	{cC|cC}
+\toprule[1pt]
+	
+	Operation   & \normalfont Zeichen  &  Operation                              & \normalfont Zeichen
+\tabcrlf
+	Addition    & +                    &  Multiplikation                         & * \\
+	Subtraktion & -                    &  Division                               & / \\
+	Negation    & -                    &  Rest der Division (\enquote{Modulo})   & \%\\
+	
+\bottomrule[1pt]
+\end{tabularx}
+\end{center}
+\caption{Rechenoperatoren in C}\label{tab:OperatorsArithmetic}
+\end{table}
+
+\begin{codebox}[Beispiel: Rechnen mit Variablen]
+\begin{minted}[linenos]{c}
+int main () {
+   int    Ganzzahl;
+   double Kommazahl, andereZahl;
+   
+   Ganzzahl   = 7;
+   Ganzzahl   = Ganzzahl + 8;
+   
+   Kommazahl  = 4.3;
+   andereZahl = 3.0 * (-Kommazahl + 7.9) / 2.0;
+}
+\end{minted}
+\end{codebox}
+
+Wichtig ist, dass Variablen bereits deklariert sind \emph{bevor} auf sie verwiesen wird, \ie bevor sie in anderen Ausdrücken vorkommen. Folgendes Beispiel funktioniert daher nicht:
+\begin{codebox}[Beispiel: Fehlerhafter Code{,} Variablen zu spät deklariert]
+\begin{minted}[linenos]{c}
+int main () {
+  Ganzzahl = 7;
+  int Ganzzahl;
+}
+\end{minted}
+\end{codebox}
+und erzeugt die folgende Fehlermeldung:
+\begin{cmdbox}[Fehlermeldungen des gcc]
+\begin{minted}{text}
+myProgram.c: In function ‘main’:
+myProgram.c:2:4: error: ‘Ganzzahl’ undeclared (first use in this 
+function)
+    Ganzzahl = 7;
+    ^~~~~~~~
+myProgram.c:2:4: note: each undeclared identifier is reported only once 
+for each function it appears in
+\end{minted}
+\end{cmdbox}
+Jede Fehlermeldung beginnt mit einem Verweis auf die Fehlerhafte Datei und die Funktion darin, in der das Problem aufgetreten ist (\texttt{myProgram.c: In function ‘main’:}). In der folgenden Zeile der Fehlerausgabe wird genauer spezifiziert in welcher Zeile, und an welcher Stelle der Fehler auftrat (\texttt{myProgram.c:2:4}, also  Zeile 2, Spalte 4) und welcher Fehler gefunden wurde (\texttt{‘Ganzzahl’ undeclared}). Schließlich gibt der Compiler noch die relevante Stelle aus und markiert die kritische Stelle.
+
+\begin{hintbox}[Zur Division mit Ganzzahl- und Fließkomma-Werten]
+Der Datentyp einer Division hängt vom Datentyp von Divisor und Dividend ab. Ist einer der beiden ein Fließkommawert, so wird auch das Ergebnis als Fließkommawert berechnet. Sind beide Werte Ganzzahlen, wird auch das Ergebnis als Ganzzahl berechnet und gegebenenfalls abgerundet. Betrachten wir folgendes Beispiel:
+\begin{codebox}[Beispiel: Division von Ganzzahlen und Fließkommazahlen]
+\begin{minted}[linenos]{c}
+double x = 3   / 2  ,
+       y = 3.0 / 2.0,
+       z = 3.0 / 2  ,
+       w = 3   / 2.0;
+\end{minted}
+\end{codebox}
+Die Variable \texttt{x} geht aus der Division zweier Ganzzahlen hervor, und wird damit zu \texttt{1.0} abgerundet. Bei der Berechnung von \texttt{y} hingegen gehen Fließkommazahlen in die Division ein; somit wird das Ergebnis nicht gerundet und als 1.5 gespeichert. Dasselbe gilt für \texttt{z} und \texttt{w}, da zumindest \emph{eine} der an der Division beteiligten Zahlen eine Fließkommazahl war.
+\end{hintbox}
+
+\subsection{Shorthands}
+Häufig soll sich der Wert einer Variablen \emph{inkrementiert} (\enquote{hochgezählt}) werden. Dies kann codiert werden als:
+\begin{codebox}[Beispiel: Inkrementieren einer Variablen i]
+\begin{minted}[linenos]{c}
+int main () {
+   int i = 5;
+   i = i + 1;  // i hat jetzt den Wert 6
+}
+\end{minted}
+\end{codebox}
+
+Daneben gibt es auch den \emph{Shorthand} (Kurzform) \texttt{variable++}:
+\begin{codebox}[Beispiel: Inkrementieren einer Variablen i mit Shorthand ++]
+\begin{minted}[linenos]{c}
+int main () {
+   int i = 5;
+   i++;       // i hat jetzt den Wert 6
+}
+\end{minted}
+\end{codebox}
+
+In beiden Beispielen wird der Wert von \texttt{i} in Zeile 3 um 1 erhöht.
+
+Analog dazu existiert der \emph{Dekrement}-Operator \texttt{variable-{}-}, der den Wert von \texttt{variable} um 1 verringert.
+
+Weiter existieren der Operator-Shorthand \texttt{variable += expression}. Zu \texttt{variable} wird der Wert von \texttt{expression} hinzugezählt und anschließend in \texttt{variable} gespeichert. \texttt{expresion} darf dabei ein beliebig komplexer Ausdruck sein:
+\begin{codebox}[Beispiel: Inkrementieren einer Variablen i mit Shorthand \texttt{+=}]
+\begin{minted}[linenos]{c}
+int main () {
+   int i = 5,
+       j = 2;
+   i += 3 * j + 1;
+}
+\end{minted}
+\end{codebox}
+Hier wird zunächst der Ausdruck \texttt{3 * j + 1} ausgewertet zu \texttt{7}; als nächster Schritt wird die Summe \texttt{i + 7} berechnet, und diese dann in \texttt{i} gespeichert. Die Variable \texttt{i} hat also nach Zeile 4 den Wert 12.
+
+Analog existieren auch die Shorthands \texttt{-=}, \texttt{*=}, \texttt{/=} und \texttt{\%=}. 
+
+\begin{hintbox}[Inkrement und Dekrement: Prefix und Postfix]
+Die Operatoren \texttt{++} und \texttt{-{}-} können sowohl \emph{vor} als auch \texttt{hinter} einen Ausdruck gesetzt werden (Wir sprechen von \emph{Prefix} und \emph{Postfix}). Für sich alleine ist in beiden Fällen der Effekt derselbe -- der Wert des Ausdrucks wird um 1 erhöht bzw. Verringert. Kombiniert mit anderen Operationen ergeben sich aber Unterschiede. Betrachten wir folgendes Beispiel:
+
+\begin{codebox}[Beispiel: Unterschiede bei Prefix- und Postfix-Inkrement]
+\begin{minted}[linenos]{c}
+int main () {
+   int i, j;
+   
+   // Postfix-Form
+   i = 5;
+   j = i++;		// i = 6, j = 5.
+   
+   // Prefix-Form
+   i = 5;
+   j = ++i;		// i = 6, j = 6.
+}
+\end{minted}
+\end{codebox}
+
+In der Postfix-Form (Zeile 6) wird zuerst der Wert von \texttt{i} gelesen und der Variablen \texttt{j} zugewiesen; danach wird \texttt{i} inkrementiert.
+
+Bei der Prefix-Form (Zeile 10) dagegen wird zuerst \texttt{i} inkrementiert und danach der Wert von \texttt{i} in \texttt{j} gespeichert.
+\end{hintbox}
+%
+\begin{hintbox}[]
+Um den Code leicht les- und wartbar zu halten, empfehle ich, alle gedanklichen Schritte in abgeschlossene Befehle zu setzen. Äquivalent zum obigen Code ist der folgende, intuitiv leichter verständliche Code:
+
+\begin{codebox}[Beispiel: Äquivalente Codes]
+\begin{minted}[linenos]{c}
+int main () {
+   int i, j;
+   
+   // zur Postfix-Form
+   i = 5;
+   j = i;
+   i++;		// i = 6, j = 5.
+   
+   // zur Prefix-Form
+   i = 5;
+   i++;
+   j = i;		// i = 6, j = 6.
+}
+\end{minted}
+\end{codebox}
+\end{hintbox}
+
+\section{Formatierte Ausgabe}\label{sec:formattedOutput}
+Wir wollen nun auch die berechneten Ergebnisse in Erfahrung bringen. Dazu können wir den bereits bekannten Befehl \texttt{printf} benutzen. Betrachten wir folgendes Beispiel:
+
+\begin{codebox}[Beispiel: Ausgabe einer Berechnung mit \texttt{printf}]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main () {
+   double result = 5.0 / 7.0;
+   
+   printf("5.0 / 7.0 = %lf\n", result);
+}
+\end{minted}
+\end{codebox}
+
+Die Ausgabe lautet:
+\begin{cmdbox}[Ausgabe einer Berechnung mit \texttt{printf}]
+5.0 / 7.0 = 0.714286
+\end{cmdbox}
+
+Wie oben besprochen wird zuerst in Zeile 4 das Ergebnis der Division zweier Fließkommazahlen berechnet und in der Variablen \texttt{result} gespeichert. Zur Ausgabe auf dem Bildschirm übergeben wir dem Befehl \texttt{printf} jetzt \emph{zwei} Argumente:
+
+Das erste Argument wird \emph{Format-String} genannt und ist in unserem Beispiel der Anteil:
+\begin{center}
+\mintinline{c}{"5.0 / 7.0 = %lf\n"}.
+\end{center}
+
+Ein Format-String ist eine Zeichenkette, die besondere \emph{Platzhalter} enthält. Diese beginnen mit dem Zeichen \texttt{\%} gefolgt von einem oder mehreren Zeichen, die beschreiben, wofür Platz freigehalten werden soll. In diesem Fall steht der Platzhalter \texttt{\%lf}, was für eine \mintinline{c}{double}-Zahl steht. Diese Zahl wird hinter dem Format-String genannt und von diesem durch ein Komma abgetrennt. Andere Platzhalter-Symbole sind in Tabelle \ref{tab:FormatOutNum} aufgelistet.
+
+In einem Format-String können beliebig viele Platzhalter stehen; für jeden Platzhalter muss eine entsprechende Einsetzung hinter dem Formatstring selbst genannt werden. 
+\begin{codebox}[Beispiel: Ausgabe mehrerer Werte mit \texttt{printf}]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main () {
+   double f = 3.14;
+   int    g = 42;
+   
+   printf(
+      "Ganzzahl i = %d, Fliesskommazahl d = %lf, weitere Zahl = %d",
+                    g,                      f,                  99);
+}
+\end{minted}
+\end{codebox}
+
+Werden hinter dem Formatstring zu viele oder zu wenige Werte angegeben, so meldet der Compiler eine Warnung:
+\begin{cmdbox}[Warnung bei zu wenigen Argumenten für den Formatstring]
+\begin{minted}{text}
+myProgram.c: In function ‘main’:
+myProgram.c:4:12: warning: format ‘%i’ expects a matching ‘int’ argument 
+[-Wformat=]
+   printf("%i\n");
+           ~^
+\end{minted}
+\end{cmdbox}
+Das Programm wird jedoch \enquote{erfolgreich} kompiliert und ausgeführt. An Stelle des Platzhalters wird ein zufälliger Wert vom Speicher eingesetzt\footnote{Bugs dieser Art sind leider häufig. Der im Jahr 2014 entdeckte \emph{Heartbleed-Bug} in der OpenSSL-Library geht auf einen ähnlichen Mechanismus zurück. Hacker konnten \enquote{fehlerhafte Anfragen} an einen Server schicken und so den Speicherinhalt des Servers auslesen -- und damit \eg Zugangsdaten der User auslesen. Compiler-Warnungen sollten also sehr ernst genommen werden.}.
+
+Ähnliches stellen wir fest, wenn wir das folgende Beispiel betrachten:
+
+\begin{codebox}[Beispiel: Ausgabe mehrerer Werte mit \texttt{printf}]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main () {
+   printf("%d\n", 1.5);
+}
+\end{minted}
+\end{codebox}
+Der Formatstring \texttt{\%d} beschreibt die Ausgabe einer \emph{Ganzzahl}; als Wert für diesen Platzhalter wird aber eine Fließkommazahl angeboten. Die Compiler-Warnung:
+
+\begin{cmdbox}[Warnung bei falscher Zuordnung Platzhalter/Datensatz]
+\begin{minted}{text}
+myProgram.c: In function ‘main’:
+myProgram.c:4:12: warning: format ‘%d’ expects argument of type ‘int’, but 
+argument 2 has type ‘double’ [-Wformat=]
+   printf("%d\n", 1.5);
+           ~^
+           %f
+\end{minted}
+\end{cmdbox}
+weist darauf hin, dass die Ausgabe mit \texttt{\%d} für Fließkommawerte ungeeignet ist (und weist auf die Möglichkeit hin, mit \texttt{\%f} auszugeben). Trotz dieses Fehlers kann das Programm umgesetzt und erfolgreich ausgeführt werden. Angezeigt wird aber nicht \texttt{1.5}, sondern \texttt{-2102427368}. Diese Zahl ergibt sich, wenn das Bitmuster der Zahl \texttt{1.5} als Ganzzahl interpretiert wird\footnote{Genauer: Die ersten 32 bit des Bitmusters; \texttt{1.5} ist eine double-Zahl und damit 64 bit breit. In jedem Fall ist diese Ausgabe \enquote{unsinnig}.}.
+
+Wir hatten zuvor schon \texttt{\textbackslash n} als Umschreibung des Zeilenumbruchs kennengelernt. Diese Umschreibung bestimmter Zeichen nennen wir \emph{Escape-Sequence}. Solche Escape-Sequenzen werden benutzt um Zeichen einzufügen, die Teil der C-Syntax sind und sonst nur schwer auf dem Bildschirm ausgegeben werden können. In diesem Kurs werden wir \texttt{\textbackslash n} (Zeilenumbruch), \texttt{\textbackslash \textbackslash} (Backslash) und \texttt{\textbackslash ''} (Anführungszeichen) häufiger sehen.
+
+In den Tabellen \ref{tab:FormatOutNum} und \ref{tab:FormatOutSpc} im Anhang sind die wichtigsten Codes für Platzhalter und Escape-Sequenzen aufgelistet.
+
+Formatstrings legen nicht nur den \emph{Datentyp} der Ausgabe fest. Zusätzlich kann eine Information hinterlegt werden, wie viel Platz auf dem Bildschirm benutzt werden soll. Auf diese Weise können tabellarische Ausgaben stattfinden. Zu diesem Zweck setzt man zwischen das \texttt{\%} und dem Platzhalter-Symbol (\eg \texttt{d} für Ganzzahl) eine Zahl:
+
+\begin{codebox}[Beispiel: Format-String mit Platzangabe (1)]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main () {
+   printf("Text %3d\n", 1);
+   printf("Text %3d\n", 10);
+   printf("Text %3d\n", 100);
+   printf("Text %3d\n", 1000);
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Format-String mit Platzangabe (1)]
+\begin{minted}{text}
+Text   1
+Text  10
+Text 100
+Text 1000
+\end{minted}
+\end{cmdbox}
+
+Sie sehen also dass die ersten drei Zeilen rechtsbündig ausgegeben. Dies liegt daran, dass mit \texttt{\%3d} drei Textzeichen für einen Ganzzahl-Wert vorgesehen werden. Die vierte Zeile enthält eine Zahl, die länger ist als die vorgesehenen drei Zeichen. Daher erfolgt die Ausgabe, als wäre keine Zahl eingefügt.
+
+Es gibt auch die Möglichkeit, Platz linksbündig zu reservieren. In diesem Fall gibt man negative Zahlen an:
+
+
+\begin{codebox}[Beispiel: Format-String mit Platzangabe (2)]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main () {
+   printf("Text %-3d Text\n", 1);
+   printf("Text %-3d Text\n", 10);
+   printf("Text %-3d Text\n", 100);
+   printf("Text %-3d Text\n", 1000);
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Format-String mit Platzangabe (2)]
+\begin{minted}{text}
+Text 1   Text
+Text 10  Text
+Text 100 Text
+Text 1000 Text
+\end{minted}
+\end{cmdbox}
+
+Bei Fließkommazahlen können wir zusätzlich zum Gesamtplatz für die Ausgabe auch angeben, wie viele Stellen hinter dem Komma angegeben werden sollen. Die Ausgabe wird dabei automatisch gerundet, wenn weniger Nachkommastellen angegeben werden als die auszugebende Zahl:
+
+\begin{codebox}[Beispiel: Format-String mit Platzangabe (3)]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main () {
+   printf("Text %5.3lf Text\n", 1.5);
+   printf("Text %5.3lf Text\n", 1.555);
+   printf("Text %5.3lf Text\n", 1.5555);
+   printf("Text %5.3lf Text\n", 15.0);
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Format-String mit Platzangabe (3)]
+\begin{minted}{text}
+Text 1.500 Text
+Text 1.555 Text
+Text 1.556 Text
+Text 15.000 Text
+\end{minted}
+\end{cmdbox}
+
+\section{Kommentare}
+Im Optimalfall ist Code selbsterklärend. \enquote{Sprechende} Variablennamen und gute Struktur erlauben, viele Zusammenhänge intuitiv zu erfassen. Dennoch ist es oft notwendig (und dann auch guter Stil), Programme mit Kommentaren zu versehen.
+
+Kommentare können auf zwei Arten gesetzt werden:
+\begin{itemize}
+\item Mehrzeilige Kommentare beginnen mit \texttt{/*} und enden mit \texttt{*/}. Achtung: Kommentare können nicht \enquote{verschachtelt} werden!
+\item Einzeilige Kommentare werden durch zwei \emph{forward slashes} \texttt{//} eingeleitet. Sie enden mit dem nächsten Zeilenumbruch\footnote{Diese Form der Kommentare ist erst seit dem Standard C99 aus dem Jahr 1999 zulässig; davor existierte nur die \enquote{Sternchen-Form}.}.
+\end{itemize}
+
+\begin{codebox}[Beispiel: Kommentare]
+\begin{minted}[linenos]{c}
+int main () {
+   int i = 0;
+   i++;  // Inkrement-Shorthand
+   // Das ist noch ein einzilger Kommentar.
+
+   /* Kommentar der sich über mehrere Zeilen erstreckt.
+    * Oft setzt man weitere Sternchen an den Zeilenanfang, dies
+    * dient aber nur optischen Zwecken und kann
+      nach belieben ausgelassen werden.
+    */
+    
+   /* "Stern-Form" auch für einzeilige Kommentare */
+   
+   /* Ein weiterer Kommentar
+    *  /* FEHLER -- keine verschachtelten Kommentare */ 
+    */
+}
+\end{minted}
+\end{codebox}
+
+\section{Hello World in C++}
+\begin{plusbox}
+Die hier gegebenen Erklärungen und Optionen gelten so auch für C++. Das bedeutet, dass der oben gezeigte Code auch in C++ so kompiliert werden kann und dasselbe Ergebnis erzeugt. Jedoch steht hier für die Textausgabe auch das Konzept \emph{Streams} zur Verfügung. Betrachten wir den folgenden Code:
+
+\begin{codebox}[Beispiel: Hello World in C++]
+\begin{minted}[linenos]{c++}
+#include <iostream>
+
+int main() {
+   std::cout << "Hello world!" << std::endl;
+}
+\end{minted}
+\end{codebox}
+
+Wie schon zuvor wird mit \mintinline{c++}{#include} ein Header geladen (Achtung: Hier keine Erweiterung \texttt{.h}!). In diesem Fall ist es der Header, der Input- und Output-Streams definiert. Ein \emph{Stream} ist ein Programm-Interface, das Daten in verschiedenen Formaten annehmen und verarbeiten kann.
+
+Die Deklaration des Hauptprogramms \texttt{main} verläuft völlig analog zur Form in C.
+
+\texttt{std::cout} ist der \enquote{Ausgabe-Stream}. Mit dem Operator \texttt{<{}<} können Datenobjekte an den Stream übergeben werden. Mehrere Datenobjekte können \enquote{hintereinander} in den Stream geschickt werden. So wird hier nach dem Text \texttt{Hello World!} ein Zeilenumbruch \texttt{std::endl} an den Stream übergeben.
+
+Platzhalter sind bei der Arbeit mit \texttt{std::cout} nicht notwendig.
+\end{plusbox}
+
+\begin{plusbox}[]
+Um weitere Details für die Ausgabe festzulegen siehe:
+\begin{itemize}
+\item \url{https://en.cppreference.com/w/cpp/io/manip/setw} -- Gesamtbreite für die Ausgabe einer Zahl
+\item \url{https://en.cppreference.com/w/cpp/io/manip/setprecision} -- Anzahl der Nachkommastellen
+\item \url{https://en.cppreference.com/w/cpp/io/manip/setiosflags} -- Ausgabeformat (exponentialschreibweise, hexadezimal, ...)
+\end{itemize}
+Siehe außerdem \url{https://en.cppreference.com/w/cpp/io/cout}
+\end{plusbox}

@@ -1,0 +1,332 @@
+\chapter{Anbindung an das Betriebssystem} \label{chp:OS-Link}
+\epigraph{Operating Systems are like underwear -- nobody really wants to look at them}{Bill Joy}
+
+Während unsere Programme \enquote{für sich alleine stehen können}, werden sie in den meisten Fällen auf einem Rechner ausgeführt, der ein Betriebssystem zur Verfügung stellt. Dieses stellt einige Schnittstellen zur Verfügung, die wir hier kennenlernen wollen.
+
+\section{Errorcodes} \label{sec:errorcodes}
+Ein Errorcode ist ein Wert zwischen 0 und 255, der angibt, welcher Fehler bei der Ausführung aufgetreten ist. Lief das Programm ohne Fehler ab, so ist dieser Errorcode üblicherweise gleich \texttt{0}.
+
+\subsection{Rückgabewert der \texttt{main}}
+In Kapitel \ref{chp:funcs} haben wir bereits festgestellt, dass formal die \mintinline{c}{int main} eine Funktion ist, die einen \mintinline{c}{int} zurück gibt. Bisher haben wir von dieser Funktionalität keinen Gebrauch gemacht. Ab hier wollen wir aber dieses Feature mit nutzen, und beenden unsere Programme mit einer \mintinline{c}{return}-Anweisung:
+\begin{codebox}[Beispiel: Hello World mit Rückgabewert]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main() {
+  printf("Hello World!\n");
+  return 0;
+}
+\end{minted}
+\end{codebox}
+
+Zeile 5 beendet das Programm und gibt einen Wert \texttt{0} zurück -- aber wo wird dieser Wert entgegen genommen? Wie Sie aus dem Thema dieses Kapitels sicher schon erahnen, nimmt das Betriebssystem den Rückgabewert entgegen. Im Allgemeinen wird dort der Wert ignoriert; er kann aber wiederum an andere Programme weiter gereicht werden, die so auf den Ablauf unseres Programms reagieren. Üblicherweise wird ein \emph{Errorcode} zurück gegeben.
+
+Eine Möglichkeit, den Rückgabewert eines Programms abzufragen ist, in der Konsole das Symbol \texttt{\$?} zu benuzen. Geben Sie die Zeile
+\begin{cmdbox}[Kommandozeile: Rückgabewert eines Programms anzeigen]
+echo \$?
+\end{cmdbox}
+ein. Sie werden eine Zahl sehen, die eben genau den Rückgabewert des zuletzt gestarteten Programms beschreibt.
+
+Beispiel: Der Linux-Befehl \texttt{ls} listet den Inhalt des aktuellen Arbeitsverzeichnisses auf. \texttt{progDoesNotExist.c} sei der Name einer Datei, die nicht existiert. Mit diesem Wissen können sie den folgenden Konsolen-Output verstehen:
+
+\begin{cmdbox}[Beispiel: Ausgabe von Rückgabewerten verschiedener Programme auf der Konsole]
+\begin{minted}{text}
+blue-chameleon@blue-chameleon:~/Codes$ ls
+ a.out                        gtk_helloworld.c     playground.c
+ BosonScattering              ImageLibrary         ProcessFilesVBA.bas
+ CasseBriques                 Java                 project
+ CB                           make_play            QS_10-Hartinger_backup.c
+'ChiZeta Default CTors.cpp'   Mockepon             QS_10-Hartinger.c
+ CircleAreaApprox.c           Mockepon_old_stuff   tmp
+ debug-out.c                  module.c             vector2D.c
+ definitions.h                myProgram            vector2D.h
+ findroot_sqrt.c              myProgram.c          VivadoProjects
+ freeglut_test.c              Playground
+blue-chameleon@blue-chameleon:~/Codes$ echo $?
+0
+blue-chameleon@blue-chameleon:~/Codes$ gcc progDoesNotExist.c
+gcc: error: progDoesNotExist.c: Datei oder Verzeichnis nicht gefunden
+gcc: fatal error: no input files
+compilation terminated.
+blue-chameleon@blue-chameleon:~/Codes$ echo $?
+1
+\end{minted}
+\end{cmdbox}
+\texttt{ls} listet den Inhalt des aktuellen Arbeitsverzeichnisses auf und wird ohne Fehler beendet. Entsprechend wird hier der Errorcode 0 gesetzt. Da die Datei \texttt{progDoesNotExist.c} nicht existiert, bricht der gcc seinen Prozess mit Fehler ab; wir erhalten den Error Code 1.
+
+Errorcodes sind teilweise normiert. Das bedeutet, dass die Bedeutung einiger Fehlercodes festgelegt ist; ab einem bestimmten Code sind diese Werte aber frei zu vergeben, \ie der/die ProgrammiererIn kann selbst entscheiden, was dieser Wert bedeuten soll.
+
+Für die vordefinierten Fehlercodes sind im Header \texttt{<errno.h>} bereits Symbole angelegt. Siehe \url{http://man7.org/linux/man-pages/man3/errno.3.html} für eine Liste aller Symbole mit zugeordneter Bedeutung. Unter \url{http://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Errors/unix_system_errors.html} finden Sie auch die Zuordnung der Symbole zu den Zahlen.
+
+Selbst definierte Errorcodes sollten größer als 130 sein, um keine Bedeutungskollision mit den vordefinierten Codes zu ergeben.
+
+\begin{hintbox}[Allgemeiner Errorcode \texttt{-1}]
+In den meisten Anwendungsfällen reicht es, zu unterscheiden: \emph{Programm wurde erfolgreich abgeschlossen} und \emph{ein Fehler ist aufgetreten}. Wo diese Unterscheidung reicht, wird als Errorcode entweder \texttt{0} bei Erfolg und \texttt{-1} bei Fehler zurück gegeben. Vom Betriebssystem wird dies automatisch in den Errorcode \texttt{255} übersetzt.
+\end{hintbox}
+
+Im Kurs \emph{Linux} der Universität Regensburg lernen Sie Möglichkeiten kennen, diese Errorcodes auszuwerten.
+
+\subsection{Programm jederzeit beenden: \texttt{exit}}
+Neben der Möglichkeit, die \texttt{main} mit \texttt{return errorcode} zu verlassen, ist es auch möglich, den Befehl \texttt{exit} aus der \texttt{<stdlib.h>} zu benutzen. Dieser beendet die Programmausführung \emph{von jedem beliebigen Punkt aus}, also auch, wenn gerade eine Funktion ausgeführt wird. Der Befehl \texttt{exit} nimmt als Argument den Errorcode an, der an das Betriebssystem zurück gegeben werden soll.
+
+\begin{codebox}[Beispiel: Programm beenden mit \texttt{exit}]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+ 
+int main() {
+  double number;
+  
+  printf("Bitte geben Sie eine positive Zahl ein:");
+  scanf("%lf", &number);
+  
+  if (number < 0) {
+    printf("Fehler: Zahl war kleiner als 0!\n");
+    exit(EXIT_FAILURE);  // Fehlercode -1
+  }
+ 
+  printf("Die Wurzel der Eingabe war %lf.\n", sqrt(number));
+  return EXIT_SUCCESS;   // Fehlercode 0
+}
+\end{minted}
+\end{codebox}
+
+\subsection{Befehle an die Kommandozeile: \texttt{system}}
+Der Befehl \texttt{system} aus der \texttt{<stdlib.h>} startet ein externes Programm und gibt den Errorcode dieses Aufrufs zurück. Wir können das Beispiel: \emph{Ausgabe von Rückgabewerten verschiedener Programme auf der Konsole} also auch direkt aus unserem C-Code heraus laufen lassen:
+
+\begin{codebox}[Beispiel: Aufrufe mit \texttt{system} und Auswertung der Errorcodes]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+#include <stdlib.h>
+ 
+int main() {
+  printf("Inhalt des aktuellen Arbeitsverzeichnisses:");
+  int errCode_ls = system("ls");
+  printf("ls schließt ab mit Errorlevel %d\n", errCode_ls);
+
+  printf("Versuch der Kompilation von 'progDoesNotExist.c':");
+  int errCode_pdne = system("gcc progDoesNotExist.c");
+  printf("Errorlevel %d\n", errCode_pdne);
+  
+  return 0;
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Aufrufe mit \texttt{system} und Auswertung der Errorcodes]
+\begin{minted}{text}
+ a.out                        gtk_helloworld.c     playground.c
+ BosonScattering              ImageLibrary         ProcessFilesVBA.bas
+ CasseBriques                 Java                 project
+ CB                           make_play            QS_10-Hartinger_backup.c
+'ChiZeta Default CTors.cpp'   Mockepon             QS_10-Hartinger.c
+ CircleAreaApprox.c           Mockepon_old_stuff   tmp
+ debug-out.c                  module.c             vector2D.c
+ definitions.h                myProgram            vector2D.h
+ findroot_sqrt.c              myProgram.c          VivadoProjects
+ freeglut_test.c              Playground
+Inhalt des aktuellen Arbeitsverzeichnisses:ls schließt ab mit Errorlevel 0
+gcc: error: progDoesNotExist.c: Datei oder Verzeichnis nicht gefunden
+gcc: fatal error: no input files
+compilation terminated.
+Versuch der Kompilation von 'progDoesNotExist.c':Errorlevel 256
+\end{minted}
+\end{cmdbox}
+
+
+\subsection{Fehlerbeschreibung ermitteln: \texttt{strerror}}
+Niemand will sich Fehlercodes im Kopf behalten. Um eine sinnvolle Unterstüzung bei der Fehlersuche zu geben, existiert die Funktion \texttt{strerror} aus dem Header \texttt{<string.h>}. Dieser wird ein Fehlercode übergeben; der Rückgabewert ist ein Pointer auf einen String, der diesen Fehler menschenlesbar beschreibt:
+
+\begin{codebox}[Beispiel: Errorcodes mit \texttt{strerror} beschreiben]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+ 
+int main() {
+  printf("Versuch der Ausführung von 'progDoesNotExist':");
+  int errCode_pdne = system("gcc progDoesNotExist.c");
+  printf("Errorlevel %d\n", errCode_pdne);  
+  printf("Fehlerbeschreibung: %s\n", strerror(errCode_pdne));
+  
+  return 0;
+}
+\end{minted}
+\end{codebox}
+
+\section{Kommandozeilenparameter} \label{sec:cmdlineParams}
+Dem \texttt{gcc} können wir über die Kommandozeile mitteilen, welche Codes wir kompilieren wollen. Außerdem ist es möglich, ober Kommandozeilenparameter wie \texttt{-std=c11} das Verhalten des Compilers weiter zu beeinflussen. Für unsere eigenen Programme gibt es ebenfalls Möglichkeiten, auf solche Kommandozeilenparameter zu reagieren.
+
+Wird ein Programm von der Konsole aus gestartet, so zerlegt das Betriebssystem die komplette Zeile in ihre Bestandteile und kopiert diese in den Arbeitsspeicher\footnote{Vermutlich sind Sie gewohnt, Programme über ein graphisches Userinterface zu starten, also durch Anklicken. Tatsächlich erzeugen diese Maus-Aktionen \enquote{unter der Oberfläche} ebenfalls Kommandozeilen-Befehle.}. Zerlegt wird an denselben Trennzeichen, die auch von \texttt{scanf} akzeptiert werden: Leerzeichen und Tabulatoren. Ein Programmaufruf wie
+\begin{cmdbox}[Programmaufruf mit Kommandozeilenparametern]
+./myProg parameter1, parameter2        parameter3 "parameter4 with whitespaces"
+\end{cmdbox}
+wird damit zerlegt in:
+\begin{cmdbox}[Zerlegung des Programmaufrufs]
+./myProg\\
+parameter1,\\
+parameter2 \\
+parameter3 \\
+parameter4 with whitespaces
+\end{cmdbox}
+
+Wie Sie sehen, bleiben Kommata erhalten; Leerzeichen werden komplett aus der Zerlegung entfernt, es sei denn, sie befinden sich in \texttt{"}doppelten Anführungszeichen\texttt{"}.
+
+Diese Zerlegung wird unserem Programm zugänglich gemacht, indem wir die Signatur der \texttt{main} abändern:
+\begin{codebox}[Syntax: \texttt{main} mit Zugriff auf Kommandozeilenparameter]
+\begin{minted}{c}
+int main (int argc, char ** argv) {...
+\end{minted}
+\end{codebox}
+
+Das Symbol \texttt{argc}\footnote{Technisch spricht nichts dagegen, andere Symbole als \texttt{argc} und \texttt{argv} zu verwenden, solange die Signatur einen \mintinline{c}{int}- und einen \mintinline{c}{char **}-Parameter beschreibt. Es hat sich jedoch etabliert, genau diese Namen zu vergeben und sollte im Sinne des Austauschs mit anderen ProgrammiererInnen so beibehalten werden.} (kurz für \emph{argument count}) enthält die Anzahl der \enquote{Blöcke} dieser Zerlegung -- im obigen Beispiel also den Wert \texttt{5}. Über \texttt{argv} (kurz für \emph{argument value}) kann auf die einzelnen Blöcke selbst zugegriffen werden. Machen Sie sich hierzu bitte zuerst den Datentyp \mintinline{c}{char **} klar: Die Zerlegung des Kommandozeilenaufruf ist eine \emph{Liste von Strings}. Ein String wiederum ist eine \emph{Liste von Zeichen}. Damit ist die Zerlegung eine \emph{Liste von Listen von Zeichen} -- ein Pointer zweiter Ebene, also ein \mintinline{c}{char **}. Mit diesen Symbolen können wir nun Code schreiben, und beispielsweise mit \mintinline{c}{if} und \texttt{strcmp} auf bestimmte Parameter reagieren.
+
+Die oben gezeigte Zerlegung wurde mit folgendem Code ausgegeben:
+\begin{codebox}[Beispiel: Abfrage von Kommandozeilenparametern]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main(int argc, char ** argv) {
+  printf("argc: %d\n", argc);
+  
+  for (int i=0; i<argc; i++) {printf("%02d\t%s\n", i, argv[i]);}
+  
+  return 0;
+}
+\end{minted}
+\end{codebox}
+
+\begin{hintbox}[Wert von \texttt{argv[0]}]
+Achtung: Der \enquote{nullte} Parameter \texttt{argv[0]} existiert immer und enthält den Namen der ausführbaren Datei, die gerade läuft.
+Ein schneller Weg zu prüfen, ob überhaupt Parameter übergeben wurden ist der Vergleich \texttt{argc > 1}.
+\end{hintbox}
+
+\section{Spezielle Befehle für unixoide Konsolen}
+Die verschiedenen Konsolen-Programme, die auf unixoiden\footnote{\ie. Linux, Mac, BSD, \ldots}  Systemen verbreitet sind können bestimmte \enquote{Kommandos} interpretieren, die ihnen mit einem regulären Druck-Befehl mitgeteilt werden. Das bedeutet, dass wir im Format-String von \texttt{printf} Zeichenketten setzen können, die besondere Effekte auf der Konsole haben.
+
+\subsection{Konsolenbildschirm leeren}
+Um einen \enquote{leeren Bildschirm} anzuzeigen, kann die Sequenz \texttt{\textbackslash 033[H\textbackslash 033[J} gedruckt werden.
+
+\begin{codebox}[Beispiel: Abfrage von Kommandozeilenparametern]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main() {
+  char password[20];
+  
+  printf("Bitte Passwort eingeben:\n");
+  scanf("%19s", password);
+  
+  // Bildschirm leeren, um Passwort nicht unnötig lange anzuzeigen
+  printf("\033[H\033[J");
+  
+  return 0;
+}
+\end{minted}
+{\normalfont Anmerkung: Benutzen Sie in der Praxis nie diese Methode, um Passwörter zu verbergen!}
+\end{codebox}
+
+\begin{hintbox}[Alternative Wege]
+Sowohl unter unixoiden Systemen als auch unter Windows existiert ein Systemkommando, das denselben Effekt hat. Der Aufruf hierfür ist
+\begin{center}
+	\mintinline{c}{system("clear");}
+\end{center}
+für unixoiden Systeme und
+\begin{center}
+	\mintinline{c}{system("cls");}
+\end{center}
+für Windows.
+\end{hintbox}
+
+\subsection{Cursor auf der Konsole platzieren}
+Bisher konnten wir auf der Konsole nur \enquote{von oben nach unten} und \enquote{von links nach rechts} schreiben. Dies erfordert manchmal einige Klimmzüge, ein bestimmtes Bild der Darstellung zu erzeugen. Leichter wird diese Aufgabe, wenn wir den Cursor an beliebigen Koordinaten platziern können. Dies ermöglicht die Sequenz \texttt{\textbackslash 033[<Zeile>;<Spalte>H}, wobei \texttt{<Zeile>} und \texttt{<Spalte>} jeweils als Dezimalzahlen angegeben werden.
+
+\begin{codebox}[Beispiel: Sternchen in Tabelle setzen]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+void print_at(char * text, int row, int col) {
+  printf("\033[%d;%dH", (row), (col));
+  printf("%s", text);
+}
+
+int main () {
+  // Tabelle zeichnen
+  for (int row = 0; row < 7; row++) {
+    if (row % 2) {
+      printf("| | | |\n");
+    } else {
+      printf("+-+-+-+\n");
+    }
+  }
+  
+  print_at("*", 4, 4);   // Koordinaten der mittleren Zelle
+  print_at("" , 8, 1);   // Cursorposition auf "Ende" setzen
+  
+  return 0;
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Sternchen in Tabelle setzen]
+\begin{minted}{text}
++-+-+-+
+| | | |
++-+-+-+
+| |*| |
++-+-+-+
+| | | |
++-+-+-+
+\end{minted}
+\end{cmdbox}
+
+\subsection{Farben setzen}
+Der Cursor hat eine \emph{Schriftfarbe}, die sich aus einer \emph{Vordergrund-} und einer \emph{Hintergrundfarbe} zusammensetzt. Das bedeutet, dass jedes Zeichen in einer aktuell eingestellten Farbe gedruckt wird. Diese Farbe ist standardmäßig grau auf schwarz; wir können jedoch über bestimmte Sequenzen diese Voreinstellungen ändern. Diese Sequenzen sind im Anhang in Tabelle \ref{tab:bashFormatCol} aufgelistet. Hinzu kommen einige \emph{Schrifteffekte} wie Fettdruck, Unterstreichung oder Blinken, die jedoch nicht von allen Konsolenprogrammen unterstützt werden. Die entsprechenden Sequenzen finden Sie in Tabelle \ref{tab:bashFormatSpc}.
+
+\begin{codebox}[Beispiel: Farbige Textausgabe]
+\begin{minted}[linenos]{c}
+#include <stdio.h>
+
+int main () {
+  printf("normaler Text\n");
+  
+  printf("\x1b[92m");  // Schriftfarbe Hellgrün
+  printf("Hellgrün auf schwarz\n");
+  printf("Immer noch Hellgrün auf Schwarz\n");
+  
+  printf("\x1b[44m");  // Hintergrundfarbe Blau
+  printf("Hellgrün auf blau\n");
+  
+  return 0;
+}
+\end{minted}
+\end{codebox}
+
+\begin{cmdbox}[Ausgabebeispiel: Farbige Textausgabe]
+normaler Text\\
+\textcolor{green}{Hellgrün auf schwarz}\\
+\textcolor{green}{Immer noch Hellgrün auf Schwarz}\\
+\colorbox {blue} {\textcolor{green}{Hellgrün auf blau}}
+\end{cmdbox}
+
+Nachdem die Konsolenfarbe gesetzt wurde, halten sich \emph{alle} Druck-Befehle an die zuletzt gesetzten Schrift\emph{attribute}. Das bedeutet, dass insbesondere auch die Sequenz \emph{Konsolenbildschirm leeren} keinen schwarzen Bildschirm erzeugt, sondern mit der gesetzten Hintergrundfarbe den Bildschirm ausfüllt.
+
+Die genannten Farbnamen sind Standardeinstellungen der üblichen Konsolen-Programme, können jedoch in den Einstellungen leicht geändert werden. Gegebenenfalls stellen Sie mit den genannten Sequenzen also andere Farben ein als Sie erwarten.
+
+\begin{hintbox}[Farbe setzen unter Windows]
+Unter Windows existiert der Konsolenbefehl \texttt{color}, dem eine zweistellige Hexadezimalzahl als Parameter mitgegeben wird. Die höherwertige Hexadezimalziffer stellt die Hintergrundfarbe ein, während das zweite Zeichen die Vordergrundfarbe bestimmt. Die übliche Zuordnung von Ziffern zu Farben ist:
+\begin{center}
+\begin{tabular}{cc|cc||cc|cc}
+	0 & Schwarz	& 4 & Rot		&	8 & Dunkelgrau	& C & Hellrot \\
+	1 & Blau		& 5 & Magenta	&	9 &	Hellblau		& D & Pink    \\
+	2 & Grün		& 6 & Braun		&	A &	Hellgrün		& E & Gelb    \\
+	3 & Cyan		& 7 & Grau		&	B & Hellcyan		& F & Weiß
+\end{tabular}
+\end{center}
+Damit bewirkt zum Beispiel unter Windows die C-Code-Zeile:
+\begin{center}
+	\mintinline{c}{system("color 0a");}
+\end{center}
+dass die Schriftfarbe \enquote{Hellgrün auf Schwarz} eingestellt wude. Diese Einstellung gilt wie auch unter unixoiden Systemen solange, bis eine neue Farbe eingestellt wird. Weitere Attribute wie Fettdruck sind unter Windows-Konsolen nicht möglich.
+\end{hintbox}
