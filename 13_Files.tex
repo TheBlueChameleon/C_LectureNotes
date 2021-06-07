@@ -1,14 +1,14 @@
 \chapter{Dateizugriff}
 \epigraph{I have files, I have computer files and, you know, files on paper. But most of it is really in my head. So God help me if anything ever happens to my head!}{George R. R. Martin}
 
-Ein- und Ausgabe fand bisher rein über den Bildschirm und die Tastatur statt. Selbstverständlich können wir aber auch Daten über die Festplatte oder andere Medien austauschen. Hier wollen wir Möglichkeiten kennen lernen, dies umzusetzen.
+Ein- und Ausgabe fand bisher rein über den Bildschirm und die Tastatur statt. Selbstverständlich können wir aber auch Daten über die Festplatte oder andere Medien austauschen. Hier wollen wir Möglichkeiten kennenlernen, dies umzusetzen.
 
 \section{File-Handle und Zugriffsmodi} \label{sec:fileAccess}
-Um Dateien zu bearbeiten muss zunächst klar sein, welche Datei bearbeitet werden soll. Im Weiteren wird auch relevant, welcher Teil der Datei geschrieben oder gelesen werden soll, sowie eine ganze Reihe weiterer Informationen, die tief in die Organisation des Betriebssystems verwickelt sind. Für das Programmieren mit C sind alle diese Informationen in einer \mintinline{c}{struct FILE} verpackt, die wir im Detail nicht kennen müssen\footnote{Unter \url{https://elixir.bootlin.com/linux/latest/source/include/linux/fs.h} finden Sie die Defintion der Datenstruktur; der dort abgedruckte Header ist 3537 Zeilen lang, was die eigentliche Komplexität des Themas \emph{Dateizugriff} zeigt. Wie bereits erwähnt müssen wir zur Anwendung diese Details aber nicht kennen.}.
+Um Dateien zu bearbeiten muss zunächst klar sein, welche Datei bearbeitet werden soll. Im Weiteren wird auch relevant, welcher Teil der Datei geschrieben oder gelesen werden soll, sowie eine ganze Reihe weiterer Informationen, die tief in die Organisation des Betriebssystems verwickelt sind. Für das Programmieren in C sind alle diese Informationen in einer \mintinline{c}{struct FILE} verpackt, die wir im Detail nicht kennen müssen\footnote{Unter \url{https://elixir.bootlin.com/linux/latest/source/include/linux/fs.h} finden Sie die Definition dieser Datenstruktur; der dort abgedruckte Header ist 3537 Zeilen lang, was die eigentliche Komplexität des Themas \emph{Dateizugriff} zeigt. Wie bereits erwähnt müssen wir zur Anwendung diese Details aber nicht kennen.}.
 
-Dateizugriff kann in verschiedenen \emph{Modi} stattfinden. Modi sind in diesem Fall \emph{Lese-} oder \emph{Schreibzugriff} (sowie einige Unterarten davon, die wir gleich im Detail kennen lernen werden). Wir können also nicht im selben Schritt aus einer Datei lesen und in diese schreiben.
+Dateizugriff kann in verschiedenen \emph{Modi} stattfinden. Modi sind in diesem Fall \emph{Lese-} oder \emph{Schreibzugriff} (sowie einige Unterarten davon, die wir gleich im Detail kennenlernen werden). Wir können also nicht im selben Schritt aus einer Datei lesen und in diese schreiben.
 
-Wenn wir eine Datei bearbeiten wollen, erfragen wir zunächst beim Betriebssystem Zugriff auf diese Datei. Dies geschieht mit dem Befehl \texttt{fopen}, der im Header \texttt{<stdio.h>} deklariert wird. \texttt{fopen} erwartet als Parameter einen Dateinamen und eine Modusbezeichnung; zurück gegeben wird ein Pointer auf eine Instanz von \mintinline{c}{struct FILE}. Diesen Pointer bezeichnen wir im Weiteren als \emph{File-Handle}\footnote{\emph{Handle} ist hierbei bildlich zu verstehen: Es handelt sich um einen \enquote{Angriffspunkt}, ein \enquote{Griff}, an dem wir die Datei \enquote{anfassen} können.}.
+Wenn wir eine Datei bearbeiten wollen, erfragen wir zunächst beim Betriebssystem Zugriff auf diese Datei. Dies geschieht mit der Funktion \texttt{fopen}, welche im Header \texttt{<stdio.h>} deklariert wird. \texttt{fopen} erwartet als Parameter einen Dateinamen und eine Modusbezeichnung; zurück gegeben wird ein Pointer auf eine Instanz von \mintinline{c}{struct FILE}. Diesen Pointer bezeichnen wir im Weiteren als \emph{File-Handle}\footnote{\emph{Handle} ist hierbei bildlich zu verstehen: Es handelt sich um einen \enquote{Angriffspunkt}, ein \enquote{Griff}, an dem wir die Datei \enquote{anfassen} können.}.
 
 \begin{codebox}[Syntax: \texttt{fopen}]
 \begin{minted}{c}
@@ -27,7 +27,7 @@ Dabei bedeuten:
 Modus & Wirkung \tabcrlf
 \texttt {"r"}  & Lesezugriff (\emph{read})\\
 \texttt {"w"}  & Schreibzugriff: Datei neu anlegen (\emph{write}) \\
-\texttt{''a''} & Schreibzugriff: Inhalten an das Dateiende anhängen (\emph{append})
+\texttt{''a''} & Schreibzugriff: Daten an das Dateiende anhängen (\emph{append})
 \end{tabular}
 \captionof{table}{Liste der Dateimodi}\label{tab:FileModes}
 \end{center}
@@ -43,7 +43,7 @@ int main () {
 \end{minted}
 \end{codebox}
 
-Hier wird die Datei \texttt{file.txt} im \emph{Schreibmodus} geöffnet. Existiert die Datei noch nicht, so wird sie im Dateisystem angelegt. Wenn es dagegen schon eine Datei mit dem Namen \texttt{file.txt} gibt, so wird sie mit einer leeren Datei ersetzt.
+Hier wird die Datei \texttt{file.txt} im \emph{Schreibmodus} geöffnet. Existiert die Datei noch nicht, so wird sie im Dateisystem angelegt. Wenn es dagegen schon eine Datei mit dem Namen \texttt{file.txt} gibt, so wird sie durch eine zunächst leere Datei ersetzt.
 
 Kann die Datei nicht geöffnet werden (\eg weil der Dateiname unzulässige Zeichen enthält, oder weil der Dateipfad nicht erreichbar ist), so ist der Rückgabewert von \texttt{fopen} gleich 0.
 
@@ -65,10 +65,10 @@ int main () {
 \end{minted}
 \end{codebox}
 
-Wenn Sie im obigen Beispiel in Zeile 4 den Modus \texttt{"w"} durch ein \texttt{''a''} ersetzen, wird ebenfalls eine neue Datei angelegt, wenn \texttt{file.txt} noch nicht existiert. Ist dies dageggen der Fall, so bleibt der Dateiinhalt erhalten. Nachfolgende Schreib-Befehle hängen Inhalte an die Datei an.
+Wenn Sie im obigen Beispiel in Zeile 4 den Modus \texttt{"w"} durch ein \texttt{''a''} ersetzen, wird eine bereits existierende Datei \texttt{file.txt} geöffnet und Daten können an das Dateiende angehängt werden. Sollte die Datei \texttt{file.txt} allerdings noch nicht existieren so wird diese neu erstellt und geöffnet.
 
-Eine Datei kann nur dann im Lesemodus geöffnet werden, wenn diese auch tatsächlich existiert. Ersetzen wir in Zeile 4 also das \texttt{"w"} durch ein \texttt{"r"}, so wird nur dann ein 
-\mintinline{c}{struct FILE} angelegt, wenn das Öffnen erfolgreich war. Andernfalls ist der Rückgabewert von \texttt{fopen} gleich 0. Im Lesemodus werden nie Dateien angelegt.
+Eine Datei kann nur dann im Lesemodus geöffnet werden, wenn diese auch tatsächlich existiert. Ersetzen wir in Zeile 4 also das \texttt{"w"} durch ein \texttt{"r"}, so wird nur dann ein
+\mintinline{c}{struct FILE} angelegt, wenn das Öffnen erfolgreich war. Andernfalls ist der Rückgabewert von \texttt{fopen} gleich 0. Im Lesemodus wird keine Datei angelegt.
 
 \begin{hintbox}[Prüfen ob Datei bereits vorhanden]
 Es gibt Situationen, in denen Sie nur prüfen wollen, ob eine Datei mit einem gegebenen Namen überhaupt existiert. Dies können Sie über den Rückgabewert von \texttt{fopen} leicht prüfen:
@@ -90,7 +90,7 @@ int main () {
   } else {
     handle = fopen("myFile.txt", "w");
   }
-  
+
   if (handle) {fclose(handle);}
   return 0;
 }
@@ -113,7 +113,7 @@ int main () {
     printf("Fehler: Datei existiert bereits!\n");
     return -1;
   }
-  
+
   if (handle) {fclose(handle);}
   return 0;
 }
@@ -134,10 +134,10 @@ fprintf(handle, formatString, ...)
 
 int main () {
   FILE * handle = fopen("myFile.txt", "w");
-  
+
   fprintf(handle, "hello world!\n");
   fprintf(handle, "29 * 3 = %d\n", 29 * 3);
-  
+
   fclose(handle);
   return 0;
 }
@@ -160,9 +160,9 @@ Dieselbe Datei \texttt{myFile.txt} kann nun mit dem Befehl \texttt{fscanf} wiede
 fscanf(handle, formatString, pointer1, ...);
 \end{codebox}
 
-Aus einer zuvor geöffneten Datei mit \texttt{handle} lesen wir also nacheinander Werte, wie sie ein \texttt{formatString} vorgibt. Dabei können wir uns vorstellen, wie ein Cursor in der Datei langsam nach vorne wandert, und für jedes \texttt{\%} im \texttt{formatString} einen Informationsblock weiter springt. Die gelesenen Daten werden dann wie bei \texttt{scanf} an der Speicheradresse abgelegt, die die verschiedenen \texttt{pointer} angeben.
+Aus einer zuvor geöffneten Datei mit \texttt{handle} lesen wir also nacheinander Werte, wie sie ein \texttt{formatString} vorgibt. Dabei können wir uns vorstellen, wie ein Cursor in der Datei langsam nach vorne wandert, und für jedes \texttt{\%} im \texttt{formatString} einen Informationsblock weiter springt. Die gelesenen Daten werden dann wie bei \texttt{scanf} an jenen Speicheradressen abgelegt, auf welche die \texttt{pointer} zeigen.
 
-Während die Syntax für uns inzwischen leicht zu verstehen ist, gestaltet sich die Anwendung manchmal schwierig, wie die folgenden Beispiele verdeutlichen werden:
+Während die Syntax für uns inzwischen leicht zu verstehen ist, gestaltet sich die Anwendung manchmal schwierig, wie die folgenden Beispiele verdeutlichen:
 
 \begin{codebox}[Beispiel: Datei \texttt{myFile.txt} zurück lesen]
 \begin{minted}[linenos]{c}
@@ -170,29 +170,29 @@ Während die Syntax für uns inzwischen leicht zu verstehen ist, gestaltet sich 
 
 int main () {
   FILE * handle = fopen("myFile.txt", "r");
-  
+
   if (!handle) {
     printf("Fehler: Konnte Datei 'myFile.txt' nicht öffnen.");
     return -1;
   }
 
-  char   helloWordLine[1024], 
-         asterisk     [2], 
+  char   helloWordLine[1024],
+         asterisk     [2],
          equals       [2];
   int    twentynine = -1, three = -1, eightyseven = -1;
-  
+
   fscanf(handle, "%1023[^\n]",  helloWordLine);
   fscanf(handle, "%d"        , &twentynine);
   fscanf(handle, "%1s"       ,  asterisk);
   fscanf(handle, "%d"        , &three);
   fscanf(handle, "%1s"       ,  equals);
   fscanf(handle, "%d"        , &eightyseven);
-  
+
   printf("%s\n", helloWordLine);
-  printf("%d %s %d %s %d\n", 
+  printf("%d %s %d %s %d\n",
     twentynine, asterisk, three, equals, eightyseven
   );
-  
+
   fclose(handle);
   return 0;
 }
@@ -208,13 +208,13 @@ Wie bekannt öffnen wir in Zeile 4 unsere Datei und überprüfen anschließend (
 
 In den Zeilen 10 bis 13 deklarieren wir einige Variablen, in denen wir den Dateiinhalt speichern wollen. \texttt{helloWorldLine} ist sehr groß gewählt, um mit Sicherheit eine ganze Zeile speichern zu können. \texttt{asterisk} und \texttt{equals} enthalten jeweils ein Zeichen und einen Null-char. Die anderen Variablen werden schließlich die Zahl aufnehmen, nach der sie benannt sind.
 
-In Zeile 15 nun lesen wir die erste Zeile der Datei ein. Der Format-String 
+In Zeile 15 lesen wir die erste Zeile der Datei ein. Der Format-String
 \texttt{\%1023[\textasciicircum\textbackslash n]}
 übersetzt sich zu \enquote{maximal 1023 Zeichen, die alles außer ein Zeilenumbruch sein dürfen}. Wie immer wird bei String-Lesebefehlen ein Null-char mit geschrieben, daher dürfen nur 1023 Zeichen gelesen werden, auch wenn \texttt{helloWorldLine} 1024 Zeichen aufnehmen kann. Beim Lesen der ersten Zeile wird durch den Formatstring der Zeilenumbruch nicht mit eingelesen; der Cursor steht also noch \emph{vor} dem Zeilenumbruch.
 
 In der folgenden Zeile 16 soll nun eine Ganzzahl gelesen werden (Formatstring \texttt{\%d}). Daher überspringt \texttt{fscanf} alle Nicht-Zahlen-Zeichen. In unserem Fall ist das also der Zeilenumbruch. Danach trifft der Dateicursor auf den Text \texttt{29}, der korrekt als Zahl eingelesen wird.
 
-Als nächstes soll das Sternchen \texttt{*} gelesen werden. Zeile 17 liest genau dieses eine Zeichen ein, und speichert es unter der Adresse von \texttt{asterisk}. Wir benutzen dazu den Format-String 
+Als nächstes soll das Sternchen \texttt{*} gelesen werden. Zeile 17 liest genau dieses eine Zeichen ein, und speichert es unter der Adresse von \texttt{asterisk}. Wir benutzen dazu den Format-String
 \texttt{\%1s}, der eben einen String mit einer Länge von einem Zeichen beschreibt, wobei Zeilenumbrüche, Leerzeichen und Tabulatoren ignoriert werden.
 
 Die Idee liegt nahe, nur ein \mintinline{c}{char} lesen zu wollen, da ja nur ein einzelnes Sternchen gelesen werden soll. Hierbei würde man aber vergessen, dass vor diesem Zeichen noch ein Leerzeichen steht. Ersetzen wir Zeile 17 durch \mintinline{c}{fscanf(handle, "%c", asterisk);}, so enthält \texttt{*asterisk} jetzt den Wert \texttt{32}, also den ASCII-Code eines Leerzeichens. Der Dateicursor ist nur um eine Stelle weiter gewandert, und steht weiterhin \emph{vor} dem Sternchen, weswegen hier auch das Einlesen der nächsten Zahl in Zeile 18 fehlschlägt.
@@ -222,7 +222,7 @@ Die Idee liegt nahe, nur ein \mintinline{c}{char} lesen zu wollen, da ja nur ein
 In den folgenden Zeilen 18-20 wird dieses Pattern wiederholt. Schließlich erfolgt in den Zeilen 22-25 die Ausgabe der eingelesenen Werte mit \texttt{printf}, bevor Zeile 27 die Datei schließt und Zeile 28 das Programm beendet.
 
 \section{Binär-Zugriff -- Lesen und Schreiben in Binärformat} \label{sec:binAccess}
-Der Titel des vorigen Abschnitts war \emph{Lesen und Schreiben in menschlichem Format}. Alle Werte, die in die Datei geschrieben wurden, werden von jedem Texteditor so dargestellt, dass ein Mensch diese interpretieren kann. Sie sind inzwischen aber mit der Tatsache vertraut, dass die interne Speicherdarstellung von diesem Menschenlesbaren Format stark abweicht.
+Der Titel des vorherigen Abschnitts war \emph{Lesen und Schreiben in menschlichem Format}. Alle Werte, die in die Datei geschrieben wurden, werden von jedem Texteditor so dargestellt, dass ein Mensch diese interpretieren kann. Sie sind inzwischen aber mit der Tatsache vertraut, dass die interne Speicherdarstellung von diesem Menschenlesbaren Format stark abweicht.
 
 Es ist möglich, Werte so in Dateien abzulegen, wie sie auch im Speicher stehen. Dies hat zwei Vorteile:
 \begin{itemize}
@@ -230,14 +230,14 @@ Es ist möglich, Werte so in Dateien abzulegen, wie sie auch im Speicher stehen.
 		muss, noch auf Trennzeichen wie Zeilenumbrüche acht gegeben werden muss, funktioniert das
 		Einlesen solcher \emph{Binärdaten} bedeutend schneller. Für große Datensätze (\eg Bilder,
 		wissenschaftliche Messreihen, Musikdaten, \ldots) bedeutet das erheblichen Performance-Gewinn.
-\item Im allgemeinen ist die Binäre Darstellung von Zahlen kompakter. Die Zahl \texttt{12345678}
-		braucht als Menschenlesbarer Text 8 Zeichen und damit auch 8 Bytes. Hinzu kommt noch
+\item Im Allgemeinen ist die Binäre Darstellung von Zahlen kompakter. Die Zahl \texttt{12345678}
+		braucht als menschenlesbarer Text 8 Zeichen und damit auch 8 Bytes. Hinzu kommt noch
 		mindestens ein Byte für ein Trennzeichen. Ein \mintinline{c}{long}-Wert dagegen ist immer 4
 		Byte lang, und kann daher ohne Trennzeichen abgelegt werden. Im Binärformat gespeicherte Dateien
 		benötigen also im Allgemeinen weniger Speicherplatz.
 \end{itemize}
 
-Zu diesem Zweck existieren die Befehle \texttt{fread} und \texttt{fwrite}, beide deklariert im Header \texttt{<stdio.h>}.
+Zu diesem Zweck existieren die Befehle \texttt{fread} und \texttt{fwrite}, beide deklariert im Header \texttt{<stdio.h>}\footnote{TODO: Endianness}.
 
 Da die binäre Darstellung besonders für große Datenmengen günstig ist, sind die Befehle \texttt{fread} und \texttt{fwrite} auf die Benutzung mit Arrays ausgelegt. Die Syntax der beiden Befehle ist sehr ähnlich:
 \begin{codebox}[Syntax: \texttt{fread} und \texttt{fwrite}]
@@ -267,10 +267,10 @@ int main () {
     printf("Fehler: Konnte Datei 'myFile.dat' nicht öffnen.");
     return -1;
   }
-  
+
   unsigned int outArray[26];
   unsigned int N = sizeof(outArray) / sizeof(*outArray);
-  
+
   for (int i = 0; i < N; i++) {
     // einige große Zahlen erzeugen
     outArray[i] =   'A' + i               // =  65 + i
@@ -279,7 +279,7 @@ int main () {
                 + (('A' + i) << 24);      // = (65 + i) * 16777216
   }
   fwrite(outArray, N, sizeof(*outArray), handle);
-  
+
   fclose(handle);
   // ....................................................................... //
   handle = fopen("myFile.dat", "r");
@@ -287,28 +287,28 @@ int main () {
     printf("Fehler: Konnte Datei 'myFile.dat' nicht öffnen.");
     return -1;
   }
-  
+
   unsigned int inArray[N+1] = {0};
   fread (inArray, N, sizeof(* inArray), handle);
-  
+
   for (int i = 0; i < N; i++) {
-    printf("%2d\t%u\t%u\t%s\n", 
-           i, 
+    printf("%2d\t%u\t%u\t%s\n",
+           i,
            inArray[i] ,  outArray[i],
            inArray[i] == outArray[i]  ?  "gleich"  : "ungleich"
           );
   }
-  
+
   printf("\nDarstellung derselben Daten in der Datei:\n");
   printf("%s\n", (char *)inArray);
-  
+
   fclose(handle);
   return 0;
 }
 \end{minted}
 \end{codebox}
 
-Wie gewohnt öffnen wir in Zeile 6 eine Datei im Schreibmodus und überprüfen anschließend, ob dies erfolgreich war. Zeile 12 deklariert ein Array \texttt{outArray} aus 26 positiven Ganzzahlen, die wir später in die Datei \texttt{myFile.dat} schreiben werden. Die Variable \texttt{N} enthält die Anzahl der Elemente von \texttt{outArray}. (Obwohl wir wissen, dass dieses Array 26 Elemente hat, bietet es sich manchmal an, die Arraygröße expizit zu berechnen. Wenn wir zu späterer Zeit unseren Code anpassen und die Arraygröße ändern, müssen wir nicht den ganzen Code überarbeiten.) 
+Wie gewohnt öffnen wir in Zeile 6 eine Datei im Schreibmodus und überprüfen anschließend, ob dies erfolgreich war. Zeile 12 deklariert ein Array \texttt{outArray} aus 26 positiven Ganzzahlen, die wir später in die Datei \texttt{myFile.dat} schreiben werden. Die Variable \texttt{N} enthält die Anzahl der Elemente von \texttt{outArray}. (Obwohl wir wissen, dass dieses Array 26 Elemente hat, bietet es sich manchmal an, die Arraygröße explizit zu berechnen. Wenn wir zu späterer Zeit unseren Code anpassen und die Arraygröße ändern, müssen wir nicht den ganzen Code überarbeiten.)
 
 Wir befüllen \texttt{outArray} in den Zeilen 15 bis 21 mit einigen großen Zahlen. Für dieses Beispiel sind diese Zahlen so konstruiert, dass ihre Speicherdarstellung dieselbe Form hat wie ein String aus den Buchstaben A-Z. Vorerst ist es aber egal, welche Zahlen in diesem Array stehen.
 
@@ -399,10 +399,10 @@ Mit diesen beiden Befehlen können wir beispielsweise die Größe einer Datei in
 
 long int lenght_of_file (FILE * filehandle) {
   long int oldPos = ftell(filehandle);
-  
+
   fseek(filehandle, 0L, SEEK_END);
   long int endPos = ftell(filehandle);
-  
+
   fseek(filehandle, oldPos, SEEK_SET);
   return endPos;
 }
@@ -410,7 +410,7 @@ long int lenght_of_file (FILE * filehandle) {
 int main () {
   FILE * filehandle = fopen("file.txt", "r");
   printf(
-    "Die Datei 'file.txt' ist %ld Bytes groß.\n", 
+    "Die Datei 'file.txt' ist %ld Bytes groß.\n",
     lenght_of_file(filehandle)
   );
   fclose(filehandle);
@@ -428,13 +428,13 @@ Schließlich gibt es noch einen schnellen Weg, zu ermitteln, ob wir bereits das 
 
 int main () {
   FILE * filehandle = fopen("file.txt", "r");
-  
+
   char line[1024];
   while (!feof(filehandle)) {
     fscanf(filehandle, "%1023[^\n]", line);
     printf("%s\n", line);
   }
-  
+
   fclose(filehandle);
 }
 \end{minted}

@@ -2,9 +2,9 @@
 \epigraph{You spin me right round, baby // Right round like a record, baby // Right round round round}
 {Dead Or Alive}
 
-Computer können dazu benutzt werden, die immer gleichen (lästigen) Aufgaben wiederholt und in schneller Folge auszuführen. Es ist möglich, bei jeder Wiederholung einen einzelnen Eingabewert zu ändern und so \eg Berechnungen für einen ganzen Wertebereich durchzuführen, oder Messwerte von einem Gerät zu überwachen.
+Computer können dazu benutzt werden, die immer gleichen Aufgaben wiederholt und in schneller Folge auszuführen. Es ist möglich, bei jeder Wiederholung einen einzelnen Eingabewert zu ändern und so \eg Berechnungen für einen ganzen Wertebereich durchzuführen, oder Messwerte von einem Gerät zu überwachen.
 
-Zeichnet man ein \emph{Flussdiagramm} eines solchen Programms (wie in Abbildung \ref{fig:FlowBasicLoop}), so findet sich in der Regel ein Programmteil, der zur Vorbereitung dient und in gewohnter Weise \enquote{von oben nach unten} abgearbeitet wird. An diesen schließt sich ein Abschnitt an, der einige Male wiederholt werden soll, und daher im Flussdiagramm als Bogen dargestellt wird. Nach diesem Teil könnte die Ausgabe der Ergebnisse stattfinden, die wiederum in gewohnter \emph{linearer} Weise (also von oben nach unten) bearbeitet wird. 
+Zeichnet man ein \emph{Flussdiagramm} eines solchen Programms (wie in Abbildung \ref{fig:FlowBasicLoop}), so findet sich in der Regel ein Programmteil, der zur Vorbereitung dient und in gewohnter Weise \enquote{von oben nach unten} abgearbeitet wird. An diesen schließt sich ein Abschnitt an, der einige Male wiederholt werden soll, und daher im Flussdiagramm als Bogen dargestellt wird. Nach diesem Teil könnte die Ausgabe der Ergebnisse stattfinden, die wiederum in gewohnter \emph{linearer} Weise (also von oben nach unten) bearbeitet wird.
 
 Die Form dieses Flussdiagramms motiviert den Namen \emph{Schleife} für eine solche Struktur.
 
@@ -14,7 +14,7 @@ Die Form dieses Flussdiagramms motiviert den Namen \emph{Schleife} für eine sol
     \node at (0, 3  ) (Input)      {Vorbereitung};
     \node at (0, 1.5) (Operations) {Wiederholungen};
     \node at (0, 0  ) (Output)     {Nachbereitung};
-    
+
     \draw [->] (Input) -- (Operations);
     \draw [->] (Operations.south)arc(-160:160:1.0);		%start angle: stop angle : radius
     \draw [->] (Operations) -- (Output);
@@ -30,7 +30,7 @@ Macht man einen Fehler bei der Formulierung der Bedingung, so kann man unbeabsic
 \end{hintbox}
 
 \section{Programmsprünge: \mintinline{c}{goto}}
-Die einfachste Form, Schleifen zu implementieren, funktioniert über die \emph{Sprunganweisung} \mintinline{c}{goto}. Stellen wir uns vor, der Computer würde mit einem Cursor durch unser Programm laufen und Zeile für Zeile bearbeiten, so ist \mintinline{c}{goto} der Befehl, den Cursor an eine bestimmte Stelle zu verschieben. Sprünge sind sowohl vorwärts als auch rückwärts möglich.
+Die einfachste Form, Schleifen zu implementieren, lässt sich mit der \emph{Sprunganweisung} \mintinline{c}{goto} realisieren. Stellen wir uns vor, der Computer würde mit einem Cursor durch unser Programm laufen und Zeile für Zeile bearbeiten, so ist \mintinline{c}{goto} der Befehl, den Cursor an eine bestimmte Stelle zu verschieben. Sprünge sind sowohl vorwärts als auch rückwärts möglich.
 
 Für einen Sprung ist zunächst eine \emph{Sprungmarke} nötig, also ein Punkt, ab der das Programm fortgeführt wird. Eine solche Sprungmarke hat einen Namen, der denselben Regeln folgt, wie Variablennamen (darf nur einmal im Programm vorkommen; Unterscheidung von Groß- und Kleinschreibung; nur alphanumerische Zeichen; darf nicht mit einer Zahl beginnen; maximal 40 Zeichen lang). Im Code wird sie durch einen Doppelpunkt abgeschlossen.
 
@@ -48,10 +48,10 @@ Hier sehen Sie ein einfaches Anwendungsbeispiel:
 
 int main () {
    printf("Erste Zeile der Ausgabe.\n");
-   goto ReEntryPoint;   
-   
+   goto ReEntryPoint;
+
    printf("Dies wird nie ausgegeben.\n");
-   
+
    ReEntryPoint:
    printf("Letzte Zeile der Ausgabe.\n");
 }
@@ -67,7 +67,7 @@ Letzte Zeile der Ausgabe.
 \end{minted}
 \end{cmdbox}
 
-Wir können Sprünge mit Sprünge mit \mintinline{c}{if} an eine Bedingung knüpfen und so eine Schleife erzeugen, die auch wieder verlassen wird:
+Wir können Sprünge mit \mintinline{c}{if} an eine Bedingung knüpfen und so eine Schleife erzeugen, die auch wieder verlassen wird:
 
 \begin{codebox}[Beispiel: Quadratwurzeln der Zahlen 1 bis 10 mit \texttt{goto}]
 \begin{minted}[linenos]{c}
@@ -84,9 +84,9 @@ int main () {
    iterationPoint:
    printf("Die Wurzel aus %4.1lf ist %lf.\n", foo, sqrt(foo));
    foo++;
-   
+
    if (foo <= 10) {goto iterationPoint;}
-   
+
    printf("Erfolgreicher Programmabschluss.\n");
 }
 \end{minted}
@@ -117,7 +117,7 @@ Es ist prinzipiell immer möglich, ohne den Befehl \mintinline{c}{goto} auszukom
 \end{warnbox}
 
 \section{Schleife mit Bedingung: \mintinline{c}{while}}
-Das Schlüsselwort \mintinline{c}{while} lehnt sich an den Sprachgebrauch an, und implementiert die Idee: WÄHREND \emph{Bedingung erfüllt} WIEDERHOLE \emph{Anweisungen}. Dabei ist \emph{Bedingung} ein Ausdruck wie schon bei \mintinline{c}{if}, der zu einem Wahrheitswert ausgewertet werden kann. Die Syntax lautet:
+Das Schlüsselwort \mintinline{c}{while} lehnt sich an den Sprachgebrauch an, und implementiert die Idee: FALLS \emph{Bedingung erfüllt} WIEDERHOLE \emph{Anweisungen}. Dabei ist \emph{Bedingung} ein Ausdruck wie schon bei \mintinline{c}{if}, der zu einem Wahrheitswert ausgewertet werden kann. Die Syntax lautet:
 
 \begin{codebox}[Syntax: \texttt{while}]
 \begin{minted}{c}
@@ -136,18 +136,18 @@ Mit diesem Schlüsselwort übersetzt sich also das vorige Beispiel zu folgendem 
 
 int main () {
    double foo = 1;
-   
+
    while (foo <= 10) {
       printf("Die Wurzel aus %4.1lf ist %lf.\n", foo, sqrt(foo));
       foo++;
    }
-   
+
    printf("Erfolgreicher Programmabschluss.\n");
 }
 \end{minted}
 \end{codebox}
 
-Wie schon bei \mintinline{c}{if} können bei einzeiligen Anweisungsblocks die \{geschweiften Klammern\} entfallen. Aus denselben Gründen wie dort empfehle ich aber, immer Klammern zu setzen.
+Wie schon bei \mintinline{c}{if} können bei einzeiligen Anweisungsblocks die \{geschweiften Klammern\} entfallen. Genauso wie bei \mintinline{c}{if}-Blocks empfehle ich bei Schleifen immer Klammern zu setzen.
 
 Die Bedingung wird bereits vor Eintritt in die Schleife überprüft. Ist sie vor dem Eintritt nicht erfüllt, wird der Schleifen-Körper nie ausgeführt sondern komplett übersprungen.
 
@@ -182,11 +182,11 @@ Die folgenden beiden Beispiele und Ausgaben verdeutlichen den Unterschied:
 
 int main () {
    unsigned int foo = 0;
-   
+
    while (foo > 0) {
       printf("Schleifenkörper.\n");
    }
-   
+
    printf("Programmende.\n");
 }
 \end{minted}
@@ -199,11 +199,11 @@ int main () {
 
 int main () {
    unsigned int foo = 0;
-   
+
    do {
       printf("Schleifenkörper.\n");
    } while (foo > 0);
-   
+
    printf("Programmende.\n");
 }
 \end{minted}
@@ -230,6 +230,8 @@ Programmende.
 \end{cmdbox}
 \end{tcbraster}
 
+Die \mintinline{c}{do-while}-Schleife kommt also zum Einsatz wenn der Schleifenkörper garantiert \emph{mindestens einmal} ausgeführt werden soll.
+
 \section{Zählschleifen: \mintinline{c}{for}}
 Der Schleifen-Typ \mintinline{c}{while} ist generell für alle Szenarios geeignet. Das häufigste Szenario ist der Fall, in dem eine Variable für jede \emph{Iteration} (\ie für jeden Durchlauf der Schleife) hochgezählt wird. Zu diesem Zweck existiert die spezielle Form der \mintinline{c}{for}-Schleife, die eine kompakte Form solcher Konstrukte erlaubt.
 
@@ -254,7 +256,7 @@ while (Bedingung) {
 \end{minted}
 \end{codebox}
 
-Das heißt, \texttt{Startanweisung} wird automatisch vor Schleifenbeginn und \texttt{Iteration} am Ende jedes Schleifendurchlaufs ausgeführt. In der Regel ist \texttt{Startanweisung} die Zuweisung eines Startwerts zu einer \emph{Zählvariablen}. Mit \texttt{Iteration} wird diese Zählvariable dann hochgezählt (oder in geeigneten Schritten verändert).
+Das heißt, \texttt{Startanweisung} wird automatisch vor Schleifenbeginn und \texttt{Iteration} am Ende jedes Schleifendurchlaufs ausgeführt. In der Regel ist \texttt{Startanweisung} die Zuweisung eines Startwerts zu einer \emph{Zählvariablen}. Mit \texttt{Iteration} wird diese Zählvariable dann hochgezählt (oder in geeigneten Schritten verändert). Üblicherweise wird die \texttt{Bedingung} durch einen Vergleich der Zählvariable mit einem konstanten Wert oder einer Variable realisiert.
 
 Das vorige Beispiel der Quadratwurzeln bis 10 schreibt sich damit folgendermaßen:
 
@@ -265,17 +267,17 @@ Das vorige Beispiel der Quadratwurzeln bis 10 schreibt sich damit folgendermaße
 
 int main () {
    double foo;
-   
+
    for (foo = 1; foo <= 10; foo++) {
       printf("Die Wurzel aus %4.1lf ist %lf.\n", foo, sqrt(foo));
    }
-   
+
    printf("Erfolgreicher Programmabschluss.\n");
 }
 \end{minted}
 \end{codebox}
 
-Mit dem Standard C99 wurde auch die Möglichkeit eingeführt, in \emph{Startanweisung} Variablen zu deklarieren. Diese \enquote{existieren} dann allerdings nur innerhalb des Schleifenkörpers und können nach Ende der Schleife nicht mehr verwendet werden. (Es dürfen jedoch nach der Schleife \emph{neue} Variablen mit demselben Namen angelegt werden.) Wir werden in Abschnitt \ref{sec:Scopes} mehr hierzu erfahren. Das folgende Beispiel zeigt diese kombinierte Deklaration und Initialisierung:
+Mit dem Standard C99 wurde auch die Möglichkeit eingeführt, in \texttt{Startanweisung} Variablen (plural) zu deklarieren und zu initialisieren. Diese \enquote{existieren} dann allerdings nur innerhalb des Schleifenkörpers und können nach Ende der Schleife nicht mehr verwendet werden (es dürfen jedoch nach der Schleife \emph{neue} Variablen mit demselben Namen angelegt werden). Wir werden in Abschnitt \ref{sec:Scopes} mehr hierzu erfahren. Das folgende Beispiel zeigt diese kombinierte Deklaration und Initialisierung:
 
 \begin{codebox}[Beispiel: \texttt{for}-Schleife mit Deklaration]
 \begin{minted}[linenos]{c}
@@ -286,7 +288,7 @@ int main () {
    for (double foo = 1; foo <= 10; foo++) {
       printf("Die Wurzel aus %4.1lf ist %lf.\n", foo, sqrt(foo));
    }
-   
+
    printf("Erfolgreicher Programmabschluss.\n");
 }
 \end{minted}
@@ -295,9 +297,9 @@ int main () {
 \section{Eingriffe in den Kontrollfluss: \mintinline{c}{break} und \mintinline{c}{continue}} \label{sec:ControlFluxAdjustment}
 Es gibt Situationen, in denen eine Schleifen-Ausführung \enquote{vorzeitig} abgebrochen oder ein Teil des Schleifenkörpers \enquote{übersprungen} werden soll. Zu diesem Zweck dienen die Befehle \mintinline{c}{break} und \mintinline{c}{continue}.
 
-Wir kennen \mintinline{c}{break} bereits von \mintinline{c}{switch}-Blöcken. Dort wurden sie benutzt, um den aktuellen \mintinline{c}{switch}-Block zu verlassen und mit der Programmausführung an das Ende des Blocks zu springen. Eben dieselbe Wirkung hat \mintinline{c}{break} auch bei Schleifen, gleich ob es sich dabei um \mintinline{c}{for}, \mintinline{c}{while} oder \mintinline{c}{do-while} handelt.
+Wir kennen \mintinline{c}{break} bereits von \mintinline{c}{switch}-Blöcken. Dort wurden sie benutzt, um den aktuellen \mintinline{c}{switch}-Block zu verlassen und mit der Programmausführung an das Ende des Blocks zu springen. Dieselbe Wirkung hat \mintinline{c}{break} auch bei Schleifen, gleich ob es sich dabei um \mintinline{c}{for}, \mintinline{c}{while} oder \mintinline{c}{do-while} handelt.
 
-Das folgende Beispiel verwendet \mintinline{c}{break}, um Zahlen und ihre Quadrate auszugeben. Dabei sollen maximal 100 Zahlen ausgegeben werden, und die Ausgabe soll stoppen, wenn eine Quadratzahl größer als 1000 ist\footnote{Natürlich kann dazu auch ein logisches OR benutzt werden; hier soll aber die Anwendung von \mintinline{c}{break} illustriert werden.}.
+Das folgende Beispiel zeigt die Ausgabe von Zahlen und deren Quadrat. Es sollen maximal 100 Zahlen ausgegeben werden, die Ausgabe soll aber stoppen, wenn eine Quadratzahl größer als 1000 ist. Um den bedingten Abbruch der Schleife zu realisieren verwenden wir \mintinline{c}{break}\footnote{Natürlich kann dazu auch ein logisches OR benutzt werden; hier soll aber die Anwendung von \mintinline{c}{break} illustriert werden.}.
 
 \begin{codebox}[Beispiel: Abbruch einer \texttt{for}-Schleife mit \texttt{break}]
 \begin{minted}[linenos]{c}

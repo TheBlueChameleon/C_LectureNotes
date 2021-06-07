@@ -3,7 +3,7 @@
 
 Für besonders große Projekte bietet es sich an, den Code auf mehrere Dateien zu verteilen, und diese nach Aufgaben zu sortieren. Dies erlaubt es, eine \enquote{übergeordnete} Kapselung umzusetzen, die ähnlich funktioniert wie schon bei den Funktionen besprochen wurde (siehe Kapitel \ref{chp:funcs}), und die den Einfluss begrenzt, den die einzelnen Programmkomponenten aufeinander haben.
 
-Ein \emph{Modul} ist eine C-Code-Datei, die nur \enquote{ihre eigenen} Variablen und Funktionen \enquote{sieht}. Innerhalb eines Moduls müssen alle Namen (von Variablen, Funktionen, Sprung-Labels, ...) eindeutig sein, \ie dürfen nicht doppelt vergeben werden (es sei denn, sie \enquote{leben} in ihrem eigenen Scope). Ein Modul erzeugt allerdings wiederum einen umfassenden Scope; daher dürfen in zwei getrennten Modulen dieselben Namen vorkommen.
+Ein \emph{Modul} ist eine C-Code-Datei, die nur \enquote{ihre eigenen} Variablen und Funktionen \enquote{sieht}. Innerhalb eines Moduls müssen alle Namen (von Variablen, Funktionen, Sprung-Labels, ...) eindeutig sein, \ie dürfen nicht doppelt vergeben werden (es sei denn, sie \enquote{leben} jeweils in ihrem eigenen Scope). Ein Modul erzeugt allerdings wiederum einen umfassenden Scope; daher dürfen in zwei getrennten Modulen dieselben Namen vorkommen.
 
 Verbunden werden Module über \emph{Header}-Dateien, die lediglich Definitionen enthalten. Diese Definitionen teilen gewissermaßen mit, welche Funktionen, Variablen, ... geteilt werden, also über die Modulgrenzen hinaus sichtbar sein sollen.
 
@@ -41,7 +41,7 @@ Die \emph{Implementierung} hierzu speichern wir in der Datei \texttt{vector2D.c}
 #include <math.h>
 
 vector2D v2_sum     (vector2D a, vector2D b) {
-  vector2D reVal = {a.x + b.x, a.y + b.y}; 
+  vector2D reVal = {a.x + b.x, a.y + b.y};
   return reVal;
 }
 
@@ -66,16 +66,16 @@ x \\ y
 
 Achtung: Die Datei \texttt{vector2D.c} besitzt \emph{keine} Funktion \texttt{main}! Sie kann vom Compiler zu \emph{Object-Code} umgesetzt werden, \ie in Maschinensprache übersetzt werden; Linken zu einem \emph{ausführbaren Programm} ist mit diesem Code alleine jedoch nicht möglich.
 
-Das \emph{Hauptmodul} findet sich in einer eigenen Datei \texttt{myProg.c}:
+Das \emph{Hauptmodul} findet sich in einer eigenen Datei \texttt{myProgram.c}:
 
-\begin{codebox}[Beispiel: Hauptmodulcode \texttt{myProg.c}]
+\begin{codebox}[Beispiel: Hauptmodulcode \texttt{myProgram.c}]
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 #include "vector2D.h"
 
 int main () {
   vector2D v = {1,1}, w = {2, 3};
-  
+
   printf("%lf\n", v2_length(v2_sum(v, w)));
 }
 \end{minted}
@@ -86,12 +86,12 @@ Hier stehen nun alle \enquote{Befehle} zur Verfügung, die wir im Header \texttt
 Unser Projekt besteht also aus zwei Modulen, die über einen gemeinsamen Header verbunden sind. Diese beiden Module müssen beim Aufruf des Compilers aufgeführt werden:
 
 \begin{cmdbox}[Compileraufruf: Projekt aus zwei Modulen]
-gcc -std=c11 -Wall -Wpedantic -Wimplicit-fallthrough myProgram.c vector2D.c -lm -o myProgram
+gcc -std=c11 -Wall -Wextra -Wpedantic myProgram.c vector2D.c -lm -o myProgram
 \end{cmdbox}
 
 Achtung: der hier gezeigte Aufruf besteht nur aus einer \emph{einzigen Zeile}. Wenn Sie diesen Aufruf eintippen bedarf es \emph{keines} Zeilenumbruchs nach \texttt{-lm}. Beachten Sie weiter auch, dass im Compiler-Aufruf der Header \emph{nicht} erwähnt wird!
 
-Wie üblich findet das Kompilieren über den \texttt{gcc} statt. Wir listen zunächst einige Optionen auf (C-Standard von 2011, Anzeigen aller relevanten Warnungen) und nennen dann unsere beiden Module (\texttt{myProgram.c} und \texttt{vector2D.c}). Den Zusatz \texttt{-lm} kennen wir als Befehl, die Math-Library einzubinden. Wir können dies als ein \emph{drittes} Modul auffassen, das in unserem Projekt verwendet wird. Schließlich nennen wir mit \texttt{-o myProgram} den Namen der ausführbaren Datei, die aus unserem Code erzeugt werden soll.
+Wie üblich findet das Kompilieren über den \texttt{gcc} statt. Wir listen zunächst einige Optionen auf (C-Standard von 2011, Anzeigen aller relevanten Warnungen) und nennen dann unsere beiden Module (\texttt{myProgram.c} und \texttt{vector2D.c}). Den Zusatz \texttt{-lm} kennen wir als Compiler Option um die Math-Library einzubinden. Wir können dies als ein \emph{drittes} Modul auffassen, das in unserem Projekt verwendet wird. Schließlich nennen wir mit \texttt{-o myProgram} den Namen der ausführbaren Datei, die aus unserem Code erzeugt werden soll.
 
 
 \section{Speicherklasse \mintinline{c}{extern}}
@@ -134,7 +134,7 @@ Da \mintinline{c}{extern} nur ein Symbol benennt, schreiben wir diesen Befehl in
 
 Wozu dieser Aufwand? Sollte es nicht genügen, eine Variable direkt in einem Header zu deklarieren?
 
-Betrachten Sie dazu die folgende Dateistruktur:
+Betrachten Sie dazu folgendes Codebeispiel:
 \begin{codebox}[Beispiel: Hauptmodulcode \texttt{myProg.c}]
 \begin{minted}[linenos]{c}
 #include <stdio.h>
@@ -179,7 +179,7 @@ Der Header \texttt{definitions.h} wird von beiden Modulen (\texttt{myProg.c} und
 \begin{warnbox}[Keine Deklarationen in Headern]
 Wie bereits erwähnt sollen in Headern nur Definitionen stehen, \ie \mintinline{c}{struct}s, \mintinline{c}{union}s, \mintinline{c}{enum}s \mintinline{c}{typedef}s, \mintinline{c}{extern}s und Funktions-Prototypen. Bei all diesen Anweisungen werden noch keine Speicher-Stellen reserviert, sondern lediglich \enquote{Formen} definiert.
 
-Da Header den Zweck haben, mehrere Module miteinander zu verbinden, werden sie in mindestens zwei Dateien includiert. Eine Deklaration in einem Header wird also naturgemäß zu doppelten Deklarationen führen. Aus diesem Grund schreiben wir in Header \emph{ausschließlich} Definitionen. Alle Anweisungen, die die Struktur des Speichers verändern, \enquote{leben} in Modulen.
+Da Header den Zweck haben, mehrere Module miteinander zu verbinden, werden sie in mindestens zwei Dateien inkludiert. Eine Deklaration in einem Header wird also naturgemäß zu doppelten Deklarationen führen. Aus diesem Grund schreiben wir in einen Header \emph{ausschließlich} Definitionen. Alle Anweisungen, die die Struktur des Speichers verändern, \enquote{leben} in Modulen.
 \end{warnbox}
 
 \section{Funktionen mit eingeschränkter Sichtbarkeit: \mintinline{c}{static}}
@@ -258,13 +258,9 @@ Die folgenden Typen-Modifier sind hier nur der Vollständigkeit halber aufgefüh
 \item[register] wird für Werte, die sehr häufig gelesen oder geändert werden und die daher aus
 	Performance-Gründen \enquote{im Prozessorspeicher} behalten werden sollten.
 \item[volatile] zeichnet Variablen aus, die nicht nur vom laufenden Programm geändert werden können,
-	sondern beispielsweise den Zustand eines laufenden Geräts wiederspiegeln. Das Schlüsselwort
-	\mintinline{c}{volatile} unterdrückt Optimierungs-Schritte des Compilers, die das korrekte Lesen
-	eines solchen Werts verhindern könnten.
+	sondern beispielsweise den Zustand eines laufenden Geräts widerspiegeln.  \mintinline{c}{volatile} teilt dem Compiler mit, dass die Variable nicht in den Registern des Prozessors gehalten werden soll, sondern immer ein Zugriff auf die Speicherstelle erfolgen muss (\mintinline{c}{volatile} entspricht in etwa dem Gegenteil von \mintinline{c}{register}).
 \item[const] markiert Werte, die nach der ersten Zuweisung nicht mehr geändert werden dürfen. Zum einen
 	überprüft der Compiler, ob diese Regel eingehalten wird, bietet also eine Sicherheitsprüfung des
-	Codes gegen unbemerkte Fehler. Zum anderen erlaubt das Wissen, dass sich ein Variablen-Wert nicht
-	ändert dem Compiler zusätzliche Optimierungs-Verfahren.
-\item[restrict] wird im Kontext von Pointern benutzt, und erzwingt, dass sich von Pointern referenzierte
-	Speicherbereiche nicht \enquote{überlappen} dürfen.
+	Codes gegen unbemerkte Fehler. Zum anderen erlaubt das Wissen, dass sich ein Variablen-Wert nicht ändert dem Compiler zusätzliche Optimierungsmöglichkeiten.
+\item[restrict] wird im Kontext von Pointern benutzt, und ist Ihr \enquote{Versprechen} an den Compiler, dass der entsprechende Speicherbereich nicht auch über einen anderen Pointer addressierbar ist (d.h. entsprechende Speicherbereiche \enquote{überlappen} garantiert nicht). Dies gibt dem Compiler diverse Möglichkeiten den Code zu optimieren.
 \end{description}

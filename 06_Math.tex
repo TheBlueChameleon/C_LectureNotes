@@ -1,7 +1,7 @@
 \chapter{Die CPP-Referenz am Beispiel der math-library}
 \epigraph{Do not worry about your difficulties in Mathematics. I can assure you mine are still greater.}{Albert Einstein}
 
-Zu vielen mathematischen Problemen wie Berechnung der Wurzel oder des Sinus einer Zahl stehen in der math-library \texttt{lm}\footnote{Wie in Abschnitt \ref{sec:Compile} besprochen, muss dem Compiler mitgeteilt werden, wenn eine Bibliothek verwendet wird. Während allgemein von der \emph{math-library} gesprochen wird, heißt die einzubindende Datei leider einfach nur \texttt{m} -- ein unschöner Umstand, mit dem wir leben müssen.} Lösungen bereit. Ich möchte Sie dazu einladen, diese Funktionen selbst zu erkunden. Dazu wird uns die Befehlsreferenz unter \url{https://en.cppreference.com/w/c} dienen. In diesem Kapitel lernen Sie, sich in der Befehlsreferenz zurecht zu finden und nützliche Features selbst zu entdecken.
+Zu vielen mathematischen Problemen wie Berechnung der Wurzel oder des Sinus einer Zahl stehen in der math-library \texttt{libm}\footnote{Wie in Abschnitt \ref{sec:Compile} besprochen, muss dem Compiler mitgeteilt werden, wenn eine Bibliothek verwendet wird. Während allgemein von der \emph{math-library} gesprochen wird, heißt die einzubindende Datei leider einfach nur \texttt{m} -- ein unschöner Umstand, mit dem wir leben müssen.} Lösungen bereit. Ich möchte Sie dazu einladen, diese Funktionen selbst zu erkunden. Dazu wird uns die Befehlsreferenz unter \url{https://en.cppreference.com/w/c} dienen. In diesem Kapitel lernen Sie, sich in der Befehlsreferenz zurecht zu finden und nützliche Features selbst zu entdecken.
 
 \section{Überblick über die Seite cppreference.com}
 Wenn Sie die Seite \url{https://en.cppreference.com/w/c} besuchen, sollten Sie ein Bild wie in Abbildung \ref{fig:cpp-home} sehen.
@@ -74,17 +74,17 @@ int main () {
 \end{minted}
 \end{codebox}
 
-Wir benutzen die Funktion \texttt{sqrt} um aus dem \mintinline{c}{double}-Wert \texttt{81.0} die Wurzel zu berechnen und speichern diesen Wert der Wurzel dann in der Variablen \texttt{root}. Dieser berechnete Wert wird als \emph{return Value} oder Rückgabewert der Funktion bezeichnet.
+Wir benutzen die Funktion \texttt{sqrt} um aus dem \mintinline{c}{double}-Wert \texttt{81.0} die Wurzel zu berechnen und speichern diesen Wert der Wurzel dann in der Variablen \texttt{root}. Dieser berechnete Wert wird als Rückgabewert (\emph{Return Value}) der Funktion bezeichnet.
 
 Der Abschnitt \emph{Return Values} gibt Details zu dem berechneten Wert unter der Annahme verschiedener Szenarios.
 
-Wenn kein Fehler auftritt, wird die Quadratwurzel von \texttt{arg} berechnet. Wie Sie wissen, exisitiert aber nicht zu jeder Zahl eine Quadratwurzel. So sind negative Werte für \texttt{arg} nicht zulässig -- dies ist gemeint mit \emph{If a domain error occurs}. In diesem Fall hängt das Ergebnis von der Version des Compilers ab (\emph{an implementation-defined value is returned}). In der Regel wird aber ein spezielles Bitmuster erzeugt, das sicher als \enquote{Fehler-Wert} interpretiert werden kann (\emph{NaN where supported} -- \emph{NaN} steht für \emph{Not a Number}, also ein Fehlerwert. Siehe hierzu mehr in Abschnitt \ref{sec:NAN}).
+Wenn kein Fehler auftritt, wird die Quadratwurzel von \texttt{arg} berechnet. Wie Sie wissen, existiert aber nicht zu jeder Zahl eine Quadratwurzel. So sind negative Werte für \texttt{arg} nicht zulässig -- dies ist gemeint mit \emph{If a domain error occurs}. In diesem Fall hängt das Ergebnis von der Version des Compilers ab (\emph{an implementation-defined value is returned}). In der Regel wird aber ein spezielles Bitmuster erzeugt, das sicher als \enquote{Fehler-Wert} interpretiert werden kann (\emph{NaN where supported} -- \emph{NaN} steht für \emph{Not a Number}, also ein Fehlerwert. Siehe hierzu mehr in Abschnitt \ref{sec:NAN}).
 
 Die letzte Zeile \emph{If a range error occurs due to underflow} beschreibt das Verhalten, wenn der Wert von \texttt{arg} nicht mehr korrekt mit seinem Datentyp abgebildet werden kann (vgl. Abschnitt \ref{sec:Datatypes} im Anhang -- manche Werte sind zu groß oder haben zu viele Nachkommastellen, um beispielsweise als \mintinline{c}{double} exakt abgebildet zu werden). In diesem Fall wird mit einem gerundeten Wert gerechnet.
 
 Unter \emph{Error Handling} werden weitere Details aufgelistet, die das Verhalten von \texttt{sqrt} in \enquote{abnormalen} Situationen beschreiben. Im Allgemeinen ist es nicht nötig, all diese Details im Kopf zu behalten -- dafür ist die Referenz da.
 
-Am Ende der weit meisten Artikel finden Sie zu jedem Befehl einen Beispiel-Code, der die Anwendung der besprochenen Funktion verdeutlicht, sowie ein Ausgabebeispiel.
+Am Ende der meisten Artikel finden Sie zu jedem Befehl einen Beispiel-Code, der die Anwendung der besprochenen Funktion verdeutlicht, sowie ein Ausgabebeispiel.
 
 \section{Weitere nützliche Funktionen der math-library}
 Die folgende Tabelle listet sehr gebräuchliche Funktionen sowie eine Kurzbeschreibung auf. Mit der cpp-Referenz sollten Sie nun dazu in der Lage sein, diese Funktionen in Ihren Programmen anzuwenden.
@@ -98,10 +98,10 @@ Die folgende Tabelle listet sehr gebräuchliche Funktionen sowie eine Kurzbeschr
 	{.95\linewidth}
 	{CD}
 \toprule[1pt]
-	
+
 	\normalfont Funktion  &  Effekt
 \tabcrlf
-	
+
 	sqrt  & Quadratwurzel einer Zahl \\
 	cbrt  & Kubikwurzel einer Zahl   \\
 	pow   & Potenz einer Zahl \texttt{x} zu einem Exponenten \texttt{y}: $x^{y}$ \\
@@ -114,11 +114,11 @@ Die folgende Tabelle listet sehr gebräuchliche Funktionen sowie eine Kurzbeschr
 	acos  & Arcuscosinus             \\
 	atan  & Arcustangens             \\
 	atan2 & Arcustangens mit Unterscheidung der Quadranten \\
-	ceil  & Zahl Aufrunden           \\
-	floor & Zahl Abrunden            \\
+	ceil  & Zahl aufrunden           \\
+	floor & Zahl abrunden            \\
 	trunc & Nachkommaanteil abschneiden \\
-	round & Zahl Runden              \\
-	
+	round & Zahl runden              \\
+
 \bottomrule[1pt]
 \end{tabularx}
 \end{center}
@@ -129,5 +129,5 @@ Die folgende Tabelle listet sehr gebräuchliche Funktionen sowie eine Kurzbeschr
 \begin{plusbox}
 Wie die URL der Seite schon vermuten lässt, ist die cpp-Referenz auch ein Verzeichnis der Features von C++. Gehen Sie hierzu von der Adressse \url{https://en.cppreference.com/w/cpp} aus, um Informationen spezifisch zu C++ zu finden.
 
-Sie haben bereits gesehen, dass die Stichwortsuche direkt auf C++-Spezifische Artikel verweist. Auf der Startseite der C++-Referenz finden Sie ebenfalls den Punkt \emph{Headers}, von wo Sie auf die spezifischen libraries verwiesen werden. Die bedeutsamsten Bibliotheken sind hier aber schon direkt von der Startseite aus verlinkt.
+Sie haben bereits gesehen, dass die Stichwortsuche direkt auf C++-spezifische Artikel verweist. Auf der Startseite der C++-Referenz finden Sie ebenfalls den Punkt \emph{Headers}, von wo Sie auf die spezifischen libraries verwiesen werden. Die bedeutsamsten Bibliotheken sind hier aber schon direkt von der Startseite aus verlinkt.
 \end{plusbox}

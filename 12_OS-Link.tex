@@ -7,7 +7,7 @@ Während unsere Programme \enquote{für sich alleine stehen können}, werden sie
 Ein Errorcode ist ein Wert zwischen 0 und 255, der angibt, welcher Fehler bei der Ausführung aufgetreten ist. Lief das Programm ohne Fehler ab, so ist dieser Errorcode üblicherweise gleich \texttt{0}.
 
 \subsection{Rückgabewert der \texttt{main}}
-In Kapitel \ref{chp:funcs} haben wir bereits festgestellt, dass formal die \mintinline{c}{int main} eine Funktion ist, die einen \mintinline{c}{int} zurück gibt. Bisher haben wir von dieser Funktionalität keinen Gebrauch gemacht. Ab hier wollen wir aber dieses Feature mit nutzen, und beenden unsere Programme mit einer \mintinline{c}{return}-Anweisung:
+In Kapitel \ref{chp:funcs} haben wir bereits festgestellt, dass formal die \mintinline{c}{int main} eine Funktion ist, die einen \mintinline{c}{int} zurück gibt. Bisher haben wir von dieser Funktionalität keinen Gebrauch gemacht. Ab hier wollen wir aber dieses Feature nutzen, und beenden unsere Programme mit einer \mintinline{c}{return}-Anweisung:
 \begin{codebox}[Beispiel: Hello World mit Rückgabewert]
 \begin{minted}[linenos]{c}
 #include <stdio.h>
@@ -19,9 +19,9 @@ int main() {
 \end{minted}
 \end{codebox}
 
-Zeile 5 beendet das Programm und gibt einen Wert \texttt{0} zurück -- aber wo wird dieser Wert entgegen genommen? Wie Sie aus dem Thema dieses Kapitels sicher schon erahnen, nimmt das Betriebssystem den Rückgabewert entgegen. Im Allgemeinen wird dort der Wert ignoriert; er kann aber wiederum an andere Programme weiter gereicht werden, die so auf den Ablauf unseres Programms reagieren. Üblicherweise wird ein \emph{Errorcode} zurück gegeben.
+Zeile 5 beendet das Programm und gibt einen Wert \texttt{0} zurück -- aber wo wird dieser Wert entgegen genommen? Wie Sie aus dem Thema dieses Kapitels sicher schon erahnen, nimmt das Betriebssystem den Rückgabewert entgegen. Im Allgemeinen wird dort der Wert ignoriert; er kann aber wiederum von anderen Programmen aufgegriffen werden, die so auf den Ablauf unseres Programms reagieren. Üblicherweise wird ein \emph{Errorcode} zurück gegeben.
 
-Eine Möglichkeit, den Rückgabewert eines Programms abzufragen ist, in der Konsole das Symbol \texttt{\$?} zu benuzen. Geben Sie die Zeile
+Eine Möglichkeit, den Rückgabewert eines Programms abzufragen ist, in der Konsole das Symbol \texttt{\$?} zu benutzen. Geben Sie die Zeile
 \begin{cmdbox}[Kommandozeile: Rückgabewert eines Programms anzeigen]
 echo \$?
 \end{cmdbox}
@@ -66,7 +66,7 @@ In den meisten Anwendungsfällen reicht es, zu unterscheiden: \emph{Programm wur
 
 Im Kurs \emph{Linux} der Universität Regensburg lernen Sie Möglichkeiten kennen, diese Errorcodes auszuwerten.
 
-\subsection{Programm jederzeit beenden: \texttt{exit}}
+\subsection{Programm instantan beenden: \texttt{exit}}
 Neben der Möglichkeit, die \texttt{main} mit \texttt{return errorcode} zu verlassen, ist es auch möglich, den Befehl \texttt{exit} aus der \texttt{<stdlib.h>} zu benutzen. Dieser beendet die Programmausführung \emph{von jedem beliebigen Punkt aus}, also auch, wenn gerade eine Funktion ausgeführt wird. Der Befehl \texttt{exit} nimmt als Argument den Errorcode an, der an das Betriebssystem zurück gegeben werden soll.
 
 \begin{codebox}[Beispiel: Programm beenden mit \texttt{exit}]
@@ -74,18 +74,18 @@ Neben der Möglichkeit, die \texttt{main} mit \texttt{return errorcode} zu verla
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
- 
+
 int main() {
   double number;
-  
+
   printf("Bitte geben Sie eine positive Zahl ein:");
   scanf("%lf", &number);
-  
+
   if (number < 0) {
     printf("Fehler: Zahl war kleiner als 0!\n");
     exit(EXIT_FAILURE);  // Fehlercode -1
   }
- 
+
   printf("Die Wurzel der Eingabe war %lf.\n", sqrt(number));
   return EXIT_SUCCESS;   // Fehlercode 0
 }
@@ -93,22 +93,22 @@ int main() {
 \end{codebox}
 
 \subsection{Befehle an die Kommandozeile: \texttt{system}}
-Der Befehl \texttt{system} aus der \texttt{<stdlib.h>} startet ein externes Programm und gibt den Errorcode dieses Aufrufs zurück. Wir können das Beispiel: \emph{Ausgabe von Rückgabewerten verschiedener Programme auf der Konsole} also auch direkt aus unserem C-Code heraus laufen lassen:
+Der Befehl \texttt{system} aus der \texttt{<stdlib.h>} startet ein externes Programm und gibt den Errorcode dieses Aufrufs zurück. Wir können das Beispiel \emph{Ausgabe von Rückgabewerten verschiedener Programme auf der Konsole} also auch direkt aus unserem C-Code heraus laufen lassen:
 
 \begin{codebox}[Beispiel: Aufrufe mit \texttt{system} und Auswertung der Errorcodes]
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 #include <stdlib.h>
- 
+
 int main() {
   printf("Inhalt des aktuellen Arbeitsverzeichnisses:");
   int errCode_ls = system("ls");
-  printf("ls schließt ab mit Errorlevel %d\n", errCode_ls);
+  printf("ls schließt ab mit Error Code %d\n", errCode_ls);
 
   printf("Versuch der Kompilation von 'progDoesNotExist.c':");
   int errCode_pdne = system("gcc progDoesNotExist.c");
-  printf("Errorlevel %d\n", errCode_pdne);
-  
+  printf("Error Code %d\n", errCode_pdne);
+
   return 0;
 }
 \end{minted}
@@ -126,30 +126,30 @@ int main() {
  definitions.h                myProgram            vector2D.h
  findroot_sqrt.c              myProgram.c          VivadoProjects
  freeglut_test.c              Playground
-Inhalt des aktuellen Arbeitsverzeichnisses:ls schließt ab mit Errorlevel 0
+Inhalt des aktuellen Arbeitsverzeichnisses:ls schließt ab mit Error Code 0
 gcc: error: progDoesNotExist.c: Datei oder Verzeichnis nicht gefunden
 gcc: fatal error: no input files
 compilation terminated.
-Versuch der Kompilation von 'progDoesNotExist.c':Errorlevel 256
+Versuch der Kompilation von 'progDoesNotExist.c':Error Code 256
 \end{minted}
 \end{cmdbox}
 
 
 \subsection{Fehlerbeschreibung ermitteln: \texttt{strerror}}
-Niemand will sich Fehlercodes im Kopf behalten. Um eine sinnvolle Unterstüzung bei der Fehlersuche zu geben, existiert die Funktion \texttt{strerror} aus dem Header \texttt{<string.h>}. Dieser wird ein Fehlercode übergeben; der Rückgabewert ist ein Pointer auf einen String, der diesen Fehler menschenlesbar beschreibt:
+Niemand will sich Fehlercodes im Kopf behalten. Um hilfreiche Unterstützung bei der Fehlersuche zu geben, existiert die Funktion \texttt{strerror} aus dem Header \texttt{<string.h>}. Dieser wird ein Fehlercode übergeben; der Rückgabewert ist ein Pointer auf einen String, der diesen Fehler menschenlesbar beschreibt:
 
 \begin{codebox}[Beispiel: Errorcodes mit \texttt{strerror} beschreiben]
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
- 
+
 int main() {
   printf("Versuch der Ausführung von 'progDoesNotExist':");
   int errCode_pdne = system("gcc progDoesNotExist.c");
-  printf("Errorlevel %d\n", errCode_pdne);  
+  printf("Error Code %d\n", errCode_pdne);
   printf("Fehlerbeschreibung: %s\n", strerror(errCode_pdne));
-  
+
   return 0;
 }
 \end{minted}
@@ -171,12 +171,12 @@ parameter3 \\
 parameter4 with whitespaces
 \end{cmdbox}
 
-Wie Sie sehen, bleiben Kommata erhalten; Leerzeichen werden komplett aus der Zerlegung entfernt, es sei denn, sie befinden sich in \texttt{"}doppelten Anführungszeichen\texttt{"}.
+Wie Sie sehen, bleiben Kommata erhalten; Leerzeichen werden entfernt, es sei denn, sie befinden sich in \texttt{"}doppelten Anführungszeichen\texttt{"}.
 
 Diese Zerlegung wird unserem Programm zugänglich gemacht, indem wir die Signatur der \texttt{main} abändern:
 \begin{codebox}[Syntax: \texttt{main} mit Zugriff auf Kommandozeilenparameter]
 \begin{minted}{c}
-int main (int argc, char ** argv) {...
+int main (int argc, char ** argv) {...}
 \end{minted}
 \end{codebox}
 
@@ -189,9 +189,9 @@ Die oben gezeigte Zerlegung wurde mit folgendem Code ausgegeben:
 
 int main(int argc, char ** argv) {
   printf("argc: %d\n", argc);
-  
+
   for (int i=0; i<argc; i++) {printf("%02d\t%s\n", i, argv[i]);}
-  
+
   return 0;
 }
 \end{minted}
@@ -214,13 +214,13 @@ Um einen \enquote{leeren Bildschirm} anzuzeigen, kann die Sequenz \texttt{\textb
 
 int main() {
   char password[20];
-  
+
   printf("Bitte Passwort eingeben:\n");
   scanf("%19s", password);
-  
+
   // Bildschirm leeren, um Passwort nicht unnötig lange anzuzeigen
   printf("\033[H\033[J");
-  
+
   return 0;
 }
 \end{minted}
@@ -232,7 +232,7 @@ Sowohl unter unixoiden Systemen als auch unter Windows existiert ein Systemkomma
 \begin{center}
 	\mintinline{c}{system("clear");}
 \end{center}
-für unixoiden Systeme und
+für unixoide Systeme und
 \begin{center}
 	\mintinline{c}{system("cls");}
 \end{center}
@@ -260,10 +260,10 @@ int main () {
       printf("+-+-+-+\n");
     }
   }
-  
+
   print_at("*", 4, 4);   // Koordinaten der mittleren Zelle
   print_at("" , 8, 1);   // Cursorposition auf "Ende" setzen
-  
+
   return 0;
 }
 \end{minted}
@@ -290,14 +290,14 @@ Der Cursor hat eine \emph{Schriftfarbe}, die sich aus einer \emph{Vordergrund-} 
 
 int main () {
   printf("normaler Text\n");
-  
+
   printf("\x1b[92m");  // Schriftfarbe Hellgrün
   printf("Hellgrün auf schwarz\n");
   printf("Immer noch Hellgrün auf Schwarz\n");
-  
+
   printf("\x1b[44m");  // Hintergrundfarbe Blau
   printf("Hellgrün auf blau\n");
-  
+
   return 0;
 }
 \end{minted}

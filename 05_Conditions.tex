@@ -12,7 +12,7 @@ Der Wahrheitswert dieses Ausdrucks ist offensichtlich \emph{wahr} (bzw. \emph{tr
 
 Beachten Sie bitte, dass für den \emph{Vergleich} zweier Zahlen das \emph{doppelte Gleichheitszeichen} \texttt{==} verwendet wird. Das einfache Gleichheitszeichen \texttt{=} dient ausschließlich der \emph{Wertzuweisung} an Variablen.
 
-Tabelle \ref{tab:OperatorsComparison} listet weitere Vergleichsoperatoren auf.
+Tabelle \ref{tab:OperatorsComparison} listet Vergleichsoperatoren auf.
 \begin{table}[h!]
 	\newcolumntype{C}{>{         \centering\arraybackslash} p{.25\linewidth}}
 	\newcolumntype{O}{>{\ttfamily\centering\arraybackslash} p{.20\linewidth}}
@@ -21,31 +21,31 @@ Tabelle \ref{tab:OperatorsComparison} listet weitere Vergleichsoperatoren auf.
 	{.95\linewidth}
 	{CO|CO}
 \toprule[1pt]
-	
-	Vergleich           & \normalfont Zeichen  &  
+
+	Vergleich           & \normalfont Zeichen  &
 	Vergleich           & \normalfont Zeichen
 \tabcrlf
 
 	Gleichheit          & ==                   &  Ungleichheit         & != \\
 	Kleiner als         & <                    &  Größer als           & >  \\
 	Kleiner oder gleich & <=                   &  Größer oder gleich   & >= \\
-	
+
 \bottomrule[1pt]
 \end{tabularx}
 \end{center}
 \caption{Vergleichsoperatoren in C}\label{tab:OperatorsComparison}
 \end{table}
 
-Da es nur zwei Wahrheitswerte gibt (\emph{wahr} und \emph{falsch}, bzw. \emph{true} und \emph{false}) wird nur ein bit benötigt, um einen solchen Wahrheitswert zu speichern. Ein Prozessor kann jedoch nur Gruppen zu mindestens 8 Bit behandeln, nicht aber einzelne Bits. Für uns sind Wahrheitswerte daher Ganzzahl-Werte, wie etwa \mintinline{c}{int}s. In der Tat lassen sich solche Wahrheitswerte speichern und ausgeben:
+Da es nur zwei Wahrheitswerte gibt (\emph{wahr} und \emph{falsch}, bzw. \emph{true} und \emph{false}) wird im Prinzip nur ein einzelnes Bit benötigt, um einen solchen Wahrheitswert zu speichern. Ein Prozessor kann jedoch nur Gruppen zu mindestens 8 Bit behandeln, nicht aber einzelne Bits. Für uns sind Wahrheitswerte daher Ganzzahl-Werte, wie etwa \mintinline{c}{int}s. In der Tat lassen sich solche Wahrheitswerte speichern und ausgeben:
 
 \begin{codebox}[Beispiel: Speichern und Ausgabe von Wahrheitswerten]
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 
 int main () {
-   int    true   = 1 + 1 == 2, 
+   int    true   = 1 + 1 == 2,
           false  = 1 + 1 != 2;
-   
+
    printf("Wert von 'true' : %d\n", true );
    printf("Wert von 'false': %d\n", false);
 }
@@ -61,7 +61,7 @@ Wert von 'false': 0
 \end{minted}
 \end{cmdbox}
 
-Da eine \mintinline{c}{int}-Variable mehr Werte als \texttt{0} und \texttt{1} halten kann, interpretiert man alle von \texttt{0} verschiedenen Werte als \emph{wahr}.
+Da eine \mintinline{c}{int}-Variable mehr Werte als \texttt{0} und \texttt{1} halten kann, interpretiert man alle von null verschiedenen Werte als \emph{wahr}.
 
 Selbstverständlich können Ausdrücke, die zu Wahrheitswerten ausgewertet werden, auch Variablen enthalten. Es kann sogar mit ihnen gerechnet werden (auch wenn dies nur selten sinnvoll ist).
 
@@ -72,7 +72,7 @@ Selbstverständlich können Ausdrücke, die zu Wahrheitswerten ausgewertet werde
 int main () {
    int x     = 17,
        truth = (x > 5) + (x < 5) + (x == 17);
-   
+
    printf("%d wahre Ausdrücke.\n", truth);
 }
 \end{minted}
@@ -96,8 +96,8 @@ Mit dem Konstrukt \mintinline{c}{if} lassen sich \emph{Wenn-Dann-Blöcke} erstel
 
 \begin{codebox}[Syntax: Einfacher \texttt{if}-Block]
 \begin{minted}{c}
-if (Bedingungen) {
-   Anweisungen;
+if (Bedingung) {
+   ... Anweisungen ...
 }
 \end{minted}
 \end{codebox}
@@ -110,14 +110,14 @@ Im Kontext eines vollständigen Programms kann dies so aussehen:
 
 int main () {
    int foo = 0;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%d", &foo);
-   
+
    if (foo % 2 == 0) {
       printf("%d ist eine gerade Zahl.\n", foo);
    }
-   
+
    printf("Sie haben %d eingegeben.\n", foo);
 }
 \end{minted}
@@ -125,7 +125,7 @@ int main () {
 
 Die Anweisung in Zeile 10 wird nur ausgeführt, wenn der Rest der Division von \texttt{foo} durch \texttt{2} gleich null ist, also wenn der Wert der Variablen gerade ist. Unabhängig vom Ausgang dieser Entscheidung wird Zeile 13 in jedem Fall ausgeführt.
 
-Wenn auf die Bedingung nur eine einzelne Anweisung folgt (wie im obigen Beispiel), so können die \{geschweiften Klammern\} auch entfallen. Der folgende Code führt also zum selben Programm:
+Wenn auf die Bedingung nur eine einzelne Anweisung folgt (wie im obigen Beispiel), so können die \{geschweiften Klammern\} auch entfallen. Der folgende Code führt also zum selben Ergebnis:
 
 \begin{codebox}[Beispiel: Einzeiliger \texttt{if}-Block]
 \begin{minted}[linenos]{c}
@@ -135,10 +135,10 @@ int main () {
   int foo = 0;
   printf("Bitte geben Sie eine Ganzzahl ein:\n");
   scanf("%d", &foo);
-   
+
   if (foo % 2 == 0)
     printf("%d ist eine gerade Zahl.\n", foo);
-    
+
   printf("Sie haben %d eingegeben.\n", foo);
 }
 \end{minted}
@@ -153,14 +153,14 @@ Es mag praktisch erscheinen, die geschweiften Klammern bei einzeiligen \mintinli
 
 int main () {
    int foo = 0;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%d", &foo);
-   
+
    if (foo % 2 == 0)
       printf("%d ist eine gerade Zahl.\n", foo);
       printf("%d ist durch 2 teilbar.\n", foo);
-   
+
    printf("Sie haben %d eingegeben.\n", foo);
 }
 \end{minted}
@@ -228,7 +228,7 @@ Sie sind also frei, Ihren Stil selbst zu definieren, sollten dabei aber zwei Reg
 
 int main () {
    int foo = 0;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%d", &foo);
 
@@ -273,10 +273,10 @@ Verschachtelte \mintinline{c}{if}-\mintinline{c}{else}-Blocks lassen sich formel
 
 int main () {
    int foo = 0;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%d", &foo);
-   
+
    if        (foo <= 0) {
       printf("%d ist eine ungültige Zahl.\n", foo);
    } else if (foo % 2 == 0) {
@@ -296,10 +296,10 @@ Achten Sie bei dieser Form aber darauf, dass nur der Code zur \emph{ersten erfü
 
 int main () {
    int foo = 0;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%d", &foo);
-   
+
    if        (foo >  5) {
       printf("%d ist größer als fünf.\n", foo);
    } else if (foo > 10) {
@@ -330,10 +330,10 @@ Sehr häufig kommt der Fall vor, in dem ausgeschlossen werden soll, dass mit ein
 
 int main () {
    unsigned int playerCount = 0;
-   
+
    printf("Bitte geben Sie die Anzahl der Spieler ein:\n");
    scanf("%u", &playerCount);
-   
+
    if (playerCount != 0) {
       // Code für das Spiel
    } else {
@@ -365,27 +365,27 @@ Nicht selten soll die Ausführung von Codeteilen von mehreren Teilbedingungen ab
 
 int main () {
    int foo = 0;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%d", &foo);
 
    if    (foo >=  5) {
       if (foo <= 10) {
-         printf("Triggered!\n");
+         printf("Triggered!\n");   // wird nur ausgefuehrt falls 5 <= foo <= 10
       }
    }
 }
 \end{minted}
 \end{codebox}
 
-Übersichtlicher und knapper wird dies jedoch, wenn wir für die Verknüpfung der Bedingungen den AND-Operator benutzen. Wir können das mit dem bitweisen AND lösen, das wir bereits aus Abschnitt \ref{sec:BitwiseOperator} kennen:
+Übersichtlicher und knapper wird dies jedoch, wenn wir für die Verknüpfung der Bedingungen den AND-Operator benutzen. Wir können das zum einen mit dem bitweisen AND lösen, das wir bereits aus Abschnitt \ref{sec:BitwiseOperator} kennen:
 \begin{center}
 \mintinline{c}{if ((foo >=  5) & (foo <= 10))}
 \end{center}
 
 Hier werden zuerst die Ausdrücke \mintinline{c}{foo >= 5} und \mintinline{c}{foo <= 10} ausgewertet; die Ergebnisse sind jeweils entweder \texttt{0} oder \texttt{1}, das heißt nur das Bit mit der niedrigsten Wertigkeit kann gesetzt sein.
 
-Bei der Arbeit mit Wahrheitswerten sollte man statt der \emph{bitweisen} Operatoren besser \emph{logische} Operatoren verwendet werden. Diese setzen dieselben Prinzipien um, bearbeiten aber nicht jedes Bit des Werts einzeln, sondern unterscheiden nur zwischen \texttt{0} (\emph{false}) und ungleich \texttt{0} (\emph{true}). Das \emph{logische} AND wird im Code als \emph{doppeltes} \texttt{\&\&} gesetzt. Wir können das obige Beispiel also vereinfachen zu:
+Bei der Arbeit mit Wahrheitswerten sollte man allerdings statt der \emph{bitweisen} Operatoren besser \emph{logische} Operatoren verwendet werden. Diese setzen dieselben Prinzipien um, bearbeiten aber nicht jedes Bit des Werts einzeln, sondern unterscheiden nur zwischen \texttt{0} (\emph{false}) und ungleich \texttt{0} (\emph{true}). Das \emph{logische} AND wird im Code als \emph{doppeltes} \texttt{\&\&} gesetzt. Wir können das obige Beispiel also vereinfachen zu:
 
 \begin{codebox}[Beispiel: Reaktion auf Eingaben innerhalb eines Wertebereichs mit logischem AND]
 \begin{minted}[linenos]{c}
@@ -393,11 +393,11 @@ Bei der Arbeit mit Wahrheitswerten sollte man statt der \emph{bitweisen} Operato
 
 int main () {
    int foo = 0;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%d", &foo);
 
-   if ((foo >=  5) && (foo >= 10))
+   if ((foo >=  5) && (foo <= 10))
       printf("Triggered!\n");
    }
 }
@@ -413,13 +413,13 @@ Logische Operatoren arbeiten marginal schneller als bitweise Operatoren. Der Eff
 int main () {
    int foo = 5,   // binär 101
        bar = 2;   // binär 010
-   
+
    if (foo & bar) {
       printf("bitweises AND: true\n");
    } else {
       printf("bitweises AND: false\n");
    }
-   
+
    if (foo && bar) {
       printf("logisches AND: true\n");
    } else {
@@ -451,8 +451,8 @@ Neben dem logischen AND existiert auch das logische OR (\texttt{||}) und das log
 	{.95\linewidth}
 	{D|CC}
 \toprule[1pt]
-	
-	Operation   & 
+
+	Operation   &
 	\normalfont Bitweiser Operator  &
 	\normalfont Logischer Operator
 \tabcrlf
@@ -460,14 +460,14 @@ Neben dem logischen AND existiert auch das logische OR (\texttt{||}) und das log
 	OR    &   |                  &  ||     \\
 	XOR   &   \textasciicircum   &  !=     \\
 	NOT   &   \textasciitilde    &  !      \\
-	
+
 \bottomrule[1pt]
 \end{tabularx}
 \end{center}
 \caption{Bitweise und logische Operatoren in C}\label{tab:OperatorsLogicBitwise}
 \end{table}
 
-Besonders bei Oder-Verknüpfungen zahlt es sich aus, mit dem Operator OR zu arbeiten. Vergleichen Sie die beiden folgenden Beispiele, in denen jeweils geprüft wird, ob die Spielerzahl außerhalb des erlaubten Bereichs liegt:
+Besonders bei Oder-Verknüpfungen zahlt es sich aus, mit dem logischen OR zu arbeiten. Vergleichen Sie die beiden folgenden Beispiele, in denen jeweils geprüft wird, ob die Spielerzahl außerhalb des erlaubten Bereichs liegt:
 
 \begin{tcbraster}[raster columns=2,
                   raster equal height,
@@ -479,10 +479,10 @@ Besonders bei Oder-Verknüpfungen zahlt es sich aus, mit dem Operator OR zu arbe
 
 int main () {
    unsigned int playerCount = 0;
-   
+
    printf("Spieleranzahl:\n");
    scanf("%u", &playerCount);
-   
+
    if (playerCount < 2) {
       printf(
          "Ungeeignet für %d ",
@@ -490,7 +490,7 @@ int main () {
       );
       printf("Spieler.\n");
    }
-   
+
    if (playerCount > 5) {
       printf(
          "Ungeeignet für %d ",
@@ -508,10 +508,10 @@ int main () {
 
 int main () {
    unsigned int playerCount = 0;
-   
+
    printf("Spieleranzahl:\n");
    scanf("%u", &playerCount);
-   
+
    if ((playerCount < 2) ||
        (playerCount > 5)    )
    {
@@ -537,10 +537,10 @@ Wir hatten bereits gesehen, dass wir den Vergleich \texttt{!= 0} fallen lassen k
 
 int main () {
    unsigned int tableLength = 0;
-   
+
    printf("Anzahl der Zeilen:\n");
    scanf("%u", &tableLength);
-   
+
    if (!tableLength) {
       printf("Fehler: Kann keine leere Tabelle anlegen\n");
    }
@@ -562,14 +562,14 @@ Ein häufiger Fehler ist es, den Zuweisungsoperator \texttt{=} anstelle des Verg
 
 int main () {
    unsigned int tableLength = 0;
-   
+
    printf("Anzahl der Zeilen:\n");
    scanf("%u", &tableLength);
-   
+
    if (tableLength = 0) {
       printf("Fehler: Kann keine leere Tabelle anlegen\n");
    }
-   
+
    printf("Länge der Tabelle: %d", tableLength);
 }
 \end{minted}
@@ -594,7 +594,7 @@ Der Compiler erkennt diesen Fehler und gibt eine entsprechende Warnung aus:
 \begin{cmdbox}[Compilerwarnung: \texttt{if} mit versehentlicher Wertzuweisung]
 \begin{minted}{text}
 myProgram.c: In function ‘main’:
-myProgram.c:9:8: warning: suggest parentheses around assignment used as 
+myProgram.c:9:8: warning: suggest parentheses around assignment used as
 truth value [-Wparentheses]
     if (tableLength = 0) {
         ^~~~~~~~~~~
@@ -602,7 +602,7 @@ truth value [-Wparentheses]
 \end{cmdbox}
 \end{warnbox}
 
-\section{Abprüfung vieler Fälle: \mintinline{c}{switch}}
+\section{Fallunterscheidungen: \mintinline{c}{switch}}
 Das Schlüsselwort \mintinline{c}{switch} wird benutzt, um Fallunterscheidungen mit vielen einzelnen Fällen umzusetzen. Die Form von \mintinline{c}{switch}-Blöcken lautet:
 
 \begin{codebox}[Syntax: \texttt{switch}]
@@ -634,15 +634,15 @@ In der Anwendung kann dies so aussehen:
 
 int main () {
    int selection = -1;
-   
+
    printf("Bitte wählen Sie einen Menüpunkt:\n");
    printf("  1) Spiel starten\n");
    printf("  2) Optionen\n");
    printf("  3) Highscore zeigen\n");
    printf("  0) Beenden\n");
-   
+
    scanf("%d", &selection);
-   
+
    switch (selection) {
       case 1 :
          // Code für: Spiel Starten
@@ -655,7 +655,7 @@ int main () {
          break;
       case 0 :
          // Code für: Beenden
-         break;      
+         break;
       default:
          printf("Ungültige Eingabe!\n");
          break;
@@ -676,15 +676,15 @@ Man kann sich \mintinline{c}{switch}-Blocks als Kurzform für \mintinline{c}{if}
 
 int main () {
    int selection = -1;
-   
+
    printf("Bitte wählen Sie einen Menüpunkt:\n");
    printf("  1) Spiel starten\n");
    printf("  2) Optionen\n");
    printf("  3) Highscore zeigen\n");
    printf("  0) Beenden\n");
-   
+
    scanf("%d", &selection);
-   
+
    if        (selection == 1) {
       // Code für: Spiel Starten
    } else if (selection == 2) {
@@ -708,7 +708,7 @@ Wichtig ist das Schlüsselwort \mintinline{c}{break}. Mit diesem Befehl wird ein
 
 int main () {
    int x = 1;
-   
+
    switch (x) {
       case 0 :
          printf("0\n");
@@ -735,12 +735,12 @@ d
 \end{minted}
 \end{cmdbox}
 
-Wie zu erwarten springt die Ausführung mit \mintinline{c}{switch} von Zeile 6 nach Zeile 9. Da hier aber keine \mintinline{c}{break}s gesetzt wurden, \enquote{fällt die Ausführung durch die \mintinline{c}{case}-Klauseln}. Das bedeutet, dass am Ende der \mintinline{c}{case}-Klausel \texttt{1} die Code-Ausführung in Zeile 11 fortgesetzt wird, und somit alle \texttt{printf}-Anweisungen ausgeführt werden. Wird der Compiler mit der Option \texttt{-Wimplicit-fallthrough} gestartet, so finden Sie in in der Ausgabe eine entsprechende Warnung:
+Wie zu erwarten springt die Ausführung mit \mintinline{c}{switch} von Zeile 6 nach Zeile 9. Da hier aber keine \mintinline{c}{break}s gesetzt wurden, \enquote{fällt die Ausführung durch die \mintinline{c}{case}-Klauseln}. Das bedeutet, dass am Ende der \mintinline{c}{case}-Klausel \texttt{1} die Code-Ausführung in Zeile 11 fortgesetzt wird, und somit alle \texttt{printf}-Anweisungen ausgeführt werden. Wird der Compiler mit der Option \texttt{-Wimplicit-fallthrough} gestartet, so finden Sie in der Compiler Ausgabe eine entsprechende Warnung:
 
 \begin{cmdbox}[Compiler-Warnung: \texttt{switch} ohne \texttt{break}]
 \begin{minted}{text}
 myProgram.c: In function ‘main’:
-myProgram.c:8:7: warning: this statement may fall through 
+myProgram.c:8:7: warning: this statement may fall through
 [-Wimplicit-fallthrough=]
        printf("0\n");
        ^~~~~~~~~~~~~
@@ -760,7 +760,7 @@ Nicht selten soll der Wert einer Variablen von einer Bedingung abhängen. Wir ke
 \begin{minted}[linenos]{c}
 int main () {
    int Bedingung = 1, Variable;
-   
+
    if (Bedingung) {
       Variable = 1;
    } else {
@@ -770,13 +770,13 @@ int main () {
 \end{minted}
 \end{codebox}
 
-Diese Wertzuweisung abhängig von einer Bedingung kann auch kompakt in einer einzelnen Zeile geschrieben werden. Mit dem \emph{ternären Operator}\footnote{von \emph{ternär}: das Dritte. Dieser Operator braucht drei \emph{Argumente}. Die Addition \texttt{+} ist beispielsweise ein \emph{binärer} Operator, da sie zwei Argumente braucht -- eben die beiden Zahlen, die addiert werden sollen.} \texttt{?} lässt sich dieser Code auch schreiben als:
+Diese von einer Bedingung abhängige Wertzuweisung kann auch kompakt in einer einzelnen Zeile geschrieben werden. Mit dem \emph{ternären Operator}\footnote{von \emph{ternär}: das Dritte. Dieser Operator braucht drei \emph{Argumente}. Die Addition \texttt{+} ist beispielsweise ein \emph{binärer} Operator, da sie zwei Argumente braucht -- eben die beiden Zahlen, die addiert werden sollen.} \texttt{?} lässt sich dieser Code auch schreiben als:
 
 \begin{codebox}[Beispiel: Bedingte Wertzuweisung mit dem ternären Operator]
 \begin{minted}[linenos]{c}
 int main () {
    int Bedingung = 1, Variable;
-   
+
    Variable = Bedingung ? 1 : 2;
 }
 \end{minted}
@@ -790,7 +790,7 @@ Variablen, die in \texttt{Bedingung} vorkommen, können auch in den Rückgabewer
 \begin{minted}[linenos]{c}
 int main () {
    int x = -42;
-   
+
    x = x >= 0 ? x : -x;
 }
 \end{minted}

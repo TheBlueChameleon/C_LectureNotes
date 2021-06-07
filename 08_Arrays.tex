@@ -2,17 +2,17 @@
 \epigraph{If debugging is the process of removing software bugs, then programming must be the process of putting them in.}
 {Edsger Dijkstra}
 
-Bis hierhin haben wir sehr kleine Datenmengen behandelt. Unser bisheriges \enquote{Arbeitsmaterial} waren Variablen, die einige wenige Bytes halten. Eine Stärke von Computern ist es aber gerade, große Datenmengen schnell zu verarbeiten. Hier werden wir Möglichkeiten kenenn lernen, nahezu beliebig große Datenmengen im Speicher zu halten und zu manipulieren.
+Bis hierhin haben wir sehr kleine Datenmengen behandelt. Unser bisheriges \enquote{Arbeitsmaterial} waren Variablen, die einige wenige Bytes halten. Eine Stärke von Computern ist es aber gerade, große Datenmengen schnell zu verarbeiten. Hier werden wir Möglichkeiten kennenlernen, nahezu beliebig große Datenmengen im Speicher zu halten und zu manipulieren.
 
 \section{Arrays} \label{sec:Arrays}
-\emph{Arrays} (Felder) sind Gruppen von Variablen, die man sich als nummerierte Liste vorstellen kann. Die einzelnen Elemente werden über ihren \emph{Index} angesprochen, also die \enquote{Nummer der Zeile in der Liste}. Die Nummerierung beginnt hierbei \emph{bei der 0}. Alle Elemente eines Arrays haben denselben Datentyp; man sagt daher auch, das Array selbst habe einen bestimmten Datentyp.
+\emph{Arrays} (Felder) sind Gruppen von Variablen, die man sich als nummerierte Liste vorstellen kann. Die einzelnen Elemente werden über ihren \emph{Index} angesprochen, also die \enquote{Nummer des Eintrags in einer Liste}. Die Nummerierung beginnt hierbei \emph{bei der 0}. Alle Elemente eines Arrays haben denselben Datentyp; man sagt daher auch, das Array selbst habe einen bestimmten Datentyp.
 
-Das Handling von Arrays geschieht über Pointer. Man speichert die Adresse des ersten Elements. Im Speicher liegen alle Werte dicht an dicht hintereinander. Um etwa das dritte Element eines Arrays anzusprechen (zu lesen oder zu überschreiben) geht man von der \emph{Startadresse} um zwei Schritte weiter. Der Abstand zur Start-Adresse wird auch \emph{Offset} genannt. Bei Arrays, deren Elemente nur ein einzelnes Byte groß sind sind also Offset und Index gleich.
+Das Handling von Arrays geschieht über Pointer. Man speichert die Adresse des ersten Elements. Im Speicher liegen alle Werte an direkt aufeinanderfolgenden Adressen. Um etwa das dritte Element eines Arrays anzusprechen (zu lesen oder zu überschreiben) geht man von der \emph{Startadresse} um zwei Schritte weiter. Der Abstand zur Start-Adresse wird auch \emph{Offset} genannt. Bei Arrays, deren Elemente nur ein einzelnes Byte groß sind also Offset und Index gleich.
 
 \begin{tcolorbox}[title=Speicherbild]
 \begin{center}
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={text width=8mm,
     text height=4mm, draw=black, inner sep=1mm},
     ld/.style={draw=blue,shorten >=2pt,->}
@@ -27,18 +27,18 @@ Das Handling von Arrays geschieht über Pointer. Man speichert die Adresse des e
   \node (labelMem) at (7,  0) {Speicher};
   \node (labelMem) at (7,  1) {Indizes};
   \node (labelMem) at (7, -1) {Adressen};
-  
+
   \node (a1) [below=2mm of c1]            {\tiny 0x27ff};
   \node (a2) [below=2mm of c2, color=red] {\tiny 0x2800};
   \node (a3) [below=2mm of c3]            {\tiny 0x2801};
   \node (a4) [below=2mm of c4]            {\tiny 0x2802};
   \node (a5) [below=2mm of c5]            {\tiny 0x2803};
   \node (a6) [below=2mm of c6]            {\tiny 0x2804};
-  
+
   \node (ptr) [below=8mm of c1] {\scriptsize\ttfamily Startadresse};
   \node (vc2) [above=6mm of c1] {\scriptsize\ttfamily Index 2};
   \node (vc0) [above=2mm of c1] {\scriptsize\ttfamily Index 0};
-  
+
   \draw [ld] (ptr.east) .. controls +(0.3,0) .. (a2.south);
   \draw [ld] (vc0.east) .. controls +(0.4,0) .. (c2.north);
   \draw [ld] (vc2.east) .. controls +(2.4,0) .. (c4.north);
@@ -60,9 +60,7 @@ Damit wird ein Array vom Typ \texttt{Datentyp} angelegt, das \emph{ElementAnzahl
 Wir greifen (sowohl lesend als auch schreibend) auf Arrays zu, indem wir in [eckingen Klammern] den Index des Elements schreiben, das wir ansprechen möchten (\ie seine \enquote{Nummer} in einer Liste). Man spricht von \emph{indiziertem Array-Zugriff}.
 
 \begin{warnbox}[Indizierung ab 0]
-Achtung: Indizes beginnen bei \texttt{0}. Das bedeutet, dass das letzte gültige Element des Arrays den Index \texttt{ElementAnzahl - 1} hat. Der Compiler führt bei Array-Zugriffen keine Gültigkeitskontrolle der Indizes durch. Es ist also möglich, ein Array mit 10 Elementen zu deklarieren, dann aber auf das 11. Element zuzugreifen. Wie schon in in Kapitel \ref{chp:Input} erklärt wurde, erzeugt Lese- und Schreibzugriff auf \emph{nicht-reservierte Speicherbereiche} undefiniertes Verhalten; mögliche Effekte sind Überschreiben von anderen Variablen, Programmabsturz, aber auch \enquote{nichts}, abhängig von der Struktur des Programmes. Auch, wenn ein fehlerhafter Arrayzugriff zunächst keinen Effekt hat, sollten Sie solche Speicherzugriffe dringend vermeiden, da sonst spätere Erweiterungen am Programm nicht mehr funktionieren können, obwohl diese korrekt programmiert sind.
-
-Achten Sie daher genau auf die Codeteile, die Ihre Array-Zugriffe bestimmen.
+Achtung: Indizes beginnen bei \texttt{0}. Das bedeutet, dass das letzte gültige Element des Arrays den Index \texttt{ElementAnzahl - 1} hat. Der Compiler führt bei Array-Zugriffen keine Gültigkeitskontrolle der Indizes durch. Es ist also möglich, ein Array mit 10 Elementen zu deklarieren, dann aber auf das 11. Element zuzugreifen. Wie bereits in Kapitel \ref{chp:Input} erklärt wurde, erzeugt ein Lese- und Schreibzugriff auf \emph{nicht-reservierte Speicherbereiche} undefiniertes Verhalten; mögliche Effekte sind Überschreiben von anderen Variablen, Programmabsturz, aber auch \enquote{nichts}, abhängig von der Struktur des Programmes. Auch, wenn ein fehlerhafter Arrayzugriff zunächst keinen Effekt hat, sollten Sie solche Speicherzugriffe unbedingt vermeiden, da sonst spätere Erweiterungen am Programm unter Umständen nicht mehr funktionieren, obwohl diese korrekt programmiert sind. Achten Sie daher genau auf die Codeteile, die Ihre Array-Zugriffe bestimmen.
 \end{warnbox}
 
 \begin{codebox}[Beispiel: Array-Zugriffe]
@@ -71,22 +69,22 @@ Achten Sie daher genau auf die Codeteile, die Ihre Array-Zugriffe bestimmen.
 
 int main () {
    int list[100];
-   
+
    list[42] = 666;
-   
+
    printf("Das 43. Element der Liste 'list' ist %d.", list[42]);
 }
 \end{minted}
 \end{codebox}
 
-Hier wird also in Zeile 4 eine Liste angelegt, die aus 100 \mintinline{c}{int}-Werten erstellt. Wie auch sonst wird den Elementen des Arrays bei der Deklaration \emph{kein} Startwert zugewiesen -- alle 100 Elemente haben also zufällige Startwerte.
+Hier wird in Zeile 4 eine Liste angelegt, die 100 \mintinline{c}{int}-Werte umfasst. Wie auch sonst wird den Elementen des Arrays bei der Deklaration \emph{kein} Startwert zugewiesen -- alle 100 Elemente haben also zufällige Startwerte.
 
 Zeile 6 greift schreibend auf das Element mit dem Index \texttt{42} zu. Da das erste Element eines Arrays den Index \texttt{0} hat, ist dies das \emph{43. Element} der Liste.
 
 Analog dazu zeigt Zeile 8 einen lesenden Zugriff.
 
 \begin{hintbox}[Obi-Wan-Fehler]
-Der Gegensatz zwischen der menschlichen Zählweise -- beginnend bei der 1 -- und der \enquote{Computer-Zählweise} -- beginnend bei der 0 -- führt leider häufig zu \emph{Offset-Fehlern}. Tatsächlich ist der Fehlertyp, sich bei der Indexberechnung um einen Wert 1 zu irren, so häufig, dass er einen eigenen Namen hat. Aus der englischen Ausdrucksweise \emph{off by one} wurde zuerst die Kurzform \emph{OB1} und hieraus bald die Sprechweise \emph{Obi-Wan}, wie der Charakter aus Star Wars.
+Der Gegensatz zwischen der menschlichen Zählweise -- beginnend bei der 1 -- und der in C und C++ -- beginnend bei der 0 -- führt leider häufig zu \emph{Offset-Fehlern}. Tatsächlich ist der Fehlertyp, sich bei der Indexberechnung um einen Wert 1 zu irren, so häufig, dass er einen eigenen Namen bekommen hat. Aus der englischen Ausdrucksweise \emph{off by one} wurde zuerst die Kurzform \emph{OB1} und hieraus bald die Sprechweise \emph{Obi-Wan}, wie der Charakter aus Star Wars.
 \end{hintbox}
 
 Da die Array-Variable nichts weiteres als ein Pointer auf das erste Element des Arrays ist, kann auch der \emph{Dereferenzierungs-Operator} \texttt{*} benutzt werden, um das \emph{erste Element} des Arrays zu bearbeiten:
@@ -97,9 +95,9 @@ Da die Array-Variable nichts weiteres als ein Pointer auf das erste Element des 
 
 int main () {
    int list[100];
-   
+
    *list = 42;
-   
+
    printf("Das erste Element der Liste 'list' ist %d.", list[0]);
       // Ausgabe: 42
 }
@@ -117,7 +115,7 @@ Datentyp Name[ElementAnzahl] = {Wert1, ...};
 \end{minted}
 \end{codebox}
 
-es wird also eine Liste der Startwerte in \{geschweifte Klammern\} gesetzt und durch Kommata voneinander getrennt. \enquote{Fehlende} Werte werden durch Nullen ergänzt. Betrachten Sie folgendes Beispiel:
+Es wird eine Liste der Initialwerte in \{geschweifte Klammern\} angeben. Einzelne Elemente werden durch Kommata getrennt. \enquote{Fehlende} Werte werden durch Nullen ergänzt. Betrachten Sie folgendes Beispiel:
 
 \begin{codebox}[Beispiel: Arrays deklarieren und initialisieren]
 \begin{minted}[linenos]{c}
@@ -125,7 +123,7 @@ es wird also eine Liste der Startwerte in \{geschweifte Klammern\} gesetzt und d
 
 int main () {
    int list[5] = {10, 20, 30};
-   
+
    for (int i=0; i<5; i++) {
      printf("%d: %2d\n", i, list[i]);
   }
@@ -133,7 +131,7 @@ int main () {
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Arrays deklarieren und initialisieren]
+\begin{cmdbox}[Ausführung: Arrays deklarieren und initialisieren]
 \begin{minted}{text}
 0: 10
 1: 20
@@ -174,7 +172,7 @@ Dies hat dort jedoch untergeordnete Bedeutung, da die Sprache C++ Konzepte anbie
 \end{itemize}
 \end{plusbox}
 
-Bei der Verwendung von \emph{Initializer-Lists} ist es auch möglich, die Anzahl der Listenelemente bei der Deklaration auszulassen. Der Compiler erstellt dann ein Array, das genau groß genug ist, um alle Werte in der \emph{Initializer-List} zu fassen. Die Deklaration des Arrays geschieht dann mit leeren eckigen Klammern []:
+Bei der Verwendung von \emph{Initializer-Lists} ist es auch möglich, die Anzahl der Listenelemente bei der Deklaration auszulassen. Der Compiler erstellt dann ein Array welches alle Werte der \emph{Initializer-List} umfasst (aber nicht mehr). Die Deklaration des Arrays geschieht hier mit leeren eckigen Klammern [ ]:
 
 \begin{codebox}[Syntax: Arrays-Deklaration mit automatischer Bestimmung der Array-Größe]
 \begin{minted}{c}
@@ -188,12 +186,12 @@ int list[] = {1, 2, 3};
 \end{minted}
 \end{codebox}
 
-In Abschnitt \ref{sec:sizeof} werden wir eine Möglichkeit kennen lernen, zur \emph{Laufzeit} die Größe eines solchen Arrays zu ermitteln.
+In Abschnitt \ref{sec:sizeof} werden wir eine Möglichkeit kennen lernen, zur \emph{Laufzeit} die Größe eines Arrays zu ermitteln.
 
 \subsection{Pointer-Arithmetik}
 Arrays werden über Pointer angesprochen. Pointer sind Ganzzahl-Werte, mit denen gerechnet werden kann. Rechnungen mit Pointer-Variablen verhalten sich aber anders als mit normalen Variablen.
 
-Bei der Addition und Subtraktion wird der Datentyp der Pointer-Variable mit einbezogen: Der addierte Wert wird vor der Addition mit der Registerbreite des Pointer-Grundtyps multipliziert. Betrachten Sie das folgende Beispiel:
+Bei der Addition und Subtraktion wird der Datentyp der Pointer-Variable mit einbezogen: Der addierte Wert wird vor der Addition mit der Größe des Pointer-Grundtyps multipliziert. Betrachten Sie das folgende Beispiel:
 
 \begin{codebox}[Beispiel: Pointer-Arithmetik]
 \begin{minted}[linenos]{c}
@@ -201,38 +199,40 @@ Bei der Addition und Subtraktion wird der Datentyp der Pointer-Variable mit einb
 
 int main () {
    int list[100];
-   
+
    list[0] = 1;
    list[1] = 2;
-   
-   printf("start point: %p\n", list    );
-   printf("plus one:    %p\n", list + 1);
-   
-   printf("at start:     %d\n", * list     );
-   printf("at plus one:  %d\n", *(list + 1));
-   printf("at index one: %d\n",   list  [1]);
+
+   // adresses
+   printf("base pointer:             %p\n", list    );
+   printf("base pointer plus one:    %p\n", list + 1);
+
+   // pointer dereferencing
+   printf("at start:                 %d\n", * list     );
+   printf("at plus one:              %d\n", *(list + 1));
+   printf("at index one:             %d\n",   list  [1]);
 }
 \end{minted}
 \end{codebox}
 
 \begin{cmdbox}[Ausgabebeispiel: Pointer-Arithmetik]
 \begin{minted}{text}
-start point: 0x7ffcf4413c30
-plus one:    0x7ffcf4413c34
-at start:     1
-at plus one:  2
-at index one: 2
+base pointer:             0x7fff8bc1f300
+base pointer plus one:    0x7fff8bc1f304
+at start:                 1
+at plus one:              2
+at index one:             2
 \end{minted}
 \end{cmdbox}
 
-Wir lassen uns die Pointer \texttt{list} und \texttt{list + 1} ausgeben. Obwohl die Konstante \texttt{1} addiert wird, unterscheiden sich die Ausgaben um den Wert \texttt{4} -- der Register-Breite einer \mintinline{c}{int}-Variablen. Ändern wir das Beispiel so ab, dass \texttt{list} ein \mintinline{c}{double}-Array wird, so finden wir einen Unterschied von \texttt{8}. Die Addition geht also um \enquote{ganze Speicherstellen} oder \enquote{ganze Feld-Elemente} weiter, statt um einzelne Bytes.
+Wir lassen uns die Pointer \texttt{list} und \texttt{list + 1} ausgeben. Obwohl die Konstante \texttt{1} addiert wird, unterscheiden sich die Ausgaben um den Wert \texttt{4} -- der Größe einer \mintinline{c}{int}-Variablen in Byte. Ändern wir das Beispiel so ab, dass \texttt{list} ein \mintinline{c}{double}-Array wird, so finden wir einen Unterschied von \texttt{8}. Die Addition geht also um \enquote{ganze Speicherstellen} oder \enquote{ganze Feld-Elemente} weiter, statt um einzelne Bytes.
 
-Dies beeinflusst selbstverständlich auch die \emph{Dereferenzierung}. Damit verhält sich die Dereferenzierung eines Pointers nach Addition genauso wie der Index-Zugriffs-Operator \texttt{[]}. Entsprechend ist die Ausgabe von Zeile 13 und Zeile 14 identisch.
+Dies beeinflusst selbstverständlich auch die \emph{Dereferenzierung}. Damit verhält sich die Dereferenzierung eines Pointers nach Addition genauso wie der Index-Zugriffs-Operator \texttt{[]}. Entsprechend ist die Ausgabe von Zeile 14 und Zeile 15 identisch.
 
 Die Subtraktion verhält sich analog -- auch hier ändert sich die Adresse, auf die der Pointer zeigt nur um \enquote{ganze Speicherstellen}. Multiplikation, Division oder andere Operationen sind mit Pointer-Variablen nicht möglich.
 
 \subsection{Mehrdimensionale Arrays} \label{sec:MultiDimArray}
-Wir haben Arrays bislang als eindimensionale Listen kennen gelernt, die im Speicher dicht an dicht gepackt sind. Es ist aber auch möglich, zweidimensionale Tabellen oder höherdimensionale Objekte abzubilden. Betrachten wir das Beispiel einer (zweidimensionalen) Tabelle:
+Wir haben Arrays bislang als eindimensionale Listen kennen gelernt, die im Speicher dicht an dicht gepackt sind. Es ist aber auch möglich, zweidimensionale Tabellen oder höherdimensionale Objekte abzubilden. Betrachten wir das Beispiel einer zweidimensionalen Tabelle mit Datentyp \mintinline{c}{int} (4 Byte pro Eintrag):
 
 \begin{tcolorbox}
 	[title=Speicherbild einer Tabelle,
@@ -241,26 +241,26 @@ Wir haben Arrays bislang als eindimensionale Listen kennen gelernt, die im Speic
 	]
 \begin{center}
 \begin{tikzpicture}
-[ 
+[
     cell/.style={text width=8mm,
     text height=4mm, draw=black, inner sep=1mm},
     ld/.style={draw=blue,shorten >=2pt,->},
     flow/.style={draw=black,->,shorten >=2pt}
-]  
+]
   \node [draw,minimum height=1cm] (cA1) at (0, 5) [cell] {\texttt{A1}};
   \node [draw,minimum height=1cm] (cA2) at (1, 5) [cell] {\texttt{A2}};
   \node [draw,minimum height=1cm] (cA3) at (2, 5) [cell] {\texttt{A3}};
-  
+
   \node [draw,minimum height=1cm] (cB1) at (0, 4) [cell] {\texttt{B1}};
   \node [draw,minimum height=1cm] (cB2) at (1, 4) [cell] {\texttt{B2}};
   \node [draw,minimum height=1cm] (cB3) at (2, 4) [cell] {\texttt{B3}};
-  
+
   \node [draw,minimum height=1cm] (cC1) at (0, 3) [cell] {\texttt{C1}};
   \node [draw,minimum height=1cm] (cC2) at (1, 3) [cell] {\texttt{C2}};
   \node [draw,minimum height=1cm] (cC3) at (2, 3) [cell] {\texttt{C3}};
-  
+
   \node (m0) at (0, 1) [cell] {xx};
-  
+
   \node (m1) at (1, 1) [cell] {\texttt{A1}};
   \node (m2) at (2, 1) [cell] {\texttt{A2}};
   \node (m3) at (3, 1) [cell] {\texttt{A3}};
@@ -272,58 +272,73 @@ Wir haben Arrays bislang als eindimensionale Listen kennen gelernt, die im Speic
   \node (m9) at (9, 1) [cell] {\texttt{C3}};
 
   \node (mx) at (10, 1) [cell] {xx};
-  
+
   \draw [decorate, decoration={brace, amplitude=5pt, mirror}, xshift=-4pt, yshift=0pt, blue]
-  		(3.0, 4.5) -- (3.0, 5.5) 
+  		(3.0, 4.5) -- (3.0, 5.5)
   		node [midway, xshift=+0.2cm]
 		(lA) {};
   \draw [decorate, decoration={brace, amplitude=5pt, mirror}, xshift=-4pt, yshift=0pt, violet]
-  		(3.0, 3.5) -- (3.0, 4.5) 
+  		(3.0, 3.5) -- (3.0, 4.5)
   		node [midway, xshift=+0.2cm]
 		(lB) {};
   \draw [decorate, decoration={brace, amplitude=5pt, mirror}, xshift=-4pt, yshift=0pt, teal]
-  		(3.0, 2.5) -- (3.0, 3.5) 
+  		(3.0, 2.5) -- (3.0, 3.5)
   		node [midway, xshift=+0.2cm]
 		(lC) {};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt}, xshift=-0pt, yshift=0pt, blue]
-  		(0.5, 1.5) -- (3.5, 1.5) node [black, midway, yshift=+0.3cm] 
+  		(0.5, 1.5) -- (3.5, 1.5) node [black, midway, yshift=+0.3cm]
 		(mA) {};
   \draw [decorate, decoration={brace,amplitude=7pt}, xshift=-0pt, yshift=0pt, violet]
-  		(3.5, 1.5) -- (6.5, 1.5) node [black, midway, yshift=+0.3cm] 
+  		(3.5, 1.5) -- (6.5, 1.5) node [black, midway, yshift=+0.3cm]
 		(mB) {};
   \draw [decorate, decoration={brace,amplitude=7pt}, xshift=-0pt, yshift=0pt, teal]
-  		(6.5, 1.5) -- (9.5, 1.5) node [black, midway, yshift=+0.3cm] 
+  		(6.5, 1.5) -- (9.5, 1.5) node [black, midway, yshift=+0.3cm]
 		(mC) {};
-  
+
   \draw[flow, blue]   (lA.east) .. controls (4, 3) and (3, 2.0) .. (mA.north);
   \draw[flow, violet] (lB.east) .. controls (5, 3) and (5, 2.5) .. (mB.north);
   \draw[flow, teal]   (lC.east) .. controls (8, 3) and (8, 2.0) .. (mC.north);
-  
-  \node (a0) at (0, 0.5)       {\scriptsize\texttt{0x1335}};
-  
-  \node (a1) at (1, 0.5) [red] {\scriptsize\texttt{0x1337}};
-  \node (a2) at (2, 0.5)       {\scriptsize\texttt{0x1339}};
-  \node (a3) at (3, 0.5)       {\scriptsize\texttt{0x133B}};
-  \node (a4) at (4, 0.5)       {\scriptsize\texttt{0x133D}};
-  \node (a5) at (5, 0.5)       {\scriptsize\texttt{0x133F}};
-  \node (a6) at (6, 0.5)       {\scriptsize\texttt{0x1341}};
-  \node (a7) at (7, 0.5)       {\scriptsize\texttt{0x1343}};
-  \node (a8) at (8, 0.5)       {\scriptsize\texttt{0x1345}};
-  \node (a9) at (9, 0.5)       {\scriptsize\texttt{0x1347}};
-  
-  \node (a0) at (10, 0.5)      {\scriptsize\texttt{0x1349}};
+
+  \node (a0) at (0, 0.5)       {\scriptsize\texttt{0x132C}};
+
+  \node (a1) at (1, 0.5) [red] {\scriptsize\texttt{0x1330}};
+  \node (a2) at (2, 0.5)       {\scriptsize\texttt{0x1334}};
+  \node (a3) at (3, 0.5)       {\scriptsize\texttt{0x1338}};
+  \node (a4) at (4, 0.5)       {\scriptsize\texttt{0x133C}};
+  \node (a5) at (5, 0.5)       {\scriptsize\texttt{0x1340}};
+  \node (a6) at (6, 0.5)       {\scriptsize\texttt{0x1344}};
+  \node (a7) at (7, 0.5)       {\scriptsize\texttt{0x1348}};
+  \node (a8) at (8, 0.5)       {\scriptsize\texttt{0x134C}};
+  \node (a9) at (9, 0.5)       {\scriptsize\texttt{0x1350}};
+
+  \node (a0) at (10, 0.5)      {\scriptsize\texttt{0x1354}};
+
+
+%  \node (a0) at (0, 0.5)       {\scriptsize\texttt{0x1335}};
+%
+%  \node (a1) at (1, 0.5) [red] {\scriptsize\texttt{0x1337}};
+%  \node (a2) at (2, 0.5)       {\scriptsize\texttt{0x1339}};
+%  \node (a3) at (3, 0.5)       {\scriptsize\texttt{0x133B}};
+%  \node (a4) at (4, 0.5)       {\scriptsize\texttt{0x133D}};
+%  \node (a5) at (5, 0.5)       {\scriptsize\texttt{0x133F}};
+%  \node (a6) at (6, 0.5)       {\scriptsize\texttt{0x1341}};
+%  \node (a7) at (7, 0.5)       {\scriptsize\texttt{0x1343}};
+%  \node (a8) at (8, 0.5)       {\scriptsize\texttt{0x1345}};
+%  \node (a9) at (9, 0.5)       {\scriptsize\texttt{0x1347}};
+%
+%  \node (a0) at (10, 0.5)      {\scriptsize\texttt{0x1349}};
 \end{tikzpicture}
 \end{center}
 \end{tcolorbox}
 
-Tabellen können im Speicher \enquote{geplättet} als Kette abgelegt werden. Jede Zeile der Tabelle -- für sich eine Liste -- fügt sich im Speicher an die nächste. Eine zweidimensionale Tabelle kann also als \enquote{Liste von Listen} gesehen werden.
+Tabellen werden im Speicher \enquote{geplättet} an direkt aufeinanderfolgenden Adressen angelegt. Jede Zeile der Tabelle -- für sich eine Liste -- fügt sich im Speicher an die nächste. Eine zweidimensionale Tabelle kann also als \enquote{Liste von Listen} gesehen werden.
 
 Jede Zelle der Tabelle hat eine Zeilen- und Spaltennummer. Wir wissen, dass die Tabelle 3 Spalten breit ist. Damit finden wir für den Index in der \enquote{geplätteten Liste}:
 \begin{center}
 \texttt{Index = (Breite * Zeile) + Spalte}
 \end{center}
-wobei die Zählung von Zeile und Spalte bei 0 beginnt.
+wobei die Zählung von Zeile und Spalte jeweils bei 0 beginnt.
 
 Umgekehrt kann aus der Position einer Zelle in der geplätteten Liste wieder die Koordinate in der Tabelle berechnet werden: Die Zelle mit dem Wert \texttt{B2} ist die fünfte Zelle der \enquote{geplätteten Liste} im Speicher und hat damit den Index 4. Wir wissen, dass unsere Tabelle eine Breite von 3 Zellen hatte. Mit diesen Informationen können wir ansetzen:
 \begin{center}
@@ -359,28 +374,28 @@ int main () {
       {4, 5, 6, -15},
       {7, 8, 9, -24}
    };
-   
-   for    (int row = 0; row < 3; row ++) {
-      for (int col = 0; col < 4; col ++) {
+
+   for    (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 4; col++) {
          printf("%d\t", table[row][col]);
-     }
+      }
          printf("\n");
    }
-   
+
    printf("\n");
    table[0][1] = 0;
-   
-   for    (int row = 0; row < 3; row ++) {
-      for (int col = 0; col < 4; col ++) {
+
+   for    (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 4; col++) {
          printf("%d\t", table[row][col]);
-     }
+      }
          printf("\n");
    }
 }
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Tabelle als mehrdimensionales C-Array]
+\begin{cmdbox}[Ausführungsbeispiel: Tabelle als mehrdimensionales C-Array]
 \begin{minted}{text}
 1       2       3       -6
 4       5       6       -15
@@ -392,13 +407,13 @@ int main () {
 \end{minted}
 \end{cmdbox}
 
-In den Zeilen 4..8 definieren wir eine Tabelle mit 3 Zeilen und 4 Spalten (auch als \emph{3x4-Matrix} bezeichnet). Und befüllen diese direkt mit Werten. 
+In den Zeilen 4..8 definieren wir eine Tabelle mit 3 Zeilen und 4 Spalten (auch als \emph{3x4-Matrix} bezeichnet). Und befüllen diese direkt mit Werten.
 
 Wir können \texttt{table[0]} als \enquote{die erste Zeile der Tabelle} lesen. Dieses Objekt ist selbst eine Liste von vier Zahlen. Entsprechend wird dem Objekt \texttt{table[0]} die Liste \texttt{\{1, 2, 3, -6\}} zugewiesen. Analog funktioniert die Zuweisung der nächsten zwei Zeilen.
 
 Mit \texttt{printf} geben wir in Zeile 12 das Tabellenelement in der Zeile \texttt{row} und der Spalte \texttt{col} aus. Diese Variablen werden im Kontext von \mintinline{c}{for}-Schleifen deklariert und mit Werten befüllt.
 
-In Zeile 18 ändern Wir Zeile 1, Spalte 2 auf den Wert \texttt{0} und geben die veränderte Tabelle dann nochmals aus.
+In Zeile 18 ändern wir (Zeile 1, Spalte 2) auf den Wert \texttt{0} und geben die veränderte Tabelle dann nochmals aus.
 
 \begin{warnbox}[Reihenfolge der Dimensionen]
 Achten Sie bei mehrdimensionalen Arrays auch auf die Reihenfolge der Indizes. Eine Vertauschung kann zu Zugriffen außerhalb Ihrer Tabelle führen und bewirkt ebenfalls wieder undefiniertes Verhalten!
@@ -413,17 +428,17 @@ Der Compiler versucht auf Zeile 4, Spalte 3 zuzugreifen. Nach der zuvor gezeigte
 \begin{center}
 \texttt{Index = (Breite * Zeile) + Spalte = (4 * 3) + 2 = 14}
 \end{center}
-Unsere Tabelle hat aber nur insgesamt 12 Werte. Der Zugriff führt also auf einen nicht-reservierten Speicherbereich und liefert eine \enquote{unsinnige} Ausgabe.
+Unsere Tabelle hat aber nur insgesamt 12 Werte. Der Zugriff geschieht also auf einen nicht-reservierten Speicherbereich und liefert eine \enquote{unsinnige} Ausgabe.
 \end{warnbox}
 
 \section{Dynamische Speicherverwaltung} \label{sec:dynArrays}
-Die bisher gezeigten Techniken funktionieren, solange zur \emph{Compile-Zeit} bereits bekannt ist, mit wie vielen Elementen gearbeitet werden soll\footnote{Oder, wenn eine Maximalzahl von Elementen bekannt ist, die höchstes auftreten können. Man benutzt dann ein Array dieser Maximalgröße und befüllt nur so viele Einträge, wie tatsächlich Daten anfallen.}. Häufig steht aber erst zur \emph{Laufzeit} fest, wie viele Daten tatsächlich anfallen. Hier wollen wir Techniken \emph{dynamischer Speicherverwaltung} kennenlernen. \ie \enquote{im laufenden Betrieb} Felder erstellen, vergrößern und verkleinern und diese Operationen direkt von Usereingaben abhängig machen.
+Die bisher gezeigten Techniken funktionieren, solange zur \emph{Compile-Zeit} bereits bekannt ist, mit wie vielen Elementen gearbeitet werden soll\footnote{Oder, wenn eine Maximalzahl von Elementen bekannt ist, die höchstes auftreten können. Man benutzt dann ein Array dieser Maximalgröße und befüllt nur so viele Einträge, wie tatsächlich Daten anfallen.}. Häufig steht aber erst zur \emph{Laufzeit} fest, wie viele Daten tatsächlich anfallen. Hier wollen wir Techniken \emph{dynamischer Speicherverwaltung} kennenlernen, \ie \enquote{zur Laufzeit} Felder erstellen, vergrößern und verkleinern und diese Operationen direkt von Usereingaben abhängig machen.
 
-\subsection{Speicher allozieren und freigeben: \texttt{malloc}, \texttt{calloc} und \texttt{free}}
+\subsection{Speicher allozieren und wieder freigeben: \texttt{malloc}, \texttt{calloc} und \texttt{free}}
 \label{sec:allocation}
-Wir haben im vorigen Abschnitt \ref{sec:Arrays} kennen gelernt, wie wir mit einem Pointer auf Feldelemente zugreifen. Für die dynamische Speicherverwaltung benötigen wir also lediglich ein Mittel, einen Pointer auf einen geeignet großen Speicherbereich zu bekommen. Dazu dienen die Befehle \texttt{malloc} und \texttt{calloc}, die über den header \texttt{stdlib.h} eingebunden werden können.
+Wir haben im vorigen Abschnitt \ref{sec:Arrays} kennen gelernt, wie wir mit einem Pointer auf Feldelemente zugreifen. Für die dynamische Speicherverwaltung benötigen wir also lediglich ein Mittel, einen Pointer auf einen geeignet großen Speicherbereich zu bekommen. Dazu dienen die Befehle \texttt{malloc} und \texttt{calloc}, die über den Header \texttt{stdlib.h} eingebunden werden.
 
-Beide Befehle \emph{allozieren} einen Speicherbereich (\ie stellen eine Anfrage ans Betriebssystem, Speicher für die ausschließliche Verwendung durch das allozierende Programm zu reservieren) und geben einen Pointer auf den Beginn dieses Speicherbereichs zurück. Der Befehl \texttt{calloc} initialisiert diesen Speicherbereich zusätzlich mit Nullen. Der Befehl \texttt{malloc} arbeitet schneller, da das auf-null-Setzen entfallen kann. Die Abkürzungen stehen also für \emph{memory allocate} und \emph{clear allocate}.
+Beide Befehle \emph{allozieren} einen Speicherbereich (\ie stellen eine Anfrage an das Betriebssystem, Speicher für die ausschließliche Verwendung durch das allozierende Programm zu reservieren) und geben einen Pointer auf den Beginn dieses Speicherbereichs zurück. Der Befehl \texttt{calloc} initialisiert diesen Speicherbereich zusätzlich mit Nullen. Der Befehl \texttt{malloc} arbeitet schneller, da das auf-null-Setzen entfallen kann. Die Abkürzungen stehen also für \emph{memory allocate} und \emph{clear allocate}.
 
 Die Syntax der beiden Befehle ist ähnlich, leider aber nicht identisch:
 \begin{tcbraster}[raster columns=2,
@@ -438,7 +453,7 @@ pointer = malloc(AnzahlBytes);
 %
 \begin{codebox}[Syntax: \texttt{calloc}]
 \begin{minted}{c}
-pointer = calloc(AnzahlFelder, 
+pointer = calloc(AnzahlFelder,
                  BytesProFeld);
 \end{minted}
 \end{codebox}
@@ -448,7 +463,10 @@ Hierbei ist \texttt{AnzahlBytes} eine vorzeichenlose (\ie positive) Ganzzahl, di
 
 Auf die Elemente des so reservierten Speicherbereichs kann über dieselben Syntaxelemente zugegriffen werden, die wir schon aus Abschnitt \ref{sec:Arrays} kennen. Selbstverständlich müssen wir auch hier die selbe Sorgfalt bei der Berechnung der Indizes anlegen.
 
-Reservierte Speicherbereiche sollten nach Nutzung wieder freigegeben werden\footnote{moderne Betriebssysteme geben bei Beenden eines Programms allen von diesem allozierten Speicher automatisch wieder frei, auch wenn dieser nicht vom Programmierer freigegeben wurde. Dieses Verhalten kann aber insbesondere für Elektronik-Anwendungen nicht garantiert werden. Allgemein gilt es als \emph{guter Stil}, zu jeder Zeit nur soviel Speicher zu beanspruchen, wie tatsächlich benötigt wird.}. Dazu dient der Befehl \texttt{free}, der ebenfalls mit dem Header \texttt{stdlib.h} eingebunden wird. Die Syntax ist denkbar einfach:
+Reservierte Speicherbereiche sollten nach Nutzung wieder freigegeben werden
+\footnote{Moderne Betriebssysteme geben bei Beenden eines Programms den von diesem allozierten Speicher automatisch wieder frei, auch wenn dieser nicht explizit vom Programmierer freigegeben wurde. Allgemein gilt es als \emph{guter Stil}, zu jeder Zeit nur soviel Speicher vorzuhalten, wie tatsächlich benötigt wird.}.
+%\footnote{moderne Betriebssysteme geben bei Beenden eines Programms den von diesem allozierten Speicher automatisch wieder frei, auch wenn dieser nicht explizit vom Programmierer freigegeben wurde. Dieses Verhalten kann aber insbesondere für Elektronik-Anwendungen nicht garantiert werden. Allgemein gilt es als \emph{guter Stil}, zu jeder Zeit nur soviel Speicher zu beanspruchen, wie tatsächlich benötigt wird.}.
+Dazu dient der Befehl \texttt{free}, der ebenfalls mit dem Header \texttt{stdlib.h} eingebunden wird. Die Syntax ist denkbar einfach:
 
 \begin{codebox}[Syntax: \texttt{free}]
 \begin{minted}{c}
@@ -469,19 +487,19 @@ int main () {
   double * array = malloc(88);      // 1 double = 8 byte ==> 11 Speicherstellen
   double * nulls = calloc(11, 8);   // dito
   int i;
-  
+
   for (i=0; i<11; i++) {
      array[i] = (i * i) / 100.0;
      printf("%2d    malloc: %4.2lf   calloc: %4.2lf\n", i, array[i], nulls[i]);
   }
-  
+
   free(array);
   free(nulls);
 }
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausfphrungsbeispiel: Dynamische Speicherverwaltung]
+\begin{cmdbox}[Ausführungsbeispiel: Dynamische Speicherverwaltung]
 \begin{minted}{text}
  0    malloc: 0.00   calloc: 0.00
  1    malloc: 0.01   calloc: 0.00
@@ -516,13 +534,13 @@ Um in komplexeren Aufgaben nicht zu vergessen, ein Feld freizugeben, habe ich mi
 \begin{hintbox}[Sinnvolle und einheitliche Programmlogik]
 Obwohl \texttt{malloc} und \texttt{calloc} dieselbe Kernaufgabe erfüllen -- das Allozieren von Speicher -- unterscheiden sie sich in ihrer Anwendung. Bei \texttt{malloc} wird die benötigte \emph{Speichergröße} angegeben, während \texttt{calloc} als Parameter die \emph{Feldzahl} und \emph{Feldgröße} erwartet. Dieser Unterschied macht das Arbeiten unangenehm, da man als ProgrammierIn auswendig behalten muss, welcher der sehr ähnlichen Befehle nun welche Form erwartet.
 
-Leider ist es nicht mehr möglich, einen der beiden Befehle in einer neuen Version der Sprache C so zu ändern, dass beide derselben Syntax folgen, da sonst viele ältere Programmcodes nicht mehr mit dem neuen Compiler \emph{kompatibel} sind. Solche \emph{legacy issues} ziehen sich durch die Welt der Informatik und bereiten an verschiedensten Stellen Schwierigkeiten. Einmal etabliert lassen sich auch ungünstige Standards aber nicht mehr loswerden, wie auch Abbildung \ref{fig:xkcd-standards} illustriert.
+Leider ist es nicht mehr möglich, einen der beiden Befehle in einer neuen Version der Sprache C so zu ändern, dass beide derselben Syntax folgen, da sonst viele ältere Programmcodes nicht mehr mit dem neuen Compiler \emph{kompatibel} sind. Solche \emph{legacy issues} ziehen sich durch die Welt der Informatik und bereiten an verschiedensten Stellen Schwierigkeiten. Einmal etabliert lassen sich auch ungünstige Konventionen aber nicht mehr loswerden, wie auch Abbildung \ref{fig:xkcd-standards} illustriert.
 
 Mit Blick auf dieses Negativ-Beispiel will ich Sie dazu aufrufen, sich eine einheitliche Struktur und Logik für Ihr Projekt zu überlegen, \emph{bevor Sie die erste Codezeile schreiben}. Wir werden insbesondere in Kapitel \ref{chp:funcs} auf Möglichkeiten stoßen, die solche Überlegungen erfordern.
 \end{hintbox}
 
 \begin{hintbox}[Feldgrößen ermitteln mit \texttt{sizeof}]
-C stellt eine Vielzahl von Datentypen bereit, die jeweils andere Speicherbedarfe haben. Anstatt alle diese auswendig zu lernen sollte man mit der Funktion \mintinline{c}{sizeof} arbeiten, die die Registerbreite jedes beliebigen Typs in Bytes zurück gibt. Im obigen Beispiel können wir damit auch schreiben:
+C stellt eine Vielzahl von Datentypen bereit, die jeweils andere Speicherbedarfe haben. Anstatt alle diese auswendig zu lernen sollte man mit der Funktion \mintinline{c}{sizeof} arbeiten, die die Größe jedes beliebigen Typs in Bytes zurück gibt. Im obigen Beispiel können wir damit auch schreiben:
 \begin{codebox}[Beispiel: Dynamische Speicherverwaltung und \texttt{sizeof}]
 \begin{minted}[linenos, firstnumber=5]{c}
 double * array = malloc(11 * sizeof(double));
@@ -542,9 +560,9 @@ In Abschnitt \ref{sec:sizeof} erfahren Sie mehr zu diesem Operator.
 \end{figure}
 
 \begin{warnbox}[Erfolg der Allozierung prüfen]
-In seltenen Fällen kann die Allozierung von Speicher fehlschlagen. Dies ist insbesondere dann der Fall, wenn nicht mehr ausreichend \emph{zusammenhängender} Speicher zur Verfügung steht, um ein Array der gewünschten Größe darin unterzubringen. In diesem Fall ist der Rückgabewert von \texttt{calloc} und \texttt{malloc} ein Null-Pointer (\ie der Wert \texttt{0}). Auf die Adresse \texttt{0} darf nicht zugegriffen werden; jeder Zugriff führt zum Programmabsturz. Daher sollte nach jedem \texttt{alloc}-Befehl eine Fehlerprüfung stattfinden. Mit dem Befehl \texttt{exit} aus der \texttt{stdlib.h} können wir etwa das Programm beenden. In Kapitel \ref{chp:OS-Link} werden wir hierzu mehr hören.
+In seltenen Fällen kann die Allozierung von Speicher fehlschlagen. Dies ist insbesondere dann der Fall, wenn nicht mehr ausreichend \emph{zusammenhängender} Speicher zur Verfügung steht, um ein Array der gewünschten Größe darin unterzubringen. In diesem Fall ist der Rückgabewert von \texttt{calloc} und \texttt{malloc} ein Null-Pointer (\ie der Wert \texttt{0}). Auf die Adresse \texttt{0} darf nicht zugegriffen werden; jeder Zugriff führt zum Programmabsturz. Daher sollte nach jedem \texttt{*alloc}-Befehl eine Fehlerprüfung stattfinden. Mit dem Befehl \texttt{exit} aus der \texttt{stdlib.h} können wir etwa das Programm beenden. In Kapitel \ref{chp:OS-Link} werden wir hierzu mehr hören.
 
-\begin{codebox}[Beispiel: Fehlerprüfung nachg Allozierung]
+\begin{codebox}[Beispiel: Fehlerprüfung nach Allozierung]
 \begin{minted}[linenos]{c}
 int * array = malloc(20);
 if (!array) {
@@ -562,11 +580,11 @@ Der Befehl \texttt{realloc} (eingebunden über den Header \texttt{stdlib.h}) än
 Betrachten wir zuerst den Fall, in dem sich zwischen dem Ende eines zu vergrößernden Arrays und dem nächsten reservierten Speicherbereich viel Platz befindet. \texttt{realloc} wird lediglich zusätzlichen Platz reservieren und sonst keine Änderungen vornehmen.
 
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={
        text width =3mm,
-       text height=3mm, 
-       draw=black, 
+       text height=3mm,
+       draw=black,
        inner sep=1mm
     },
     ld/.style={
@@ -604,24 +622,24 @@ Betrachten wir zuerst den Fall, in dem sich zwischen dem Ende eines zu vergröß
   \node (c26) at (13.0,1) [cell, violet] {\ttfamily b};
   \node (c27) at (13.5,1) [cell, violet] {\ttfamily c};
   \node (c28) at (14.0,1) [cell, violet] {\ttfamily 0};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 6.75, 0.5) -- ( 9.25, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 6.75, 0.5) -- ( 9.25, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {zu vergrößerndes Array};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, violet]
-  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm] 
+  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {reservierter Speicher};
 \end{tikzpicture}
 
 Soll nun das Array um drei Zellen vergrößert werden, so wird es einfach \enquote{nach hinten verlängert}:
 
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={
        text width =3mm,
-       text height=3mm, 
-       draw=black, 
+       text height=3mm,
+       draw=black,
        inner sep=1mm
     },
     ld/.style={
@@ -659,28 +677,28 @@ Soll nun das Array um drei Zellen vergrößert werden, so wird es einfach \enquo
   \node (c26) at (13.0,1) [cell, violet] {\ttfamily b};
   \node (c27) at (13.5,1) [cell, violet] {\ttfamily c};
   \node (c28) at (14.0,1) [cell, violet] {\ttfamily 0};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 6.75, 0.5) -- (10.75, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 6.75, 0.5) -- (10.75, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {vergrößertes Array};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, violet]
-  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm] 
+  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {reservierter Speicher};
 
   \draw [decorate, decoration={brace,amplitude=7pt}, xshift=-0pt, yshift=0pt, teal]
-  		( 9.25, 1.4) -- (10.75, 1.4) node [teal, midway, yshift=+0.5cm] 
+  		( 9.25, 1.4) -- (10.75, 1.4) node [teal, midway, yshift=+0.5cm]
 		(braceArrayPreResize) {Erweiterung};
 \end{tikzpicture}
 
 Bei mehr als fünf Zellen zusätzlichen Speicherbedarf entsteht jedoch ein Konflikt:
 
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={
        text width =3mm,
-       text height=3mm, 
-       draw=black, 
+       text height=3mm,
+       draw=black,
        inner sep=1mm
     },
     ld/.style={
@@ -718,32 +736,32 @@ Bei mehr als fünf Zellen zusätzlichen Speicherbedarf entsteht jedoch ein Konfl
   \node (c26) at (13.0,1) [cell, violet] {\ttfamily b};
   \node (c27) at (13.5,1) [cell, violet] {\ttfamily c};
   \node (c28) at (14.0,1) [cell, violet] {\ttfamily 0};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 6.75, 0.5) -- ( 9.25, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 6.75, 0.5) -- ( 9.25, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {zu vergrößerndes Array};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, violet]
-  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm] 
+  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {reservierter Speicher};
 
   \draw [decorate, decoration={brace,amplitude=7pt}, xshift=-0pt, yshift=0pt, teal]
-  		( 9.25, 1.4) -- (12.75, 1.4) node [teal, midway, yshift=+0.5cm] 
+  		( 9.25, 1.4) -- (12.75, 1.4) node [teal, midway, yshift=+0.5cm]
 		(braceArrayPreResize) {Gewünschte Erweiterung};
 
   \draw [decorate, decoration={brace,amplitude=7pt}, xshift=-0pt, yshift=0pt, red]
-  		(11.75, 2.2) -- (12.75, 2.2) node [red, midway, yshift=+0.5cm] 
+  		(11.75, 2.2) -- (12.75, 2.2) node [red, midway, yshift=+0.5cm]
 		(braceArrayPreResize) {Konflikt};
 \end{tikzpicture}
 
 Stattdessen wird also das Array als Ganzes an eine neue Stelle kopiert:
 
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={
        text width =3mm,
-       text height=3mm, 
-       draw=black, 
+       text height=3mm,
+       draw=black,
        inner sep=1mm
     },
     ld/.style={
@@ -781,21 +799,21 @@ Stattdessen wird also das Array als Ganzes an eine neue Stelle kopiert:
   \node (c26) at (13.0,1) [cell, violet] {\ttfamily b};
   \node (c27) at (13.5,1) [cell, violet] {\ttfamily c};
   \node (c28) at (14.0,1) [cell, violet] {\ttfamily 0};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 0.25, 0.5) -- ( 6.25, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 0.25, 0.5) -- ( 6.25, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {vergrößertes Array mit kopierten Daten};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, violet]
-  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm] 
+  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {reservierter Speicher};
 
   \draw [decorate, decoration={brace,amplitude=7pt}, xshift=-0pt, yshift=0pt, teal]
-  		( 0.25, 1.4) -- ( 2.75, 1.4) node [teal, midway, yshift=+0.5cm] 
+  		( 0.25, 1.4) -- ( 2.75, 1.4) node [teal, midway, yshift=+0.5cm]
 		(braceArrayPreResize) {Kopierte Daten};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, black]
-  		( 6.75, 0.5) -- ( 9.25, 0.5) node [black, midway, yshift=-0.9cm] 
+  		( 6.75, 0.5) -- ( 9.25, 0.5) node [black, midway, yshift=-0.9cm]
 		(braceArrayPreResize) {\parbox{1.7cm}{\centering alte Daten, nicht mehr reserviert}};
 \end{tikzpicture}
 
@@ -805,11 +823,11 @@ Da die Daten des Arrays vor dem Vergrößern kopiert (im Gegensatz zu verschoben
 Verkürzt man ein Array, so wird ebenso lediglich die Reservierung aufgehoben:
 
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={
        text width =3mm,
-       text height=3mm, 
-       draw=black, 
+       text height=3mm,
+       draw=black,
        inner sep=1mm
     },
     ld/.style={
@@ -847,17 +865,17 @@ Verkürzt man ein Array, so wird ebenso lediglich die Reservierung aufgehoben:
   \node (c26) at (13.0,1) [cell, violet] {\ttfamily b};
   \node (c27) at (13.5,1) [cell, violet] {\ttfamily c};
   \node (c28) at (14.0,1) [cell, violet] {\ttfamily 0};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 6.75, 0.5) -- ( 8.25, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 6.75, 0.5) -- ( 8.25, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {verkleinertes Array};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, violet]
-  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm] 
+  		(11.75, 0.5) -- (14.25, 0.5) node [violet, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {reservierter Speicher};
 
   \draw [decorate, decoration={brace,amplitude=7pt}, xshift=-0pt, yshift=0pt, black]
-  		( 8.25, 1.4) -- ( 9.25, 1.4) node [black, midway, yshift=+0.5cm] 
+  		( 8.25, 1.4) -- ( 9.25, 1.4) node [black, midway, yshift=+0.5cm]
 		(braceArrayPreResize) {Freigegebener Speicher};
 \end{tikzpicture}
 \end{tcolorbox}
@@ -872,7 +890,7 @@ pointer = realloc(pointer, AnzahlBytesNeu);
 
 Dabei ist \texttt{pointer} die Adresse des Arrays, dessen Größe geändert werden soll und \texttt{AnzahlBytesNeu} die gewünschte Größe des neuen Arrays.
 
-Wie wir gesehen haben kann sich die Adresse des Arrays (also sein Startpunkt im Speicher) bei Größenänderung verschieben. Daher müssen wir auch hier das Ergebnis speichern; wir aktualisieren also den Wert der Variablen \texttt{pointer}. Natürlich kann es auch geschehen, dass die Größenänderung fehlschlägt (etwa, wenn ein zu großer Speicherbereich angefragt wird). In diesem Fall ist der Rückgabewert von \texttt{realloc} gleich \texttt{0}. Es gehört zum guten Stil, auf solche Fehler mit \mintinline{c}{if} zu reagieren.
+Wie wir gesehen haben kann sich die Adresse des Arrays (also sein Startpunkt im Speicher) bei Größenänderung verschieben. Daher müssen wir auch hier das Ergebnis speichern; wir aktualisieren also den Wert der Variablen \texttt{pointer}. Natürlich kann es auch geschehen, dass die Größenänderung fehlschlägt (etwa, wenn ein zu großer Speicherbereich angefragt wird). In diesem Fall ist der Rückgabewert von \texttt{realloc} gleich \texttt{0}. Es gehört zum guten Stil, auf solche Fehler mit \mintinline{c}{if} abzufangen.
 
 Betrachten wir folgendes Beispiel aus der \href{https://en.cppreference.com/w/c/memory/realloc}{CPP-Referenz}:
 
@@ -880,18 +898,18 @@ Betrachten wir folgendes Beispiel aus der \href{https://en.cppreference.com/w/c/
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 #include <stdlib.h>
- 
+
 int main(void) {
     int *pa = malloc(10 * sizeof(*pa)); // allocate an array of 10 int
     if (pa) {
         printf("%ld bytes allocated. Storing ints: ", 10 * sizeof(int));
         for(int n = 0; n < 10; ++n) {printf("%d ", pa[n] = n);}
     }
-    
+
     // reallocate array to a larger size
-    int *pb = realloc(pa, 1000000 * sizeof(*pb)); 
+    int *pb = realloc(pa, 1000000 * sizeof(*pb));
     if (pb) {
-        printf("\n%ld bytes allocated, first 10 ints are: ", 
+        printf("\n%ld bytes allocated, first 10 ints are: ",
                1000000 * sizeof(int)
         );
         for(int n = 0; n < 10; ++n) {printf("%d ", pb[n]);} // show the array
@@ -911,45 +929,46 @@ int main(void) {
 
 In Zeile 5 wird versucht, mit \texttt{malloc} Speicher für ein Array zu reservieren, das 10 \mintinline{c}{int}-Werte fassen kann. Beachten Sie hier auch die Verwendung des \mintinline{c}{sizeof}-Operators: Abgefragt wird hier die Speichergröße von \texttt{*pa}. Die Variable \texttt{pa} ist ein Pointer auf \mintinline{c}{int}; damit ist die dereferenzierte Variable \texttt{*pa} selbst ein Ausdruck vom Typ \mintinline{c}{int}.
 
-\emph{Nur wenn diese Allozierung erfolgreich war}, wird das Array mit Werten befüllt und diese Werte zugleich auch auf dem Bildschirm ausgebeben. Beachten Sie hierbei die \texttt{printf}-Anweisung in Zeile 8: Ausgegeben wird der Ausdruck \texttt{pa[n] = n}. Dieser Ausdruck ist zunächst eine \emph{Wertzuweisung} -- in \texttt{pa[n]} wird also der Wert \texttt{n} gespeichert. Zugleich ist das \enquote{Ergebnis} dieser Wertzuweisung der zugewiesene Wert selbst -- \texttt{printf} gibt also den Wert von \texttt{n} aus.
+\emph{Nur wenn diese Allozierung erfolgreich war}, wird das Array mit Werten befüllt und diese Werte zugleich auch auf dem Bildschirm ausgegeben. Beachten Sie hierbei die \texttt{printf}-Anweisung in Zeile 8: Ausgegeben wird der Ausdruck \texttt{pa[n] = n}. Dieser Ausdruck ist zunächst eine \emph{Wertzuweisung} -- in \texttt{pa[n]} wird also der Wert \texttt{n} gespeichert. Zugleich ist das \enquote{Ergebnis} dieser Wertzuweisung der zugewiesene Wert selbst -- \texttt{printf} gibt also den Wert von \texttt{n} aus.
 
 In Zeile 12 versuchen wir nun, das Array so zu vergrößern, dass es \mbox{1\;000\;000} \mintinline{c}{int}-Werte halten kann. Wenn dies gelingt, wird die Variable \texttt{pb} einen von null verschiedenen Wert haben; der Pointer \texttt{pa} dagegen ist \emph{möglicherweise nicht mehr gültig}!
 
-Bei Erfolg dieser Vergrößerung können wir nun über \texttt{pb} auf die Werte des Arrays zugreifen, und finden die Elemente, die wir zuvor über \texttt{pa} gespeichert hatten. Obwohl im Programm zwei verschiedene Pointer-Variablen benutzt werden, existiert nur ein einzeiges Array.
+Bei Erfolg dieser Vergrößerung können wir nun über \texttt{pb} auf die Werte des Arrays zugreifen, und finden die Elemente, die wir zuvor über \texttt{pa} gespeichert hatten. Obwohl im Programm zwei verschiedene Pointer-Variablen benutzt werden, existiert nur ein einziges Array.
 
 Wie üblich müssen \emph{dynamische Arrays} mit \texttt{free} freigegeben werden. War die Vergrößerung mit \texttt{realloc} erfolgreich, so muss dies über den Pointer \texttt{pb} geschehen, da \texttt{pa} möglicherweise \enquote{ins Leere} zeigt. Konnte dagegen das Array nicht so weit vergrößert werden, so existiert weiterhin das Array mit der Adresse \texttt{pa}. Daher schreiben wir für diesen Fall in Zeile 20 \texttt{free(pa)}.
 
 \subsection{Heap und Stack} \label{sec:HeapStack}
 In Abschnitt \ref{sec:Arrays} haben wir \emph{automatische Arrays} kennen gelernt. Später in Abschnitt \ref{sec:dynArrays} haben wir \emph{dynamische Arrays} eingeführt. Während der Zugriff auf die Array-Elemente für beide Arten gleich ist, bestehen doch Unterschiede. \emph{Automatische} Arrays sind in ihrer Größe fest und können nach dem Anlegen nicht mehr verändert werden. Dafür müssen wir uns nicht um die Freigabe des Speichers nach Benutzung kümmern. Für \emph{dynamische} Arrays gilt in dieser Hinsicht das Gegenteil.
 
-Um grob zu verstehen, warum das so ist, müssen Sie wissen, dass der Arbeitsspeicher in mehrere Segmente geteilt wird. 
+Um grob zu verstehen, warum das so ist, müssen Sie wissen, dass der Arbeitsspeicher in mehrere Segmente geteilt wird.
 
-Ein erstes Segment ist der Code-Bereich. Hier liegt der Maschinencode, also die Folge von Bytes, die den Prozessor Anweisen, unsere Anweisungen auszuführen. 
+Ein erstes Segment ist der Code-Bereich. Hier liegt der Maschinencode. Dieser wird vom Prozessor ausgeführt.
 
-Hieran schließt sich der \emph{Heap} (englisch: Haufen) an. Es ist ein Bereich, auf den mehr oder minder \enquote{wahllos} zugegriffen werden kann: beliebige Schnitte des Heaps können reserviert und wieder freigegeben werden, ohne eine bestimmte Struktur oder Reihenfolge einhalten zu müssen. Auf dem Heap \enquote{leben} die dynamischen Arrays. Da im allgemeinen nicht vorhergesehen werden kann, wie sich ein dynamisches Array verhält, macht es keinen Sinn, diese geordnet im Speicher unterbringen zu wollen. Zu jeder Zeit könnte ein \texttt{realloc} eine geordnete Struktur aufbrechen. Die reservierten Speicherbereiche liegen also wirklich wie ein ungeordneter Haufen vor.
+Hieran schließt sich der \emph{Heap} (englisch: Haufen) an. Es ist ein Bereich, auf den mehr oder minder \enquote{wahllos} zugegriffen werden kann: beliebige Schnitte des Heaps können reserviert und wieder freigegeben werden, ohne eine bestimmte Struktur oder Reihenfolge einhalten zu müssen. Auf dem Heap \enquote{leben} die dynamischen Arrays.
+%Da im Allgemeinen nicht vorhergesehen werden kann, wie sich ein dynamisches Array verhält, macht es keinen Sinn, diese geordnet im Speicher unterbringen zu wollen. Zu jeder Zeit könnte ein \texttt{realloc} eine geordnete Struktur aufbrechen. Die reservierten Speicherbereiche liegen also wirklich wie ein ungeordneter Haufen vor.
 
-Der \emph{Stack} dagegen ist eine geordnete Speicherstruktur: Hier liegen alle Werte dicht an dicht, wie Schichten eines geordneten Stapels. Dies ist nur möglich, wenn die einzelnen Schichten nicht ihre Größe ändern (und damit Lücken hinterlassen oder andere Schichten zum nachrücken zwingen). Neue Elemente können nur \enquote{oben auf den Stack gelegt} werden. Zum Freigeben des Speichers muss in umgekehrter Reihenfolge vorgegangen werden, der Stack wird \enquote{von oben nach unten} freigegeben. Auf dem Stack \enquote{leben} die automatischen Variablen, \ie Arrays wie in Abschnitt \ref{sec:Arrays} gezeigt, aber auch die \enquote{normalen Variablen}, die nur einen einzelnen Wert halten können.
+Der \emph{Stack} dagegen ist eine strikt geordnete Speicherstruktur: Hier liegen alle Werte dicht an dicht, wie Schichten eines geordneten Stapels. Dies ist nur möglich, wenn die einzelnen Schichten nicht ihre Größe ändern (und damit Lücken hinterlassen oder andere Schichten zum nachrücken zwingen). Neue Elemente können nur \enquote{oben auf den Stack gelegt} werden. Zum Freigeben des Speichers muss in umgekehrter Reihenfolge vorgegangen werden, der Stack wird \enquote{von oben nach unten} freigegeben. Auf dem Stack \enquote{leben} die automatischen Variablen, \ie Arrays wie in Abschnitt \ref{sec:Arrays} gezeigt, aber auch die \enquote{normalen Variablen}, die nur einen einzelnen Wert halten können.
 
 \begin{tcolorbox}[title=Visualisierung: Heap und Stack]
 \begin{tikzpicture}
 \footnotesize
-\node (code) 
+\node (code)
 	[text height=3mm, text depth=3mm, text width=.2\linewidth, fill=red!50!white]
 	{Code};
-\node (heap) 
-	[text height=3mm, text depth=3mm, text width=.3\linewidth, fill=green!50!white, right=0pt of code] 
+\node (heap)
+	[text height=3mm, text depth=3mm, text width=.3\linewidth, fill=green!50!white, right=0pt of code]
 	{Heap};
-\node (stack) 
-	[text height=3mm, text depth=3mm, text width=.2\linewidth, fill=blue!50!white,  right=0pt of heap] 
+\node (stack)
+	[text height=3mm, text depth=3mm, text width=.2\linewidth, fill=blue!50!white,  right=0pt of heap]
 	{Stack};
-	
-\node (tcode) 
+
+\node (tcode)
 	[below=2mm of code, text width=.18\linewidth, font=\rightskip0pt plus 1fil]
 	{Programmcode -- kompilierte Datei};
-\node (theap) 
+\node (theap)
 	[below=2mm of heap, text width=.23\linewidth, font=\rightskip0pt plus 1fil]
 	{Dynamische Speicherverwaltung};
-\node (tstack) 
+\node (tstack)
 	[below=2mm of stack,text width=.18\linewidth, font=\rightskip0pt plus 1fil]
 	{Automatische Variablen};
 \end{tikzpicture}
@@ -958,7 +977,7 @@ Der \emph{Stack} dagegen ist eine geordnete Speicherstruktur: Hier liegen alle W
 \includegraphics[width=.2\linewidth]{./gfx/Stack}
 \end{tcolorbox}
 
-Da der Stack eine so regelmäßige Gestalt hat, kann die Verwaltung automatisiert vom Betriebssystem übernommen werden. Wir müssen lediglich die Variablen deklarieren, jedoch nicht explizit Speicherplatz allozieren oder freigeben.
+Der Stack hat zwar eine regelmäßige Gestalt, auf seine komplexe Verwaltung wird hier aber nicht näher eingegangen. Wir müssen lediglich die Variablen deklarieren, jedoch nicht explizit Speicherplatz allozieren oder freigeben. Den Rest übernehmen der Compiler und ggfs. das Betriebssystem.
 
 \begin{warnbox}[Keine dynamischen Operationen an automatischen Variablen]
 Operationen der dynamischen Speicherverwaltung (insbesondere die Befehle \texttt{realloc} und \texttt{free}) sind auf dem Stack nicht erlaubt. Daher darf \emph{niemals} die Größe eines automatischen Arrays mit \texttt{realloc} geändert werden und auch \emph{niemals} sein Speicher mit \texttt{free} freigegeben werden. Der Versuch, dies zu tun führt sofort zum Programmabsturz.
@@ -967,7 +986,7 @@ Operationen der dynamischen Speicherverwaltung (insbesondere die Befehle \texttt
 
 \subsection{C++} \label{sec:ArrayCPP}
 \begin{plusbox}
-Wie üblich stehen auch in C++ alle soeben gezeigten Mittel zur Verfügung. Automatische Arrays werden ebenso angelegt wie in C. Für \emph{dynamische Arrays} dagegen sollten nicht mehr \texttt{malloc}, \texttt{calloc} und \texttt{free} verwendet werden, sondern die Operatoren \mintinline{c++}{new} und \mintinline{c++}{delete}.
+Wie üblich stehen auch in C++ alle soeben gezeigten Mittel zur Verfügung. Automatische Arrays werden ebenso unterstützt wie in C. Für \emph{dynamische Arrays} dagegen sollten nicht mehr \texttt{malloc}, \texttt{calloc} und \texttt{free} verwendet werden, sondern die Operatoren \mintinline{c++}{new} und \mintinline{c++}{delete}.
 
 Die Syntax lautet:
 
@@ -984,8 +1003,8 @@ Auf die Unterschiede kann an dieser Stelle leider nicht im Detail eingegangen we
 Stattdessen sei hier vermerkt, dass die C++ Standard Library eine Vielzahl von Mitteln zur Verfügung stellt, die den \emph{direkten Umgang} mit Pointern unnötig machen. Diese Mittel werden in einem eigenen Kurs vorgestellt und sind den C-Arrays \idR klar vorzuziehen.
 \end{plusbox}
 
-\subsection{mehrdimensionale dynamische Arrays}
-In Abschnitt \ref{sec:MultiDimArray} haben wir bereits gesehen, wie mehrdimensionale Objekte wie Tabellen im Speicher organisiert werden können. An dieser Stelle möchte ich zwei Techniken besprechen, die solche Objekte auch mit dynamischen Arrays verfügbar machen.
+\subsection{Mehrdimensionale dynamische Arrays}
+In Abschnitt \ref{sec:MultiDimArray} haben wir bereits gesehen, wie mehrdimensionale Objekte wie Tabellen im Speicher organisiert werden können. An dieser Stelle möchte ich zwei Techniken besprechen, wie solche Objekte auch mit dynamischen Arrays verwaltet werden können.
 
 \subsubsection{Geplättete Listen}
 Der sicher einfachste Weg ist es, eine Tabelle (oder sein höherdimensionales Objekt) zu \enquote{plätten}, also die einzelnen Listen, aus denen es besteht, hintereinander im Speicher anzuordnen. In diesem Fall muss zwar für jeden Zugriff aus den \enquote{Koordinaten} (also \eg Spalten- und Zeilennummern der Tabelle) ein Index berechnet werden. Der sonstige \emph{Overhead} (Verwaltungsaufwand) hält sich jedoch in Grenzen.
@@ -996,34 +1015,34 @@ Folgendes Beispiel erzeugt eine Tabelle, deren Maße vom User bestimmt werden, u
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 #include <stdlib.h>
- 
+
 int main(void) {
   int width = -1, height = -1, i, r, c;
-  
+
   // Usereingaben
   printf("Bitte geben Sie die Breite der Tabelle ein:\n");
   scanf("%d", &width);
-  
+
   printf("Bitte geben Sie die Höhe der Tabelle ein:\n");
   scanf("%d", &height);
-  
+
   if ((height <= 0) || (width <= 0)) {
     printf("Ungültige Eingabe -- Programm wird beendet.\n");
     exit(-1);
   }
-  
+
   // Speicher für Tabelle allozieren
   int * table = malloc(width * height * sizeof(*table));
   if (!table) {
     printf("Allozierung fehlgeschlagen -- Programm wird beendet.\n");
     exit(-1);
   }
-  
+
   // Tabelleninhalt schreiben
   for (i = 0; i < width * height; i++) {
     table[i] = i;
   }
-  
+
   // Tabelle auf dem Bildschirm ausgeben
   for   (r = 0; r < height; r++) {
     for (c = 0; c < width;  c++) {
@@ -1031,7 +1050,7 @@ int main(void) {
     }
     printf("\n");
   }
-  
+
   // Speicher freigeben
   free(table);
 }
@@ -1066,7 +1085,7 @@ Ausgehend vom obigen Code (\emph{Tabelle mit dynamischem Array}) ändern wir das
   } else {
     table = newTable;
   }
-  
+
   // Tabelle auf dem Bildschirm ausgeben
   printf("\nVerbreiterte Tabelle:\n");
   for   (r = 0; r < height; r++) {
@@ -1075,7 +1094,7 @@ Ausgehend vom obigen Code (\emph{Tabelle mit dynamischem Array}) ändern wir das
     }
     printf("\n");
   }
-  
+
   // Speicher freigeben
   free(table);
 }
@@ -1108,11 +1127,11 @@ Um dieses Verhalten zu verstehen, müssen wir uns das Speicherbild ansehen:
 Bis Zeile 39 des Codes liegen die Tabellen-Zeilen dicht aneinander:
 
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={
        text width =3mm,
-       text height=3mm, 
-       draw=black, 
+       text height=3mm,
+       draw=black,
        inner sep=1mm
     },
     ld/.style={
@@ -1150,30 +1169,30 @@ Bis Zeile 39 des Codes liegen die Tabellen-Zeilen dicht aneinander:
   \node (c26) at (13.0,1) [cell]         {\ttfamily  0};
   \node (c27) at (13.5,1) [cell]         {\ttfamily  0};
   \node (c28) at (14.0,1) [cell]         {\ttfamily  0};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 0.25, -0.3) -- ( 7.75, -0.3) node [blue, midway, yshift=-0.5cm] 
+  		( 0.25, -0.3) -- ( 7.75, -0.3) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Array \texttt{table}};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 0.25, 0.5) -- ( 2.75, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 0.25, 0.5) -- ( 2.75, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Zeile 1};
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 2.75, 0.5) -- ( 5.25, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 2.75, 0.5) -- ( 5.25, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Zeile 2};
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 5.25, 0.5) -- ( 7.75, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 5.25, 0.5) -- ( 7.75, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Zeile 3};
 \end{tikzpicture}
 
 Mit \texttt{realloc} erweitern wir unseren Speicher um weitere 3 Elemente, um so Platz für eine zusätzliche Spalte zu haben. Wie in Abschnitt \ref{sec:realloc} gezeigt, wird dieser Platz \emph{am Ende des Arrays} angehängt. Wegen \texttt{width++} in Code-Zeile 48 lesen wir ab jetzt aber Ketten von \emph{6 Speicherstellen} als eine Zeile, und erhalten eine zersetzte Tabelle:
 
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={
        text width =3mm,
-       text height=3mm, 
-       draw=black, 
+       text height=3mm,
+       draw=black,
        inner sep=1mm
     },
     ld/.style={
@@ -1211,28 +1230,28 @@ Mit \texttt{realloc} erweitern wir unseren Speicher um weitere 3 Elemente, um so
   \node (c26) at (13.0,1) [cell]         {\ttfamily  0};
   \node (c27) at (13.5,1) [cell]         {\ttfamily  0};
   \node (c28) at (14.0,1) [cell]         {\ttfamily  0};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 0.25, -0.3) -- ( 9.25, -0.3) node [blue, midway, yshift=-0.5cm] 
+  		( 0.25, -0.3) -- ( 9.25, -0.3) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Array \texttt{table}};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 0.25, 0.5) -- ( 3.25, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 0.25, 0.5) -- ( 3.25, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Zeile 1};
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 3.25, 0.5) -- ( 6.25, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 3.25, 0.5) -- ( 6.25, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Zeile 2};
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt, blue]
-  		( 6.25, 0.5) -- ( 9.25, 0.5) node [blue, midway, yshift=-0.5cm] 
+  		( 6.25, 0.5) -- ( 9.25, 0.5) node [blue, midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Zeile 3};
 
   \draw [decorate, decoration={brace,amplitude=7pt}, xshift=-0pt, yshift=0pt, teal]
-  		( 7.75, 1.4) -- ( 9.25, 1.4) node [teal, midway, yshift=+0.5cm] 
+  		( 7.75, 1.4) -- ( 9.25, 1.4) node [teal, midway, yshift=+0.5cm]
 		(braceArrayPreResize) {neu reservierter Speicher};
 \end{tikzpicture}
 \end{tcolorbox}
 
-(Wenn dagegen nur eine Zeile an die Tabelle angehängt werden soll, funktioniert dieses Beispiel mit \texttt{realloc} genau wie erwartet, da neue Zeilen immer \emph{am Ende} der \enquote{geplätteten Liste} angehängt werden.
+Wenn dagegen nur eine Zeile an die Tabelle angehängt werden soll, funktioniert dieses Beispiel mit \texttt{realloc} genau wie erwartet, da neue Zeilen immer \emph{am Ende} der \enquote{geplätteten Liste} angehängt werden.
 
 Um nun auch Spalten anhängen zu können, müssen wir manuell ein neues Array erstellen und alle Tabellen-Einträge an die richtigen Stellen kopieren. Wir gehen wieder vom Beispiel \emph{Tabelle mit dynamischem Array} aus und ergänzen ab Zeile 39:
 
@@ -1244,19 +1263,19 @@ Um nun auch Spalten anhängen zu können, müssen wir manuell ein neues Array er
     printf("Allozierung fehlgeschlagen -- Programm wird beendet.\n");
     exit(-1);
   }
-  
+
   // Tabelleninhalt kopieren
   for   (r = 0; r < height; r++) {
     for (c = 0; c < width;  c++) {
       newTable[r * (width + 1) + c] = table[r * width + c];
     }
   }
-  
+
   // Speicher der alten Tabelle freigeben, Variablen aktualisieren
   free(table);
   table = newTable;
   width++;
-  
+
   // Tabelle auf dem Bildschirm ausgeben
   printf("\nVerbreiterte Tabelle:\n");
   for   (r = 0; r < height; r++) {
@@ -1265,7 +1284,7 @@ Um nun auch Spalten anhängen zu können, müssen wir manuell ein neues Array er
     }
     printf("\n");
   }
-  
+
   // Speicher freigeben
   free(table);
 }
@@ -1296,19 +1315,19 @@ Wir haben bereits festgestellt, dass sich eine Tabelle auch als \emph{Liste von 
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 #include <stdlib.h>
- 
+
 int main(void) {
   int width  = -1, height = -1, r, c;
-  
+
   // Usereingaben
   printf("Bitte geben Sie die Breite der Tabelle ein:\n"); scanf("%d", &width);
   printf("Bitte geben Sie die Höhe der Tabelle ein:\n");   scanf("%d", &height);
-  
+
   if ((height <= 0) || (width <= 0)) {
     printf("Ungültige Eingabe -- Programm wird beendet.\n");
     exit(-1);
   }
-  
+
   // Speicher für Tabelle allozieren
   int ** table = malloc(height * sizeof(*table));         // Liste der Zeilen
   if (!table) {
@@ -1318,14 +1337,14 @@ int main(void) {
   for (r = 0; r < height; r++) {
     table[r] = malloc(  width * sizeof(*(table[r]))  );   // Zeilen selbst
   }
-  
+
   // Tabelleninhalt schreiben
   for   (r = 0; r < height; r++) {
     for (c = 0; c < width;  c++) {
       table[r][c] = r * width + c;
     }
   }
-  
+
   // Tabelle auf dem Bildschirm ausgeben
   for   (r = 0; r < height; r++) {
     for (c = 0; c < width;  c++) {
@@ -1333,7 +1352,7 @@ int main(void) {
     }
     printf("\n");
   }
-  
+
   // Speicher freigeben
   for (r = 0; r < height; r++) {free(table[r]);}
   free(table);
@@ -1370,10 +1389,10 @@ Die hier gezeigten Konventionen orientieren sich an den Gewohnheiten der Mehrhei
 \section{C-Strings} \label{sec:string}
 Bisher haben wir fast ausschließlich mit Zahlenwerten gearbeitet. Wie wir in Abbildung \ref{fig:ASCII} gesehen haben, sind Buchstaben aber nur \enquote{Interpretationsweisen} von Ganzzahlen. Texte -- Zeichenketten, oder englisch: \emph{Strings} -- lassen sich also mit Ganzzahl-Arrays behandeln. Um diese (häufig auftretende) Aufgabe zu erleichtern bringt die Sprache C einige Mittel für den Umgang mit Strings mit.
 
-\subsection{spezielle Syntax-Elemente}
+\subsection{Spezielle Syntax-Elemente}
 Für einfache Aufgaben steht uns ein Vorrat aus 256 verschiedenen Zeichen zur Verfügung. Dies ist genau der Wertebereich des Datentyps \mintinline{c}{char} (von englisch: \emph{character}, Buchstabe oder Zeichen). Wir verwenden also \mintinline{c}{char}-Arrays zur Arbeit mit Strings.
 
-Es ist zwar möglich, jeden Buchstaben in der ASCII-Tabelle nachzuschlagen und manuell den zugehörigen Zahlenwert zuzuweisen; jedoch wäre dies reichlich aufwändig und fehleranfällig. Stattdessen können wir auch \texttt{'}einfache Anführungszeichen\texttt{'} benutzen, um \enquote{der Zeichencode für das eingeschlossene Zeichen} auszudrücken.
+Es ist zwar möglich, jeden Buchstaben in der ASCII-Tabelle nachzuschlagen und manuell den zugehörigen Zahlenwert zuzuweisen; jedoch wäre dies reichlich aufwändig und fehleranfällig. Stattdessen können wir auch \texttt{'}einfache Anführungszeichen\texttt{'} benutzen, um \enquote{den Zeichencode für das eingeschlossene Zeichen} auszudrücken.
 
 \begin{codebox}[Beispiel: ASCII-Codes]
 \begin{minted}[linenos]{c}
@@ -1409,7 +1428,7 @@ Mit diesem Mittel können wir bereits ein \mintinline{c}{char}-Array anlegen und
 
 int main () {
   char string[] = {
-    'D', 'u', 'n', 'e', ' ', 'b', 'y', ' ', 
+    'D', 'u', 'n', 'e', ' ', 'b', 'y', ' ',
     'F', 'a', 'n', 'k', ' ', 'H', 'e', 'r', 'b', 'e', 'r', 't', 0};
 }
 \end{minted}
@@ -1431,7 +1450,7 @@ int main () {
 \end{minted}
 \end{codebox}
 
-Sie sehen: Nicht nur ist dieser Code bedeutend kürzer; sie können auch auf die Nennung des Null-Chars verzichten. Solche Zeichenketten in \texttt{"}doppelten Anführungszeichen\texttt{"} nennen wir \emph{String-Literals}.
+Sie sehen: Nicht nur ist dieser Code bedeutend kürzer; Sie können auch auf die Nennung des Null-Chars verzichten. Solche Zeichenketten in \texttt{"}doppelten Anführungszeichen\texttt{"} nennen wir \emph{String-Literals}.
 
 Zur Ausgabe von Strings steht uns ein eigenes Formatierungszeichen zur Verfügung. Im Formatstring können wir \texttt{\%s} setzen, um eine Zeichenkette auszugeben. In der Parameterliste wird hier der \emph{Pointer auf das \mintinline{c}{char}-Array} übergeben:
 
@@ -1446,7 +1465,7 @@ int main () {
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Formattierte Ausgabe von Strings (1)]
+\begin{cmdbox}[Ausführungsbeispiel: Formattierte Ausgabe von Strings (1)]
 \begin{minted}{text}
 My favourite book is Dune by Frank Herbert.
 \end{minted}
@@ -1466,7 +1485,7 @@ int main () {
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Formattierte Ausgabe von Strings (2)]
+\begin{cmdbox}[Ausführungsbeispiel: Formattierte Ausgabe von Strings (2)]
 \begin{minted}{text}
 |Dune|
 |      Dune|
@@ -1483,16 +1502,16 @@ Wir können \texttt{scanf} mit dem Formatstring-Platzhalter \texttt{\%s} benutze
 
 int main () {
   char userinput[1024];
-  
+
   printf("Bitte nennen Sie eine gute Band:\n");
   scanf("%s", userinput);
-  
+
   printf("Ihre Wahl war: %s\n", userinput);
 }
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Strings mit scanf einlesen (1)]
+\begin{cmdbox}[Ausführungsbeispiel: Strings mit scanf einlesen (1)]
 \begin{minted}{text}
 Bitte nennen Sie eine gute Band:
 Wir Sind Helden
@@ -1500,11 +1519,11 @@ Ihre Wahl war: Wir
 \end{minted}
 \end{cmdbox}
 
-Wenn (wie im Beispiel oben) diese Vorgabe von Trennzeichen Probleme macht, so kann auch die \enquote{Set-Schreibweise} verwenden: zwischen \texttt{\%[} und \texttt{]} werden die Zeichen eingeschlossen, die zum String gehören dürfen; alle anderen Zeichen werden als Trennzeichen aufgefasst. Zeichen-Bereiche können mit \texttt{-} umschrieben werden. So erlaubt etwa
+Wenn (wie im Beispiel oben) diese Vorgabe von Trennzeichen Probleme macht, so kann auch die \enquote{Set-Schreibweise} verwenden: zwischen \texttt{\%[} und \texttt{]} werden die Zeichen eingeschlossen, die zum String gehören dürfen; alle anderen Zeichen werden als Trennzeichen aufgefasst. Zeichen-Bereiche können mit Bindestrich (\texttt{-}) umschrieben werden. So erlaubt etwa
 \begin{center}
 \mintinline{c}{scanf("%[A-Za-z ]", userinput);}
 \end{center}
-die eingabe von Klein- und Großbuchstaben sowie Leerzeichen.
+die Eingabe von Klein- und Großbuchstaben sowie Leerzeichen.
 
 Meist noch kompakter ist die \enquote{Ausschlussset-Schreibweise}: Ist das erste Zeichen in den \texttt{[}eckigen Klammern\texttt{]} ein Zirkumflex (\texttt{\textasciicircum}), so werden alle aufgelisteten Zeichen als Trennzeichen interpretiert; alle sonstigen Eingaben werden zum String gerechnet:
 
@@ -1514,16 +1533,16 @@ Meist noch kompakter ist die \enquote{Ausschlussset-Schreibweise}: Ist das erste
 
 int main () {
   char userinput[1024];
-  
+
   printf("Bitte nennen Sie eine gute Band:\n");
   scanf("%[^\n]", userinput);
-  
+
   printf("Ihre Wahl war: %s\n", userinput);
 }
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Strings mit scanf einlesen (2)]
+\begin{cmdbox}[Ausführungsbeispiel: Strings mit scanf einlesen (2)]
 \begin{minted}{text}
 Bitte nennen Sie eine gute Band:
 Wir Sind Helden
@@ -1538,13 +1557,13 @@ Im obigen Beispiel haben wir ein Kilobyte an Arbeitsspeicher (1024 Bytes) zur Ve
 \begin{hintbox}[Usereingaben begrenzen]
 Da auch ein sehr großer Puffer für Usereingaben \enquote{vollaufen} kann, bietet \texttt{scanf} die Möglichkeit, die Usereingabe auf eine bestimmte Zeichenzahl zu begrenzen. Dazu wird hinter das \texttt{\%}-Zeichen eine Zahl gesetzt, die die maximale Eingabelänge beschreibt. Dies funktioniert sowohl mit \texttt{\%s}, mit der Set-Schreibweise und mit der Ausschlussset-Schreibweise. In den obigen Beispielen sollte man also
 \begin{center}
-\mintinline{c}{scanf("%1023s", userinput);} 
+\mintinline{c}{scanf("%1023s", userinput);}
 \qquad bwz. \qquad
 \mintinline{c}{scanf("%1023[^\n]", userinput);}
 \end{center}
 setzen.
 
-Es ist hierbei kein Versehen, dass die Eingabe auf \emph{1023} Zeichen begrenzt wird, obwohl \texttt{userinput} ein Array mit bis zu \emph{1024} \mintinline{c}{char}-Elementen ist. Das letzte Element eines Strings ist immer der null-char, der bei der Begrenzung von \texttt{scanf} nicht mitgerechnet wird.
+Es ist hierbei kein Versehen, dass die Eingabe auf \emph{1023} Zeichen begrenzt wird, obwohl \texttt{userinput} ein Array mit bis zu \emph{1024} \mintinline{c}{char}-Elementen ist. Das letzte Element eines Strings ist immer der Null-char, der bei der Begrenzung von \texttt{scanf} nicht mitgerechnet wird.
 \end{hintbox}
 
 \subsection{Formatierte Strings erzeugen: \texttt{sprintf} und \texttt{snprintf}}
@@ -1561,9 +1580,9 @@ sprintf(buffer, formatstring, ...);
 
 int main () {
   char buffer[1024];
-  
+
   sprintf(buffer, "normaler Text mit Formatcodes: %d", 17);
-  
+
   printf("Generierter String: \"%s\"\n", buffer);
 }
 \end{minted}
@@ -1573,12 +1592,12 @@ int main () {
 Generierter String: "normaler Text mit Formatcodes: 17"
 \end{cmdbox}
 
-\texttt{buffer} kann ein beliebiger \mintinline{c}{char *} sein. Es kann also sowohl ein automatisches Array (wie im obigen Beispiel) beschrieben werden als auch ein dynamisches Array (von \texttt{malloc}). In jeden Fall aber muss sichergestellt sein, dass der Speicherbereich tatsächlich reserviert ist, und nicht über die Grenzen der Reservierung hinaus geschrieben wird. Beachten Sie hierbei auch, dass ein abschließender NULL-char mit geschrieben wird.
+\texttt{buffer} kann ein beliebiger \mintinline{c}{char *} sein. Es kann also sowohl ein automatisches Array (wie im obigen Beispiel) beschrieben werden als auch ein dynamisches Array (von \texttt{malloc}). In jeden Fall aber muss sichergestellt sein, dass der Speicherbereich tatsächlich reserviert ist, und nicht über die Grenzen der Reservierung hinaus geschrieben wird. Beachten Sie hierbei auch, dass ein abschließender Null-char mit geschrieben wird.
 
-Der Befehl \texttt{snprintf} funktioniert ebenso wie \texttt{sprintf}, verlangt aber noch einen zusätzlichen Parameter vom Typ \mintinline{c}{unsigned long}, der angibt, wie viele Zeichen maximal geschrieben werden dürfen (inclusive abschließendem NULL-char). Dies stellt einen zusätzlichen Sicherheitsmechanismus gegen versehentliches Schreiben über den reservierten Bereich hinaus dar und ist grundsätzlich zu bevorzugen. Ist der zu schreibende String länger als dieser \mintinline{c}{unsigned long}-Wert, so wird der Text abgeschnitten. Auch \texttt{snprintf} schließt den Puffertext mit einem NULL-char ab, selbst wenn der eigentliche Text abgeschnitten wurde.
+Der Befehl \texttt{snprintf} funktioniert ebenso wie \texttt{sprintf}, verlangt aber noch einen zusätzlichen Parameter vom Typ \mintinline{c}{unsigned long}, der angibt, wie viele Zeichen maximal geschrieben werden dürfen (inclusive abschließendem Null-char). Dies stellt einen zusätzlichen Sicherheitsmechanismus gegen versehentliches Schreiben über den reservierten Bereich hinaus dar und ist grundsätzlich zu bevorzugen. Ist der zu schreibende String länger als dieser \mintinline{c}{unsigned long}-Wert, so wird der Text abgeschnitten. Auch \texttt{snprintf} schließt den Puffertext mit einem Null-char ab, selbst wenn der eigentliche Text abgeschnitten wurde.
 
-\begin{codebox}[Syntax: sprintf]
-sprintf(buffer, length, formatstring, ...);
+\begin{codebox}[Syntax: snprintf]
+snprintf(buffer, length, formatstring, ...);
 \end{codebox}
 
 \begin{codebox}[Beispiel: Einen String mit \texttt{snprintf} generieren]
@@ -1587,9 +1606,9 @@ sprintf(buffer, length, formatstring, ...);
 
 int main () {
   char buffer[10];
-  
+
   snprintf(buffer, 9, "normaler Text mit Formatcodes: %d", 17);
-  
+
   printf("Generierter String: \"%s\"\n", buffer);
 }
 \end{minted}
@@ -1599,7 +1618,7 @@ int main () {
 Generierter String: "normaler"
 \end{cmdbox}
 
-Beide Befehle geben die Zahl der geschriebenen Zeichen (ohne NULL-char) zurück. Zusätzlich kann \texttt{snprintf} genutzt werden, um den Speicherbedarf einer Ausgabe zu ermitteln, ohne Werte in den Speicher zu schreiben: Wird als \texttt{buffer} und als \texttt{length} jeweils der Wert \texttt{0} übergeben, so ermittelt \texttt{snprintf} lediglich die länge eines Textes:
+Beide Befehle geben die Zahl der geschriebenen Zeichen (ohne Null-char) zurück. Zusätzlich kann \texttt{snprintf} genutzt werden, um den Speicherbedarf einer Ausgabe zu ermitteln, ohne Werte in den Speicher zu schreiben: Wird als \texttt{buffer} und als \texttt{length} jeweils der Wert \texttt{0} übergeben, so ermittelt \texttt{snprintf} lediglich die Länge eines Textes:
 
 \begin{codebox}[Beispiel: String-Länge mit \texttt{snprintf} ermitteln]
 \begin{minted}[linenos]{c}
@@ -1609,24 +1628,24 @@ Beide Befehle geben die Zahl der geschriebenen Zeichen (ohne NULL-char) zurück.
 int main () {
   int number, length;
   char * buffer = NULL;
-  
+
   printf("Bitte eine Ganzzahl eingeben:\n");
   scanf("%d", &number);
-  
+
   // Bedarf ermitteln
   length = snprintf(0, 0, "%d", number);
-  
+
   buffer = malloc(length + 1);
   if (!buffer) {
     printf("Fehler: Speicher konnte nicht reserviert werden");
-    	exit(-1);
+    exit(-1);
   }
 
   // tatsächlich schreiben
   snprintf(buffer, length + 1, "%d", number);
-  
+
   printf("Eingabe als String: %s\n", buffer);
-  
+
   free(buffer);
 }
 \end{minted}
@@ -1645,12 +1664,12 @@ Die folgenden Funktionen sind nützlich beim Umgang mit Arrays und Zeichenketten
 	{.95\linewidth}
 	{CHD}
 \toprule[1pt]
-	
+
 	\normalfont Funktion  &  \normalfont Header  &  Effekt
 \tabcrlf
-	
+
 strlen & <string.h> &
-	Länge eines Strings (ohne Nullchar) ermitteln\\
+	Länge eines Strings (ohne Null-char) ermitteln\\
 strcmp & <string.h> &
 	Den \emph{Inhalt} zweier Strings vergleichen\\
 strcat & <string.h> &
@@ -1663,7 +1682,7 @@ strrchr & <string.h> &
 	Nach einem Zeichen in einem String suchen (Suchrichtung rechts nach links)\\
 memXXX & <string.h> &
 	(Varianten von \texttt{strcmp}, \texttt{strcpy}, \texttt{strchr} und \texttt{strrchr} die auch mit
-	nullchars im Array funktionieren)\\
+	Null-chars im Array funktionieren)\\
 tolower, toupper & <string.h> &
 	Einen String in Klein- oder Großbuchstaben umwandeln\\
 isXXX & <ctype.h> &
@@ -1672,7 +1691,7 @@ isXXX & <ctype.h> &
 atoXXX & <stdlib.h> &
 	(Verschiedene Funktionen, die einen String als Zahl interpretieren und einen \texttt{int},
 	\texttt{double}, oder ähnlichen Datentyp zurück geben.)\\
-	
+
 \bottomrule[1pt]
 \end{tabularx}
 \end{center}
@@ -1682,7 +1701,7 @@ atoXXX & <stdlib.h> &
 \section{Speicherbedarf von Datenstrukturen ermitteln: \mintinline{c}{sizeof}} \label{sec:sizeof}
 Wir hatten den Operator \mintinline{c}{sizeof} im Abschnitt \ref{sec:dynArrays} kennen gelernt. Er dient dazu, den Speicherbedarf eines Objekts in Byte zu bestimmen. Als \emph{Argument} können sowohl Datentypen als auch Variablen und Ausdrücke übergeben werden. An dieser Stelle sollen einige Sonderfälle besprochen werden, die sich im Umgang mit Arrays ergeben.
 
-Wie bekannt werden Arrays über Pointer verwaltet. Auf Gängigen Systemen sind Pointer 64-bit-Werte; es wäre also zu erwarten, dass \mintinline{c}{sizeof(pointer)} immer den Wert 8 ergibt. Während dies bei Pointern auf \emph{dynamische Arrays} tatsächlich so ist, gibt \mintinline{c}{sizeof} bei \emph{automatischen Arrays} die \emph{Gesamtgröße} des Feldes aus. Betrachten Sie folgendes Beispiel:
+Wie bekannt werden Arrays über Pointer verwaltet. Auf gängigen Systemen sind Pointer 64-bit Werte; es wäre also zu erwarten, dass \mintinline{c}{sizeof(pointer)} immer den Wert 8 ergibt. Während dies bei Pointern auf \emph{dynamische Arrays} tatsächlich so ist, gibt \mintinline{c}{sizeof} bei \emph{automatischen Arrays} die \emph{Gesamtgröße} des Feldes aus. Betrachten Sie folgendes Beispiel:
 
 \begin{codebox}[Beispiel: \texttt{sizeof} mit automatischen und dynamischen Arrays]
 \begin{minted}[linenos]{c}
@@ -1692,37 +1711,37 @@ Wie bekannt werden Arrays über Pointer verwaltet. Auf Gängigen Systemen sind P
 int main () {
   char   autoString[] = "ABCDEFGHIJ";
   char * dynString    = malloc(200);
-  
+
   for (int i=0; i<10; i++) {
     dynString[i] = 'A' + i;
   }
   dynString[10] = 0;
-  
+
   int   autoInts[] = {1, 2, 3, 4, 5};
   int * dynInts    = malloc(200);
-  
+
   printf("automatischer String\n");
   printf("%s\n" ,        autoString );
   printf("%ld\n", sizeof(autoString));
-  
+
   printf("dynamischer String\n");
   printf("%s\n" ,        dynString );
   printf("%ld\n", sizeof(dynString));
-  
+
   printf("\n");
-  
+
   printf("einzelne int-Variable  : %ld\n", sizeof(*dynInts))
   printf("automatisches int-Array: %ld\n", sizeof(autoInts));
   printf("dynamisches   int-Array: %ld\n", sizeof( dynInts));
-  
-  
+
+
   free(dynString);
   free(dynInts);
 }
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: \texttt{sizeof} mit automatischen und dynamischen Arrays]
+\begin{cmdbox}[Ausführungsbeispiel: \texttt{sizeof} mit automatischen und dynamischen Arrays]
 \begin{minted}{text}
 automatischer String
 ABCDEFGHIJ
@@ -1737,11 +1756,11 @@ dynamisches   int-Array: 8
 \end{minted}
 \end{cmdbox}
 
-In den Zeilen 5 und 6 werden jeweils \mintinline{c}{char *}-Variablen deklariert. (Die Zeilen 8-11 dienen lediglich dazu, dem dynamischen Array \texttt{dynString} denselben Inhalt zu geben wie \texttt{autoString}.) Analog dazu deklarieren wir in Zeile 13 und 14 zwei \mintinline{c}{int *}-Variablen.
+In den Zeilen 5 und 6 werden jeweils \mintinline{c}{char *}-Variablen deklariert (die Zeilen 8-11 dienen lediglich dazu, dem dynamischen Array \texttt{dynString} denselben Inhalt zu geben wie \texttt{autoString}). Analog dazu deklarieren wir in Zeile 13 und 14 zwei \mintinline{c}{int *}-Variablen.
 
-Da die automatischen Variablen auf dem Stack abgelegt werden und der Verwaltung des Betriebssystems unterliegen, ist es möglich, ihren Speicherbedarf zur Runtime anzugeben. Entsprechend geben Zeile 18 und 27 die Werte 11 (Zeichenkette inclusive null-char) bzw. 20 (fünf Werte mal 4 Bytes pro Wert) aus. Die Zeilen 22 und 28 dagegen fragen die Größe eines dynamischen Arrays ab. Diese liegen auf dem Heap und können zur Runtime nicht mehr analysiert werden. Entsprechend lautet beide male die Ausgabe \texttt{8} (die Speicherbreite eines Pointers: ein 64-bit-Wert). In Zeile 26 fragen wir die Größe eines \emph{einzelnen Werts} ab. Dieser Wert ist vom Typ \mintinline{c}{int} und ist somit 4 Bytes breit.
+Da die automatischen Variablen auf dem Stack abgelegt werden und der Verwaltung durch Compiler bzw. des Betriebssystems unterliegen, ist es möglich, ihren Speicherbedarf zur Runtime anzugeben. Entsprechend geben Zeile 18 und 27 die Werte 11 (Zeichenkette inclusive Null-char) bzw. 20 (fünf Werte mal 4 Bytes pro Wert) aus. Die Zeilen 22 und 28 dagegen fragen die Größe eines dynamischen Arrays ab. Diese liegen auf dem Heap und können zur Runtime nicht mehr analysiert werden. Entsprechend lautet beide Male die Ausgabe \texttt{8} (die Speicherbreite eines Pointers: ein 64-bit Wert). In Zeile 26 fragen wir die Größe eines \emph{einzelnen Werts} ab. Dieser Wert ist vom Typ \mintinline{c}{int} und ist somit 4 Bytes breit.
 
-Die Funktion \texttt{strlen} (deklariert im Header \texttt{string.h}) gibt die Zahl der Zeichen bis zum ersten null-char aus (also die Länge des Strings) und funktioniert sowohl mit dynamischen als auch mit automatischen Arrays. Dieses Ergebnis ist aber nicht zwingend identisch mit dem Speicherbedarf, selbst, wenn wir mit automatischen Arrays arbeiten:
+Die Funktion \texttt{strlen} (deklariert im Header \texttt{string.h}) gibt die Zahl der Zeichen bis zum ersten Null-char aus (also die Länge des Strings) und funktioniert sowohl mit dynamischen als auch mit automatischen Arrays. Dieses Ergebnis ist aber nicht zwingend identisch mit dem Speicherbedarf, selbst, wenn wir mit automatischen Arrays arbeiten:
 
 \begin{codebox}[Beispiel: Unterschied zwischen \texttt{sizeof} und \texttt{strlen}]
 \begin{minted}[linenos]{c}
@@ -1750,17 +1769,17 @@ Die Funktion \texttt{strlen} (deklariert im Header \texttt{string.h}) gibt die Z
 
 int main () {
   char string[] = "AB\0CD";
-  
+
   printf("%s\n", string);
   printf("%s\n", string + 3);
-  
+
   printf("sizeof: %ld\n", sizeof(string));
   printf("strlen: %ld\n", strlen(string));
 }
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Unterschied zwischen \texttt{sizeof} und \texttt{strlen}]
+\begin{cmdbox}[Ausführungsbeispiel: Unterschied zwischen \texttt{sizeof} und \texttt{strlen}]
 \begin{minted}{text}
 AB
 CD
@@ -1769,16 +1788,16 @@ strlen: 2
 \end{minted}
 \end{cmdbox}
 
-Da hier \texttt{string} einen null-char enthält (gegeben durch die Escape-Sequenz \texttt{\textbackslash 0}), bricht die Ausgabe nach dem \texttt{B} ab. Es wird immer noch automatisch ein null-char an das Ende des Strings angehängt, so dass auch Zeile 8 eine \enquote{sinnvolle} Ausgabe liefert.
+Da hier \texttt{string} einen Null-char enthält (gegeben durch die Escape-Sequenz \texttt{\textbackslash 0}), bricht die Ausgabe nach dem \texttt{B} ab. Es wird immer noch automatisch ein Null-char an das Ende des Strings angehängt, so dass auch Zeile 8 eine \enquote{sinnvolle} Ausgabe liefert.
 
-So, wie die String-Ausgabe beim null-char endet, erkennt auch \texttt{strlen} dieses Zeichen als Ende des Strings an. Daher ist das Ergebnis von Zeile 11 der Wert 2 -- die Länge von \texttt{AB}. \mintinline{c}{sizeof} dagegen liefert die Größe der Speicherstruktur auf dem stack zurück, unabhängig von seinem Inhalt. Bei Programmstart wurden hier 6 Bytes reserviert (vier für die Buchstaben A-D, eines für das explizit angegebene null-char durch \texttt{\textbackslash 0} und eines für das automatische null-char zum Abschluss des Strings.)
+So, wie die String-Ausgabe beim Null-char endet, erkennt auch \texttt{strlen} dieses Zeichen als Ende des Strings an. Daher ist das Ergebnis von Zeile 11 der Wert 2 -- die Länge von \texttt{AB}. \mintinline{c}{sizeof} dagegen liefert die Größe der Speicherstruktur auf dem stack zurück, unabhängig von seinem Inhalt. Bei Programmstart wurden hier 6 Bytes reserviert (vier für die Buchstaben A-D, eines für das explizit angegebene Null-char durch \texttt{\textbackslash 0} und eines für das automatische Null-char zum Abschluss des Strings.)
 
 \section{Debugging-Tool \texttt{valgrind}}
 Der Umgang mit Arrays (insbesondere mit dynamischen Arrays) bringt einige Schwierigkeiten mit sich. Niemals darf auf nicht reservierte Speicherbereiche zugegriffen werden. Außerdem muss jeder dynamisch reservierte Speicherblock wieder mit \emph{free} freigegeben werden; danach darf kein Zugriff mehr erfolgen.
 
 In Projekten mittlerer Größe können diese Regeln leicht verletzt werden. Die Folgen sind schwer abzuschätzen; sie können versteckt bleiben oder zum Programmabsturz führen.
 
-Um leichter zu prüfen, ob ein eigenes Programm alle Regeln befolgt, existiert auf unixoiden Systemen\footnote{\ie auf Linux und Mac} das Kommandozeilen-Tool \texttt{valgrind}. Dieses Tool startet ein Programm und führt es regulär aus; allerdings wird jede Maschinencode-Anweisung überprüft. Array-Zugriffe außerhalb des gültigen Bereichs oder vergessene \texttt{free}-Anweisungen werden in einem Report ausgegeben.
+Um leichter zu prüfen, ob ein eigenes Programm alle Regeln befolgt, existiert auf unixoiden Systemen\footnote{\ie auf Linux und Mac} das Kommandozeilen-Tool \texttt{valgrind}. Dieses Tool startet ein Programm und führt es regulär aus; dabei wird jede Maschinencode-Anweisung des Programms überprüft. Array-Zugriffe außerhalb des gültigen Bereichs oder vergessene \texttt{free}-Anweisungen werden in einem Report ausgegeben.
 
 Beispiel: Im folgenden Code fehlt ein \texttt{free}. Außerdem soll mit \texttt{printf} ein Wert aus einem nicht mehr reservierten Speicherbereich ausgegeben werden:
 
@@ -1790,7 +1809,7 @@ Beispiel: Im folgenden Code fehlt ein \texttt{free}. Außerdem soll mit \texttt{
 int main () {
   int * x = malloc(20);
   x[0] = 500;
-  
+
   printf("Ausgabe mit printf: %d\n", x[5]);
 }
 \end{minted}
@@ -1807,25 +1826,25 @@ valgrind ./myProgram
 
 Die Ausgabe sieht folgendermaßen aus:
 
-\begin{cmdbox}[Ausführungseispiel: Fehlerhafter Code mit dynamischer Speicherverwaltung über \texttt{valgrind}]
+\begin{cmdbox}[Ausführungsbeispiel: Fehlerhafter Code mit dynamischer Speicherverwaltung über \texttt{valgrind}]
 \begin{minted}{text}
 ==28330== Memcheck, a memory error detector
 ==28330== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==28330== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
 ==28330== Command: ./myProgram
-==28330== 
+==28330==
 ==28330== Invalid read of size 4
 ==28330==    at 0x1086B2: main (in /home/blue-chameleon/Codes/myProgram)
 ==28330==  Address 0x522d054 is 0 bytes after a block of size 20 alloc'd
 ==28330==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
 ==28330==    by 0x10869B: main (in /home/blue-chameleon/Codes/myProgram)
-==28330== 
+==28330==
 Ausgabe mit printf: 0
-==28330== 
+==28330==
 ==28330== HEAP SUMMARY:
 ==28330==     in use at exit: 20 bytes in 1 blocks
 ==28330==   total heap usage: 2 allocs, 1 frees, 1,044 bytes allocated
-==28330== 
+==28330==
 \end{minted}
 \end{cmdbox}
 
@@ -1838,13 +1857,13 @@ Ausgabe mit printf: 0
 ==28330==    still reachable: 0 bytes in 0 blocks
 ==28330==         suppressed: 0 bytes in 0 blocks
 ==28330== Rerun with --leak-check=full to see details of leaked memory
-==28330== 
+==28330==
 ==28330== For counts of detected and suppressed errors, rerun with: -v
 ==28330== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
 \end{minted}
 \end{cmdbox}
 
-Die tatsächliche Ausgabe unseres Codes wird also \enquote{zwischen den Report eingeschoben}. Wir finden die Information \texttt{Invalid read of size 4}, die uns darauf hinweist, dass Zeile 8 unseres Codes einen unerlaubten Lesezugriff anweist. Zwar geht aus dem Report von \texttt{valgrind} nicht hervor, welche Zeile unseres Codes fehlerhaft war, allderings kann die Ursache bereits stark eingeschränkt werden. (Die Zeile \texttt{at 0x1086B2: main (in /home/blue-chameleon/Codes/myProgram)} sagt aus, dass der Zugriff in der Funktion \texttt{main} stattfindet. Bisher haben wir ausschließlich mit einer einzigen Funktion gearbeitet; in Kapitel \ref{chp:funcs} werden wir aber sehen, wie wir unser Programm strukturieren und eigene Funktionen schreiben. Diese Strukturierung wird auch im \texttt{valgrind}-Report erhalten bleiben.)
+Die tatsächliche Ausgabe unseres Codes wird also \enquote{zwischen den Report eingeschoben}. Wir finden die Information \texttt{Invalid read of size 4}, die uns darauf hinweist, dass Zeile 8 unseres Codes einen unerlaubten Lesezugriff anweist. Zwar geht aus dem Report von \texttt{valgrind} nicht hervor, welche Zeile unseres Codes fehlerhaft war, allerdings kann die Ursache bereits stark eingeschränkt werden. (Die Zeile \texttt{at 0x1086B2: main (in /home/blue-chameleon/Codes/myProgram)} sagt aus, dass der Zugriff in der Funktion \texttt{main} stattfindet. Bisher haben wir ausschließlich mit einer einzigen Funktion gearbeitet; in Kapitel \ref{chp:funcs} werden wir aber sehen, wie wir unser Programm strukturieren und eigene Funktionen schreiben. Diese Strukturierung wird auch im \texttt{valgrind}-Report erhalten bleiben.)
 
 Die Zeile \texttt{in use at exit: 20 bytes in 1 blocks} weist darauf hin, dass einmal vergessen wurde, einen Speicherblock mit \texttt{free} freizugeben. Der fragliche Speicherblock ist 20 Bytes groß. Mit dieser Information kann man nun auf die Suche gehen und das fehlende \texttt{free} zum Code hinzufügen.
 
@@ -1856,11 +1875,11 @@ Korrekt geschriebener Code wie der folgende:
 #include <stdlib.h>
 
 int main () {
-  int * x = malloc(20); 
+  int * x = malloc(20);
 
   x[0] = 500;
-  printf("Ausgabe mit printf: %d\n", x[0]); 
-  
+  printf("Ausgabe mit printf: %d\n", x[0]);
+
   free(x);
 }
 \end{minted}
@@ -1868,26 +1887,26 @@ int main () {
 
 erzeugt folgenden Report:
 
-\begin{cmdbox}[Ausführungseispiel: Korrekter Code mit dynamischer Speicherverwaltung über \texttt{valgrind}]
+\begin{cmdbox}[Ausführungsbeispiel: Korrekter Code mit dynamischer Speicherverwaltung über \texttt{valgrind}]
 \begin{minted}{text}
 ==28459== Memcheck, a memory error detector
 ==28459== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
 ==28459== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
 ==28459== Command: ./myProgram
-==28459== 
+==28459==
 \end{minted}
 \end{cmdbox}
 
 \begin{cmdbox}[]
 \begin{minted}{text}
 Ausgabe mit printf: 500
-==28459== 
+==28459==
 ==28459== HEAP SUMMARY:
 ==28459==     in use at exit: 0 bytes in 0 blocks
 ==28459==   total heap usage: 2 allocs, 2 frees, 1,044 bytes allocated
-==28459== 
+==28459==
 ==28459== All heap blocks were freed -- no leaks are possible
-==28459== 
+==28459==
 ==28459== For counts of detected and suppressed errors, rerun with: -v
 ==28459== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 \end{minted}
@@ -1904,8 +1923,10 @@ Um dem Aufwand zu entkommen, Arrays manuell mit \texttt{malloc} anzulegen und wi
 \end{center}
 wobei \texttt{n} eine beliebige \mintinline{c}{int}-Variable ist. Solche \emph{Variable Length Arrays (VLAs)} werden seit dem Standard C99 unterstützt, sollten allerdings vermieden werden.
 
-Wie alle Arrays, die auf diese Art deklariert werden, handelt es sich um \emph{automatische} Arrays, die auf dem \emph{Stack} angelegt werden. Das bedeutet, der Compiler versucht, die Speicheranordnung zu optimieren und verwaltet das Array selbst. Da zur \emph{Compilierzeit} in diesem Fall aber der Speicherbedarf nicht bekannt ist (\texttt{n} ist eine Variable, die erst zur \emph{Laufzeit} einen Wert erhält), muss \enquote{auf Verdacht} Speicherplatz reserviert werden. Außerdem fehlen so Informationen für die Warnmechanismen; \ie bei der Arbeit mit VLAs erhalten wir weniger Hinweise auf Fehler im Code.
+Wie alle Arrays, die auf diese Art deklariert werden, handelt es sich um \emph{automatische} Arrays, die auf dem \emph{Stack} angelegt werden. Das bedeutet, der Compiler versucht, die Speicheranordnung zu optimieren und verwaltet das Array selbst. Da zur \emph{Kompilierzeit} in diesem Fall aber der Speicherbedarf nicht bekannt ist (\texttt{n} ist eine Variable, die erst zur \emph{Laufzeit} einen Wert erhält), muss \enquote{auf Verdacht} Speicherplatz reserviert werden. Außerdem fehlen so Informationen für die Warnmechanismen; \ie bei der Arbeit mit VLAs erhalten wir weniger Hinweise auf Fehler im Code.
 
 \begin{plusbox}
-Die Sprache C++ bietet viele Konzepte, die die direkte Arbeit mit Arrays unnötig machen; jedoch existiert dieses Konzept auch in C++, wie wir in Abschnitt \label{sec:ArrayCPP} gehört haben. VLAs wurden dort mit dem Standard C++14 (aus dem Jahr 2014) schließlich auch eingeführt; dort gilt aber umso mehr die Empfehlung, das Konstrukt zu vermeiden, da die Überwiegende Mehrheit der ProgrammierInnen noch immer den Standard C++11 verwenden und daher eigener Code als inkompatibel angesehen wird.
+Die Sprache C++ bietet viele Konzepte, die die direkte Arbeit mit Arrays unnötig machen; jedoch existiert dieses Konzept auch in C++, wie wir bereits
+% in Abschnitt \label{sec:ArrayCPP}   this reference does not exist !
+gehört haben. VLAs wurden dort mit dem Standard C++14 (aus dem Jahr 2014) schließlich auch eingeführt; dort gilt aber umso mehr die Empfehlung, das Konstrukt zu vermeiden, da die Überwiegende Mehrheit der ProgrammierInnen noch immer den Standard C++11 verwenden und daher eigener Code als inkompatibel angesehen wird.
 \end{plusbox}

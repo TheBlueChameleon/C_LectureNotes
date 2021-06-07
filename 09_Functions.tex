@@ -10,25 +10,25 @@ Viele Aufgaben wiederholen sich oder lassen sich verallgemeinern. Folgender Code
 
 int main () {
   double x0 = 1.0;
-  
+
   int    accuracy = 20;
   double x        = 1.0;
   double d        = 1.0;
   double e        = 1.0;
-  
+
   for (int i=1; i<accuracy; i++) {
     x *= x0;
     d *= i;
     e += x / d;
   }
-  
+
   printf("Manuell: %10.8lf\n", e);
   printf("Mathlib: %10.8lf\n", exp(x0));
 }
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Berechnung von Eulers Zahl]
+\begin{cmdbox}[Ausführungsbeispiel: Berechnung von Eulers Zahl]
 \begin{minted}{text}
 Manuell: 2.71828183
 Mathlib: 2.71828183
@@ -48,18 +48,18 @@ Scopes sind Code-Abschnitte, innerhalb derer Variablen existieren, \ie innerhalb
 
 int main () {
   int x = 1;
-  
+
   {
     int y = 2;
     printf("%d\n", y);
   }
-  
+
   // printf("%d\n", y); -- Fehler: y nicht deklariert
 }
 \end{minted}
 \end{codebox}
 
-Die Variable \texttt{y} existiert nur Zwischen Zeile 7 (wo sie deklariert wird) und Zeile 9 (wo der Scope endet, innerhalb derer \texttt{y} \enquote{lebt}). Daher würde Zeile 11 einen Compiler-Fehler erzeugen, da auf eine nicht deklarierte Variable verwiesen wird.
+Die Variable \texttt{y} existiert nur zwischen Zeile 7 (wo sie deklariert wird) und Zeile 9 (wo der Scope endet, innerhalb derer \texttt{y} \enquote{lebt}). Daher würde Zeile 11 einen Compiler-Fehler erzeugen, da auf eine nicht deklarierte Variable verwiesen wird.
 
 Variablen sind \enquote{nach innen sichtbar}. Das bedeutet, dass die Variable \texttt{x} auch innerhalb des Scopes gelesen oder verändert werden kann, da sie außerhalb des Scopes deklariert wurde und nach innen \enquote{fortlebt}:
 
@@ -69,13 +69,13 @@ Variablen sind \enquote{nach innen sichtbar}. Das bedeutet, dass die Variable \t
 
 int main () {
   int x = 1;
-  
+
   {
     int y = 2;
-    printf("%d\n", x);  // kein Problem -- Sichtbarkeit nach innen.
+    printf("%d\n", x);  // kein Problem -- Sichtbarkeit nach innen
     printf("%d\n", y);
   }
-  
+
   // printf("%d\n", y); -- Fehler: y nicht deklariert
 }
 \end{minted}
@@ -89,22 +89,22 @@ Innerhalb von Scopes dürfen Namen auch neu vergeben werden. Das heißt, dass in
 
 int main () {
   int x = 1;
-  
+
   {
     int y = 2;
     printf("%d\n", x);   // Sichtbarkeit nach innen -- 1 wird angezeigt
     printf("%d\n", y);
-    
+
     double x = 5.0;
     printf("%lf\n", x);  // neue Variable wird unter dem Namen x angesprochen
   }
-  
+
   printf("%d\n", x);     // alte Variable wird angesprochen -- Ausgabe 1
 }
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Scopes (3)]
+\begin{cmdbox}[Ausführungsbeispiel: Scopes (3)]
 \begin{minted}{text}
 1
 2
@@ -113,7 +113,11 @@ int main () {
 \end{minted}
 \end{cmdbox}
 
-Scopes können (nahezu) beliebig tief ineinander verschachtelt werden und können auch \enquote{nebeineinander} stehen. Scopes, die auf gleicher Ebene nebeneinander stehen \enquote{sehen ihren Inhalt nicht}, \ie die Variablen, die in einem Scope deklariert werden können nicht von einem anderen Scope gelesen werden:
+Scopes können (nahezu) beliebig tief ineinander verschachtelt werden.
+%und können auch \enquote{nebeneinander} existieren.
+Scopes, die auf gleicher Ebene
+%nebeneinander
+stehen \enquote{teilen ihren Inhalt nicht}, \ie die Variablen, die in einem Scope deklariert werden sind also nicht in einem anderen Scope nicht verfügbar:
 
 \begin{codebox}[Beispiel: Scopes (4)]
 \begin{minted}[linenos]{c}
@@ -121,44 +125,44 @@ Scopes können (nahezu) beliebig tief ineinander verschachtelt werden und könne
 
 int main () {
   int x = 1;
-  
+
   {
     int y = 2;
     printf("%d\n", x);     // Sichtbarkeit nach innen -- 1 wird angezeigt
     printf("%d\n", y);
-    
+
     double x = 5.0;
     printf("%lf\n", x);    // neue Variable
   }
 \end{minted}
 \end{codebox}
-  
+
 \begin{codebox}[]
 \begin{minted}[linenos, firstnumber=last]{c}
   {
-    // printf("%d\n", y);  // Fehler -- keine Sichtbarkeit in andere Scopes 
-                           // gleicher Ebene
-    printf("%d\n", x);     // Sichtbarkeit nach innen -- 1 wird angezeigt. 
+    // printf("%d\n", y);  // Fehler -- keine Sichtbarkeit in andere Scopes
+                           // der gleichen Ebene
+    printf("%d\n", x);     // Sichtbarkeit nach innen -- 1 wird angezeigt.
                            // Die double-Variable x ist "vergessen"
-                           
+
     double x = 10.0;
     printf("%lf\n", x);    // neue Variable, wie zuvor.
   }
-  printf("%d\n", x); 
+  printf("%d\n", x);
 }
 \end{minted}
 \end{codebox}
 
 \section{Funktionen} \label{sec:funcs}
-Eine \emph{Funktion} ist ein Programmabschnitt, der gewissermaßen unabhängig vom Rest des Codes existiert, und von jeder Stelle \emph{aufgerufen} werden kann. Wir haben mit \texttt{printf} und \texttt{scanf} schon zwei Funktionen im Detail kennengelernt; die Befehle der math-library sind ebenfalls solche Funktionen. Tatsächlich haben wir auch schon eine Funktion selbst geschrieben: die \mintinline{c}{int main ()} ist der Form nach ebenso ein solches Objekt.
+Eine \emph{Funktion} ist ein Programmabschnitt, der gewissermaßen unabhängig vom Rest des Codes existiert, und von jeder Stelle im Programm \emph{aufgerufen} werden kann. Wir haben mit \texttt{printf} und \texttt{scanf} schon zwei Funktionen im Detail kennengelernt; die Befehle der math-library sind ebenfalls solche Funktionen. Tatsächlich haben wir auch schon eine Funktion selbst geschrieben: \mintinline{c}{int main ()} ist der Form nach ebenso ein solches Objekt.
 
-Als Konzept ist eine Funktion eine Arbeitsanweisung, die einen Wert berechnet. Daher braucht eine Funktion zunächst einen \emph{Rückgabetyp}, also den Datentyp des Werts, der berechnet wird. Im Falle der \texttt{main} ist das eben \mintinline{c}{int}. Es folgt ein Name, über den die Funktion aufgerufen werden kann (wie eben \texttt{printf}) so wie eine \emph{Parameterliste}, \ie eine Liste von Variablen, abhängig von denen das Ergebnis der Funktion berechnet werden soll. Im Falle der \mintinline{c}{int main ()} ist dies eine leere Liste; wir werden bald Beispiele sehen, in denen Parameter mit übergeben werden.
+Konzeptuell ist eine Funktion eine Arbeitsanweisung, die einen Wert zurückgibt. Daher braucht eine Funktion zunächst einen \emph{Rückgabetyp}, also den Datentyp des Werts, der berechnet wird. Im Falle der \texttt{main} Funktion ist das eben \mintinline{c}{int}. Es folgt ein Name, über den die Funktion aufgerufen werden kann (wie eben \texttt{printf}) so wie eine \emph{Parameterliste}, \ie eine Liste von Variablen anhand derer \eg das Ergebnis der Funktion berechnet werden soll. Im Falle der \mintinline{c}{int main ()} ist dies eine leere Liste; wir werden bald Beispiele sehen, in denen auch Parameter werden.
 
 Als erste Zeile einer Funktion folgen wir also der Syntax:
 \begin{codebox}[Syntax: Deklaration von Funktionen]
-Rückgabetyp Funktionsname(Parameterliste) \{...
+Rückgabetyp Funktionsname(Parameterliste) \{...\}
 \end{codebox}
-Wir nennen dieses Set von Informationen (Rückgabetyp, Funktionsname und Parameterliste) auch den \emph{Prototyp} der Funktion. Verwandt damit ist der Begriff der \emph{Signatur}, die nur Rückgabetyp und Parameterliste beschreibt.
+Wir nennen diesen Satz von Informationen (Rückgabetyp, Funktionsname und Parameterliste) auch den \emph{Prototyp} der Funktion. Verwandt damit ist der Begriff der \emph{Signatur}, die nur Rückgabetyp und Parameterliste beschreibt.
 
 Die Parameterliste ist eine durch Kommata getrennte Liste von Datentypen und Bezeichnern (also Variablennamen). Diese Variablennamen sind unabhängig vom Rest des Codes: Eine Funktion öffnet einen eigenen Scope. In der Parameterliste werden die Variablen also erst deklariert. Wir können etwa folgenden Prototypen für Funktion vorschlagen, die die Exponentialfunktion berechnet:
 
@@ -168,7 +172,7 @@ double myExp(double x0, int accuracy) {...
 \end{minted}
 \end{codebox}
 
-Nach der Funktionssignatur folgt -- eingeschlossen in \{geschweifte Klammern\} -- der \emph{Function-Body}. Dabei handelt es sich um beliebigen C-Code, wie wir ihn bisher schon kennen gelernt haben. Teil dieses Codes muss an irgend einer Stelle die Anweisung \mintinline{c}{return expression} sein. Diese Anweisung sorgt dafür, dass das \emph{aufrufende Programm} den berechneten Wert \texttt{expression} empfängt und die Funktion verlassen wird\footnote{Eine Funktion, die keine \mintinline{c}{return}-Anweisung enthält, wird ebenso verlassen, sobald ihre letzte Zeile ausgeführt wird. Allerdings kann dann keiner der berechneten Werte vom Hauptprogramm empfangen werden. Stattdessen erhält die aufrufende Stelle einen zufälligen Wert, wie bei einer uninitialisierten Variable.}. Folgendes Beispiel zeigt eine mögliche Umsetzung der Funktion \texttt{myExp}:
+Nach der Funktionssignatur folgt -- eingeschlossen in \{geschweifte Klammern\} -- der Funktionsrumpf bzw. -körper (\emph{Function-Body}). Dabei handelt es sich um beliebigen C-Code, wie wir ihn bisher schon kennen gelernt haben. Teil dieses Codes muss an irgend einer Stelle die Anweisung \mintinline{c}{return expression} sein. Diese Anweisung sorgt dafür, dass das \emph{aufrufende Programm} den berechneten Wert \texttt{expression} empfängt und die Funktion verlassen wird\footnote{Eine Funktion, die keine \mintinline{c}{return}-Anweisung enthält, wird ebenso verlassen, sobald ihre letzte Zeile ausgeführt wurde. Allerdings kann dann keiner der berechneten Werte vom Hauptprogramm empfangen werden. Stattdessen erhält die aufrufende Stelle einen zufälligen Wert, wie bei einer uninitialisierten Variable.}. Folgendes Beispiel zeigt eine mögliche Umsetzung der Funktion \texttt{myExp}:
 
 \begin{codebox}[Beispiel: Funktion \texttt{myExp}]
 \begin{minted}[linenos]{c}
@@ -176,21 +180,23 @@ double myExp(double x0, int accuracy) {
   double x           = 1.0;
   double denominator = 1.0;
   double result      = 1.0;
-  
+
   for (int i=1; i<accuracy; i++) {
     x           *= x0;
     denominator *= i;
     result      += x / denominator;
   }
-  
+
   return result;
 }
 \end{minted}
 \end{codebox}
 
-Die Variablen \texttt{x0} und \texttt{accuracy} werden also schon im Funktions-Prototypen deklariert; \texttt{x}, \texttt{denominator} und \texttt{result} folgen im Funktions-Body. Alle diese fünf Variablen gehören demselben Scope an.
+Die Variablen \texttt{x0} und \texttt{accuracy} werden also schon im Funktions-Prototypen deklariert; \texttt{x}, \texttt{denominator} und \texttt{result} folgen im Funktionsrumpf. Alle diese fünf Variablen gehören demselben Scope an.
 
-Um eine Funktion aufzurufen, setzen wir einfach ihren Namen, gefolgt von der Parameterliste in runden Klammern (). Beim Aufruf schreiben wir in die Parameterliste die Werte oder Ausdrücke, mit denen wir rechnen wollen. Diese Werte werden dann zuerst an die Speicherstellen des Funktion-Scopes kopiert, bevor der Code ausgeführt wird.
+Um eine Funktion aufzurufen, setzen wir einfach ihren Namen, gefolgt von der Parameterliste in runden Klammern (). Beim Aufruf schreiben wir in die Parameterliste die Ausdrücke die übergeben werden sollen.
+% ???
+%Diese werden dann zuerst an die Speicherstellen des Funktion-Scopes kopiert, bevor der Code ausgeführt wird.
 
 \begin{codebox}[Beispiel: Funktion \texttt{myExp} in Anwendung]
 \begin{minted}[linenos]{c}
@@ -201,13 +207,13 @@ double myExp(double x0, int accuracy) {
   double x           = 1.0;
   double denominator = 1.0;
   double result      = 1.0;
-  
+
   for (int i=1; i<accuracy; i++) {
     x           *= x0;
     denominator *= i;
     result      += x / denominator;
   }
-  
+
   return result;
 }
 \end{minted}
@@ -217,8 +223,8 @@ double myExp(double x0, int accuracy) {
 \begin{minted}[linenos, firstnumber=last]{c}
 int main () {
   double d, e;
-  
-  printf("Genauigkeit\tNäherung\tAbweichung\tRelativ\n");  
+
+  printf("Genauigkeit\tNäherung\tAbweichung\tRelativ\n");
   for (int i=0; i<10; i++) {
     e = myExp(1, i);
     d = e - exp(1);
@@ -228,7 +234,7 @@ int main () {
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: Funktion \texttt{myExp} in Anwendung]
+\begin{cmdbox}[Ausführungsbeispiel: Funktion \texttt{myExp} in Anwendung]
 \begin{minted}{text}
 Genauigkeit     Näherung        Abweichung      Relativ
 0               +1.000000       -1.718282         -1.718
@@ -247,9 +253,9 @@ Genauigkeit     Näherung        Abweichung      Relativ
 
 In Zeile 22 wird die Funktion \texttt{myExp} aufgerufen. Als Parameter wird jeweils die Zahl \texttt{1} und der Wert von \texttt{i} übergeben. Diese beiden Werte werden an die Speicherstellen von \texttt{x0} und \texttt{accuracy} im Scope von \texttt{myExp} kopiert, bevor die Ausführung der Funktion beginnt. Mit Zeile 15 wird diese wieder verlassen und der soeben berechnete Wert \texttt{result} zurückgegeben, \ie ist jetzt in der Funktion \texttt{main} lesbar. Achtung: die Symbole \texttt{denominator} und \texttt{result} existieren nur im Scope von \texttt{myExp} und sind in \texttt{main} nicht ansprechbar.
 
-Der Rückgabewert einer Funktion muss nicht \enquote{entgegen genommen} werden. Wenn der Aufruf nicht im Kontext einer Wertzuweisung geschieht, wird das Ergebnis der Berechnung einfach verworfen. Wir haben dies tatsächlich bisher bei jedem Aufruf von \texttt{printf} benutzt: \texttt{printf} \enquote{berechnet} eigentlich die Zahl der Zeichen, die auf dem Bildschirm ausgegeben werden. Da wir aber nie eine Variable angeboten haben, in der dieses Ergebnis gespeichert wurde, haben wir den Wert jedes mal verwofen.
+Der Rückgabewert einer Funktion muss nicht \enquote{entgegen genommen} werden. Wenn der Aufruf nicht im Kontext einer Wertzuweisung oder einer Bedingung (\eg eines \texttt{if}-Blocks) geschieht, wird das Ergebnis der Berechnung einfach verworfen. Wir haben dies tatsächlich bisher bei jedem Aufruf von \texttt{printf} benutzt: \texttt{printf} \enquote{berechnet} eigentlich die Zahl der Zeichen, die auf dem Bildschirm ausgegeben werden. Da wir aber nie eine Wertzuweisung angeboten haben wurde der Wert verworfen.
 
-\begin{codebox}[Beispiel: \texttt{printf} mit und ohne Entgegennahme des Rückgabewerts]
+\begin{codebox}[Beispiel: Rückgabewert von \texttt{printf}]
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 int main () {
@@ -259,7 +265,7 @@ int main () {
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausführungseispiel: \texttt{printf} mit und ohne Entgegennahme des Rückgabewerts]
+\begin{cmdbox}[Ausführungsbeispiel: Rückgabewert von \texttt{printf}]
 \begin{minted}{text}
 Die Peanuts, Charles M. Schulz
 Die letzte Ausgabe hatte 31 Zeichen.
@@ -270,7 +276,7 @@ Die letzte Ausgabe hatte 31 Zeichen.
 Neben Funktionen legen auch andere Strukturen eigene Scopes an: Alle Blöcke, die durch \{geschweifte Klammern\} eingefasst werden, stellen einen eigenen Scope dar. Das betrifft insbesondere \mintinline{c}{if}, \mintinline{c}{for} und \mintinline{c}{while}. Aus diesem Grund existieren Variablen, die in einer \mintinline{c}{for}-Schleife deklariert werden auch nur innerhalb der Schleife.
 
 \subsection{Forward Declaration} \label{sec:forwardDeclaration}
-Wie schon bei den Variablen gilt: Eine Funktion muss deklariert sein, \emph{bevor} sie aufgerufen werden kann. Im obigen Beispiel dient der Funktions-Prototyp bereits als Deklaration. Das bedeutet, dass \texttt{myExp} vor \texttt{main} stehen muss. Möchte man eine Funktion aufrufen, die erst an späterer Stelle stehen kann, so kann diese explizit deklariert werden. Dies geschieht, indem man den Funktions-Prototyp ohne Körper an eine Stelle vor den ersten Aufruf setzt. Wir nennen diese Technik \emph{forward declaration}:
+Wie schon bei den Variablen gilt: Eine Funktion muss deklariert sein, \emph{bevor} sie aufgerufen werden kann. Im obigen Beispiel ist dies der Fall. \texttt{myExp} steht \emph{vor} \texttt{main}. Möchte man allerdings eine Funktion aufrufen, die erst \emph{nach} \texttt{main} steht, so muss der Funktions-Prototyp explizit \emph{vor} \texttt{main} deklariert werden. Wir nennen diese Technik \emph{forward declaration}:
 
 \begin{codebox}[Beispiel: Funktion \texttt{myExp} mit forward declaration]
 \begin{minted}[linenos]{c}
@@ -281,8 +287,8 @@ double myExp(double x0, int accuracy);  // Deklaration ohne Body
 
 int main () {
   double d, e;
-  
-  printf("Genauigkeit\tNäherung\tAbweichung\tRelativ\n");  
+
+  printf("Genauigkeit\tNäherung\tAbweichung\tRelativ\n");
   for (int i=0; i<20; i++) {
     e = myExp(1, i);
     d = e - exp(1);
@@ -294,13 +300,13 @@ double myExp(double x0, int accuracy) {
   double x           = 1.0;
   double denominator = 1.0;
   double result      = 1.0;
-  
+
   for (int i=1; i<accuracy; i++) {
     x           *= x0;
     denominator *= i;
     result      += x / denominator;
   }
-  
+
   return result;
 }
 \end{minted}
@@ -355,7 +361,7 @@ Wir starten in \texttt{main}: hier wird in Zeile 7 \texttt{funcA} aufgerufen und
 
 Folgerichtig wird als nächstes Zeile 20 ausgeführt, und die Ausgabe \texttt{Call to funcB with depth 2} erscheint: Wir haben wieder eine Variable mit dem Namen \texttt{depth}, die aber unabhängig von \texttt{funcA} ist -- jede Funktion hat seinen \emph{eigenen} Scope. \texttt{2} ist ungleich \texttt{0}, daher entscheidet auch das \mintinline{c}{if} in Zeile 21 auf \emph{true}, und wir finden uns in einer ähnlichen Situation wie zuvor: Zur Berechnung des Funktionswerts von \texttt{funcB} muss zunächst noch einmal \texttt{funcA} ausgewertet werden.
 
-Naiv könnte man annehmen, wir würden nun in \texttt{funcA} \enquote{zurückkehren}. Tatsächlich aber steht dieser Aufruf unabhängig vom ersten \enquote{Betreten} von \texttt{funcA}: eine neue \emph{Instanz}, \ie ein eigener Speicherbereich mit seinen \emph{eigenen Variablen} wird angelegt und Code darauf ausgeführt. Entsprechend haben wir hier eine \emph{dritte} Speicherstelle, die lokal über den Namen \texttt{depth} angesprochen werden kann und die hier den Wert \texttt{1} beinhaltet. Noch einmal wird in Zeile 13 die Funktion \texttt{funcB} aufgerufen, für die ebenso eine zweite Instanz geöffnet wird.
+Naiv könnte man annehmen, wir würden nun in \texttt{funcA} \enquote{zurückkehren}. Tatsächlich aber steht dieser Aufruf unabhängig vom ersten \enquote{Betreten} von \texttt{funcA}: eine neue \emph{Instanz} (\emph{Stack Frame}), \ie ein eigener Speicherbereich mit seinen \emph{eigenen Variablen} wird angelegt und Code darauf ausgeführt. Entsprechend haben wir hier eine \emph{dritte} Speicherstelle, die lokal über den Namen \texttt{depth} angesprochen werden kann und die hier den Wert \texttt{1} beinhaltet. Noch einmal wird in Zeile 13 die Funktion \texttt{funcB} aufgerufen, für die ebenso eine zweite Instanz geöffnet wird.
 
 Diese zweite Instanz von \texttt{funcB} schließlich erhält für ihre Variable \texttt{depth} den Wert \texttt{0}, so dass das \mintinline{c}{if} in Zeile 21 schließlich auf \emph{false} entscheidet, und hier den Wert \texttt{1} zurück gibt.
 
@@ -368,16 +374,16 @@ Funktionen arbeiten immer nur mit \emph{Kopien} der übergebenen Parameter. Soll
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 
-int setToSeven(int * x, int y) {
-  *x = 7;     // Ändert die Speicherstelle an der Adresse x
-   y = 7;     // Ändert die lokale Variable y (existiert nur im Scope)
+int setToZero(int x, int * y) {
+   x = 0;     // Ändert die lokale Variable x (existiert nur in diesem Scope)
+  *y = 0;     // Ändert die Speicherstelle an der Adresse von y
   return 0;   // Dummy-Rückgabewert
 }
 
 int main () {
-  int x = 0, y = 0;
-  setToSeven(&x, y);
-  
+  int x = 7, y = 7;
+  setToZero(x, &y);
+
   printf("x=%d, y=%d\n", x, y);
 }
 \end{minted}
@@ -388,7 +394,7 @@ x=7, y=0
 \end{cmdbox}
 
 \subsection{Datentyp \mintinline{c}{void}}
-Funktionen, die unter keinen Umständen einen Wert berechnen sollen, können auch mit dem \enquote{Datentyp} \mintinline{c}{void} ausgezeichnet werden. Es handelt sich hierbei tatsächlich um einen \enquote{Nicht-Datentyp}, der explizit ausdrückt, dass diese Funktion keinen Wert berechnet.
+Funktionen die keinen Wert zurückgeben können mit dem \enquote{Datentyp} \mintinline{c}{void} ausgezeichnet werden. Es handelt sich hierbei tatsächlich um einen \enquote{Nicht-Datentyp}, der explizit ausdrückt, dass diese Funktion keinen Wert zurückgibt.
 
 \begin{codebox}[Beispiel: \texttt{void} Funktion]
 \begin{minted}[linenos]{c}
@@ -412,7 +418,7 @@ void showChameleon() {
   printf("      {   ',',___,'   '\n");
   printf("  pils ',           ,'\n");
   printf("          '-,,__,,-'\n");
-  
+
   // http://ascii.co.uk/art/chameleon
 }
 
@@ -431,7 +437,7 @@ An dieser Stelle sei außerdem erwähnt, dass \mintinline{c}{void *} für einen 
 int main () {
   int      i;
   double   d;
-  
+
   int    * ip = &i;
   double * dp = &d;
   void   * vp = &i;
@@ -454,19 +460,19 @@ Die entsprechenden Warnungen des Compilers lauten:
 \begin{cmdbox}[Compilerausgabe: \texttt{void *}]
 \begin{minted}{text}
 myProgram.c: In function ‘main’:
-myProgram.c:9:6: warning: assignment makes pointer from integer without a cast 
+myProgram.c:9:6: warning: assignment makes pointer from integer without a cast
 [-Wint-conversion]
    ip = i;  // Warnung: i ist kein Pointer
       ^
-myProgram.c:10:6: warning: assignment from incompatible pointer type 
+myProgram.c:10:6: warning: assignment from incompatible pointer type
 [-Wincompatible-pointer-types]
    ip = dp; // Warnung: unverträgliche Pointer-Typen
       ^
-myProgram.c:12:6: warning: assignment makes pointer from integer without a cast 
+myProgram.c:12:6: warning: assignment makes pointer from integer without a cast
 [-Wint-conversion]
    vp = i;  // Warnung: i ist kein Pointer
       ^
-myProgram.c:9:6: warning: ‘i’ is used uninitialized in this function 
+myProgram.c:9:6: warning: ‘i’ is used uninitialized in this function
 [-Wuninitialized]
    ip = i;  // Warnung: i ist kein Pointer
    ~~~^~~
@@ -481,7 +487,7 @@ Ein Anwendungsbeispiel für \mintinline{c}{void *} ist etwa die Funktion \texttt
 \mintinline{c}{void * memcpy (void * dest, const void * src, size_t count);}
 \end{center}
 
-(Siehe \url{https://en.cppreference.com/w/c/string/byte/memcpy}). 
+(Siehe \url{https://en.cppreference.com/w/c/string/byte/memcpy}).
 
 Dabei bedeutet \mintinline{c}{const}, dass die Werte an der Adresse \texttt{src} sich nicht ändern dürfen. (Dies erlaubt dem Compiler verschiedene Optimierungs-Schritte.)
 
@@ -495,15 +501,15 @@ Sowohl für \texttt{dest} als auch für \texttt{src} können beliebige Pointer �
 int main () {
   int    src_i[10], dst_i[10];
   double src_d[10], dst_d[10];
-  
+
   for (int i=0; i<10; i++) {
     src_i[i] = 2 * i;
     src_d[i] = 2 * i;
   }
-  
-  memcpy(dst_i, src_i, sizeof(src_i));   // kopiert 40 Byte
-  memcpy(dst_d, src_d, sizeof(src_d));   // kopiert 80 Byte
-  
+
+  memcpy(dst_i, src_i, sizeof(src_i));   // kopiert 40 Bytes
+  memcpy(dst_d, src_d, sizeof(src_d));   // kopiert 80 Bytes
+
   for (int i=0; i<10; i++) {
     printf("%2d, %2d, %4.1lf\n", i, dst_i[i], dst_d[i]);
   }
@@ -511,7 +517,7 @@ int main () {
 \end{minted}
 \end{codebox}
 
-Derselbe Befehel \texttt{memcpy} nimmt in Zeile 13 einen \mintinline{c}{int *} an, und wird in Zeile 14 mit einem \mintinline{c}{double *} als Parameter aufgerufen.
+Derselbe Befehl \texttt{memcpy} nimmt in Zeile 13 einen \mintinline{c}{int *} an, und wird in Zeile 14 auch mit einem \mintinline{c}{double *} als Parameter aufgerufen.
 
 Es ist sogar möglich, \enquote{typenfremd} zu kopieren:
 
@@ -524,9 +530,9 @@ int main () {
   char  src[10] = {1, 1, 1, 1, 1,   // 1 Byte per char
                    1, 1, 1, 1, 1};
   short dst[ 5];                    // 2 Byte per short
-  
+
   memcpy(dst, src, 10);
-  
+
   for (int i=0; i<5; i++) {
     printf("%i\n", dst[i]);
   }
@@ -547,7 +553,7 @@ int main () {
 Das Array \texttt{src} besteht aus 10 Elementen, die jeweils ein Byte groß sind, und das Bitpattern \texttt{00000001} besitzen. Diese werden über \texttt{memcpy} an die Adresse kopiert, auf die \texttt{dst} verweist. Das Array \texttt{dst} ist vom Typ \mintinline{c}{short}, \ie pro Feld-Element werden 2 Byte gelesen. Ein solches \mintinline{c}{short}-Element wird also aus \emph{zwei} \mintinline{c}{char}-Elementen zusammengesetzt und hat das Bitpattern \texttt{0000000100000001} -- dies entspricht der Dezimalzahl \texttt{257}.
 
 \subsection{Globale Variablen} \label{sec:globals}
-Bisher haben wir nur Variablen gesehen, die \emph{in Funktionen} angelegt wurden (sei dies in der \texttt{main} oder in anderen Funktionen). Es ist aber auch möglich, Variablen ganz außerhalb jedes Scopes anzulegen und sie damit \emph{global} verfügbar zu machen:
+Bisher haben wir nur Variablen gesehen, die \emph{innerhalb} von Funktionen deklariert wurden (sei dies in der \texttt{main} oder in anderen Funktionen). Es ist aber auch möglich, Variablen ganz außerhalb jedes Scopes zu deklarieren und sie damit \emph{global} verfügbar zu machen:
 
 \begin{codebox}[Beispiel: Globale Variablen]
 \begin{minted}[linenos]{c}
@@ -563,13 +569,13 @@ void setToSeven () {
 
 int main () {
   printf("bei Start:\t\t%d\n", global);
-  
+
   setToSeven();
   printf("nach setToSeven:\t%d\n", global);
-  
+
   global = 9;
   printf("nach Änderung in main:\t%d\n", global);
-  
+
   setToSeven();
 }
 \end{minted}
@@ -609,13 +615,13 @@ Ein weiteres Beispiel: Naturkonstanten wie die Lichtgeschwindigkeit, die Kreisza
 	{Code Quality. Quelle: \url{https://xkcd.com/1513/}}
 \end{center}
 \end{figure}
-Immer wieder wird die Frage gestellt, welche Programmteile sinnvoll in Funktionen ausgelagert werden sollten. Während es dafür keine allgemeingültige Formel gibt, kann man zumindest einige Situationen aufzählen, in denen es sich anbietet, Code in einer eigenen Funktion anzulegen.
+Immer wieder wird die Frage gestellt, welche Programmteile sinnvoll in Funktionen ausgelagert werden sollten und welche nicht. Während es dafür keine allgemeingültige Formel gibt, kann man zumindest einige Situationen aufführen, in denen es sich anbietet, Code in einer eigenen Funktion anzulegen.
 
 Generell ist es sinnvoll, alle Arbeitsschritte, die eine gedankliche Einheit bilden, in einer Funktion zu verkapseln. Eine gedankliche Einheit ist etwa \enquote{Berechne den Wert einer Funktion} oder \enquote{Gib Text auf dem Bildschirm aus}.
 
 Insbesondere sollte aller Code, den man mehrfach verwenden will in Funktionen stehen. Kopierter Code macht das Programm länger und damit schwieriger zu warten. Vor allem aber ergibt sich daraus eine Fehlerquelle, da Änderungen an einem kopierten Codeteil verlangen, auch alle anderen Stellen zu ändern, an denen diese Kopien auftauchen. Es ist leicht, diese Stellen zu vergessen und so inkonsistenten und fehlerhaften Code zu erhalten.
 
-Schließlich kann es von Vorteil sein, selbst Codeblöcke in Funktionen zu setzen, die nur einmal aufgerufen werden. Ein Funktionsname sollte eindeutig beschreiben, welche Aufgabe die Funktion erfüllt. Ist dies gegeben, so kann der Ablauf eines Programms klarer im Code gelesen werden, ohne im Detail Zeile für Zeile nachvollziehen zu müssen. Sehen Sie sich dazu folgenden Code an:
+Schließlich kann es von Vorteil sein, selbst Codeblöcke in Funktionen zu setzen, die nur einmal aufgerufen werden. Ein Funktionsname sollte eindeutig beschreiben, welche Aufgabe die Funktion erfüllt. Ist dies gegeben, so kann der Ablauf eines Programms klarer im Code gelesen werden, ohne jedes Detail Zeile für Zeile nachvollziehen zu müssen. Sehen Sie sich dazu folgenden Code an:
 
 \begin{codebox}[Beispiel: \texttt{main} eines Spiels]
 \begin{minted}[linenos]{c}
@@ -625,24 +631,22 @@ Schließlich kann es von Vorteil sein, selbst Codeblöcke in Funktionen zu setze
 
 int main () {
   showTitleAnimation();
-  
+
+  int selectedMenuPoint = 0;
   do {
-    int selectedMenuPoint = 0;
-    
     showMenuScreen();
     selectedMenuPoint = askForMenuOption();
-    
     performAction(selectedMenuPoint);
   } while(selectedMenuPoint);
 }
 \end{minted}
 \end{codebox}
 
-Hier wird vor Start des Spiels eine Animation gezeigt. Im Anschluss wird jeweils in Folge ein Menübildschirm dargestellt, eine Usereingabe angenommen und dann dafür gesorgt, dass die Auswahl des Users ausgeführt wird. Dies wird solange durchgeführt, bis die Funktion \texttt{askForMenuOption} den Wert \texttt{0} zurückgibt. Dies könnte (und sollte) \eg dann der Fall sein, wenn der User auswählt, das Spiel zu beenden.
+Hier wird vor Start des Spiels eine Animation gezeigt. Im Anschluss wird jeweils in Folge ein Menü\-bildschirm dargestellt, eine Usereingabe angenommen und dann dafür gesorgt, dass die Auswahl des Users ausgeführt wird. Dies wird solange durchgeführt, bis die Funktion \texttt{askForMenuOption} den Wert~\texttt{0} zurückgibt. Dies könnte (und sollte) \eg dann der Fall sein, wenn der User auswählt, das Spiel zu beenden.
 
-Obwohl in diesem Beispiel nicht klar ist, wie die Animation im Detail aussieht, oder welche Menüpunkte angeboten werden, ist klar, wie das Programm organisiert ist. Neue Features können leicht eingefügt werden. Soll etwa eine Animation ausgeführt werden, sobald ein Menupunkt ausgewählt wurde, so kann nach Zeile 12 noch eine neue Funktion \texttt{showMenuAnimation(selectedMenuPoint)} eingefügt werden.
+Obwohl in diesem Beispiel nicht klar ist, wie die Animation im Detail aussieht, oder welche Menüpunkte angeboten werden, ist klar, wie das Programm organisiert ist. Neue Features können leicht eingefügt werden. Soll etwa eine Animation ausgeführt werden, sobald ein Menupunkt ausgewählt wurde, so kann nach Zeile 11 noch eine neue Funktion \texttt{showMenuAnimation(selectedMenuPoint)} eingefügt werden.
 
-Funktionen können sich auch untereinander aufrufen, wie wir im Abschnitt \ref{sec:forwardDeclaration} gesehen haben. Dies \enquote{kostet} einigen Verwaltungsaufwand (um den wir als ProgrammiererInnen uns aber nicht explizit kümmern müssen). Der Compiler muss für jeden Aufruf einer Funktion mitspeichern, an welche Stelle bei Verlassen der aufgerufenen Funktion zurück gesprungen werden soll; außerdem müssen die Speicherbereiche für die einzelnen Funktionen angelegt und wieder frei gegeben werden. Bei geringer \emph{Aufruftiefe} (bis etwa 20 Aufruf-Ebenen) fällt dies nicht weiter ins Gewicht. Stärkere Verschachtelung macht Programme aber merklich langsamer. Natürlich ist es vor allem schwierig, eine Struktur mit so vielen Ebenen zu überblicken. Daher möchte ich Ihnen diesen Gedanken als einzige Beschränkung für die Sinnhaftigkeit von Funktionen mitgeben: halten Sie die Verschachtelung klein und übersichtlich. In Kapitel \ref{chp:recursion} werden wir diesen Gedanken nochmals aufgreifen.
+Funktionen können sich auch untereinander aufrufen, wie wir in Abschnitt \ref{sec:forwardDeclaration} gesehen haben. Dies \enquote{kostet} einigen Verwaltungsaufwand (um den wir als ProgrammiererInnen uns aber nicht explizit kümmern müssen). Der Compiler muss für jeden Aufruf einer Funktion mitspeichern, an welche Stelle bei Verlassen der aufgerufenen Funktion zurück gesprungen werden soll; außerdem müssen die Speicherbereiche für die einzelnen Funktionen angelegt und wieder frei gegeben werden. Bei geringer \emph{Aufruftiefe} (bis etwa 20 Aufruf-Ebenen) fällt dies nicht weiter ins Gewicht. Stärkere Verschachtelung macht Programme aber merklich langsamer. Natürlich ist es vor allem schwierig, eine Struktur mit so vielen Ebenen zu überblicken. Daher möchte ich Ihnen diesen Gedanken als einzige Beschränkung für die Sinnhaftigkeit von Funktionen mitgeben: halten Sie die Verschachtelung klein und übersichtlich. In Kapitel \ref{chp:recursion} werden wir diesen Gedanken nochmals aufgreifen.
 
 \subsection{Rückgabe mehrerer Werte}
 Eine Funktion kann nur entweder nichts (\mintinline{c}{void}) oder genau einen einzigen Wert zurückgeben. Es gibt aber Situationen, in denen dieselbe Funktion \emph{mehrere} Werte zugleich berechnen soll. Um dies zu ermöglichen stehen uns zwei Techniken zur Verfügung: Wir können ein \emph{Array} oder ein \mintinline{c}{struct} zurückgeben.
@@ -659,7 +663,7 @@ Sehen Sie sich folgendes Beispiel an, das ein Rezept für Obstsalat auf verschie
 
 double * fruitsaladForPersons(double persons) {
   double * reVal = malloc(8 * sizeof(*reVal));
-  
+
   reVal[0] = persons/4.0 *   3;  // apples
   reVal[1] = persons/4.0 *   2;  // bananas
   reVal[2] = persons/4.0 *   2;  // peaches
@@ -668,14 +672,14 @@ double * fruitsaladForPersons(double persons) {
   reVal[5] = persons/4.0 *   1;  // oranges
   reVal[6] = persons/4.0 * 200;  // grams of grapes
   reVal[7] = persons/4.0 *  50;  // grams of walnuts
-  
+
   return reVal;
 }
 
 int main () {
   double persons = 2;
   double * requirements = fruitsaladForPersons(persons);
-  
+
   printf("Obstsalat für %1.0lf Personen:\n", persons);
   printf("\tÄpfel    : %5.1lf\n"  , requirements[0]);
   printf("\tBananen  : %5.1lf\n"  , requirements[1]);
@@ -685,7 +689,7 @@ int main () {
   printf("\tOrangen  : %5.1lf\n"  , requirements[5]);
   printf("\tTrauben  : %5.1lf g\n", requirements[6]);
   printf("\tWalnüsse : %5.1lf g\n", requirements[7]);
-  
+
   free(requirements);
 }
 \end{minted}
@@ -723,7 +727,7 @@ void foobar(int * callCounter) {
 
 int main () {
   int calls = 0;
-  
+
   foobar(&calls);
   foobar(&calls);
 }
@@ -759,12 +763,12 @@ int main () {
 \end{minted}
 \end{codebox}
 
-Der Compiler legt \emph{ein einziges Mal} die Speicherstelle für \texttt{callCounter} an, selbst, wenn (wie hier) die Funktion \texttt{foobar} mehrfach aufgerufen wird. Entsprechend findet auch die Wertzuweisung in Zeile 4 nur ein einziges Mal statt. Danach \enquote{erinnert} sich der Compiler an die bereits angelegte Speicherstelle, sobald \texttt{foobar} \enquote{betreten} wird, und \enquote{vergisst} diesen Variablennamen (nicht aber die Speicherstelle selbst) wieder, wenn die Funktion verlassen wird.
+Der Compiler legt \emph{ein einziges Mal} die Speicherstelle für \texttt{callCounter} an, selbst wenn (wie hier) die Funktion \texttt{foobar} mehrfach aufgerufen wird. Entsprechend findet auch die Wertzuweisung in Zeile 4 nur ein einziges Mal statt. Danach \enquote{erinnert} sich der Compiler an die bereits angelegte Speicherstelle sobald \texttt{foobar} \enquote{betreten} wird, \enquote{vergisst} aber diesen Variablennamen (nicht aber die Speicherstelle selbst) wieder, wenn die Funktion verlassen wird.
 
 \section{Optimierung: \mintinline{c}{inline}} \label{sec:inline}
-Bei einem Funktionsaufruf werden die Werte von Parametern kopiert und die Stelle gespeichert, von der weg gesprungen wurde, so dass beim Verlassen der Funktion die Ausführung nach dem Sprung-Befehl fortgesetzt werden kann. Dieses Kopieren und Speichern kostet Zeit. Bei häufig wiederkehrenden Aufrufen führt dies zu merklichen Performance-Einbrüchen.
+Bei einem Funktionsaufruf werden die Werte von Parametern kopiert.  Ebenso wird die Stelle gespeichert, von der weg gesprungen wurde, so dass beim Verlassen der Funktion die Ausführung nach dem Sprung-Befehl dort fortgesetzt werden kann. Dieses Kopieren und Speichern kostet Zeit. Bei häufig wiederkehrenden Aufrufen führt dies zu merklichen Performance-Einbrüchen.
 
-Um dem entgegen zu wirken, können \emph{kurze} Funktionen als \mintinline{c}{inline} deklariert werden. Dies teilt dem Compiler mit, dass der Funktionskörper an der aufrufenden Stelle eingefügt werden sollte, statt einen normalen Sprung und Rücksprung durchzuführen. Ergebnis ist eine größere ausführbare Datei (da derselbe Code an mehreren Stellen eingefügt wird), der aber schneller läuft. Für die ProgrammiererInnen ergibt sich sonst kein Unterschied -- Funktionsaufruf sowie Scoping funktionieren wie bisher besprochen.
+Um dem entgegen zu wirken, können \emph{kurze} Funktionen als \mintinline{c}{inline} deklariert werden\footnote{Es gibt allerdings keine Garantie dafür, dass der Compiler die Funktion wirklich an entsprechende Stellen im einfügt. Es handelt sich also lediglich um einen Hinweis an den Compiler.}. Dies teilt dem Compiler mit, dass der Funktionskörper an der aufrufenden Stelle eingefügt werden sollte, statt einen normalen Sprung und Rücksprung durchzuführen. Ergebnis ist eine größere ausführbare Datei (da derselbe Code an mehreren Stellen eingefügt wird), der aber schneller läuft. Für die ProgrammiererInnen ergibt sich sonst kein Unterschied -- Funktionsaufruf sowie Scoping funktionieren wie bisher besprochen.
 
 Um eine Funktion als \mintinline{c}{inline} zu deklarieren, schreibt man eine forward declaration und stellt dieser das Schlüsselwort \mintinline{c}{inline} voran:
 
@@ -782,7 +786,7 @@ inline int max (int a, int b);
 \end{codebox}
 
 \section{Funktionszeiger} \label{sec:funcPtr}
-Alle \enquote{Dinge}, mit denen wir arbeiten, müssen im Speicher abgelegt werden, und haben daher notwendigerweise auch eine Adresse. Dies umfasst einzelne Zahlen, Gruppen von Zahlen (Arrays) und eben auch Programmcode. Bei der Ausführung eines Programms wird dieses zunächst in den Arbeitsspeicher kopiert, und dann die Maschinencode-Anweisungen ausgeführt, die in der Datei vermerkt waren. Wir können daher auch die Adressen von bestimmten Programmteilen ausfindig machen und mit der Ausführung an diese Adressen springen. Zu diesem Zweck existiert das Konzept von \texttt{Funktionszeigern}, also Pointer auf Funktionen.
+Alle Objekte mit denen wir arbeiten müssen im Speicher abgelegt werden. Sie haben daher notwendigerweise auch eine Adresse. Dies umfasst einzelne Zahlen, Gruppen von Zahlen (Arrays) und eben auch Programmcode. Bei der Ausführung eines Programms wird dieses zunächst in den Arbeitsspeicher kopiert, und dann die Maschinencode-Anweisungen ausgeführt, die in der Datei vermerkt waren. Wir können die Adressen von bestimmten Programmteilen ausfindig machen und mit der Ausführung an diese Adressen springen. Zu diesem Zweck existiert das Konzept von \texttt{Funktionszeigern}, also Pointer auf Funktionen.
 
 Funktionszeiger sind wie alle Pointer Variablen, die zunächst deklariert werden müssen. Diese Deklaration enthält alle Informationen der Funktionssignatur, also Rückgabewert der Funktion und Parameterliste. Dies drückt sich in der folgenden (leider etwas unhandlichen Syntax) aus:
 \begin{codebox}[Syntax: Deklaration Funktionszeiger]
@@ -826,7 +830,7 @@ int main () {
 \begin{minted}[linenos]{c}
   printf("direkt : ");
   foo();
-  
+
   printf("funcPtr: ");
   funcPtr();
 }
@@ -850,7 +854,7 @@ Als Beispiel sei die Funktion \texttt{qsort}\footnote{Der Sortieralgorithmus \em
 
 Da Arrays \emph{beliebigen} Typs sortiert werden, können an \texttt{comp} nicht die \emph{Werte} \texttt{a} und \texttt{b} übergeben werden, sondern nur ihre \emph{Adressen} \texttt{\&a} und \texttt{\&b}.
 
-Wenn \texttt{a} \emph{vor} \texttt{b} in der sortierten Liste auftauchen soll, soll der Rückgabewert von \texttt{comp(\&a, \&b)} gleich \texttt{-1} sein. Falls dagegen \texttt{b} vor \texttt{a} sortiert werden soll, so muss \texttt{+1} zurückgegeben werden. Schließlich wird \texttt{comp} den Wert \texttt{0} zurückgeben, wenn \texttt{a} und \texttt{b} gleichwertig sind. (\emph{Gleichwertig} bedeutet in diesem Kontext nicht zwingend \emph{gleich}. Wir könnten zum Beispiel Zahlen nach ihrer Quersumme sortieren. Für diese Sortierung sind die Zahlen \texttt{19} und \texttt{91} dann gleichwertig, nicht aber gleich.) 
+Wenn \texttt{a} \emph{vor} \texttt{b} in der sortierten Liste auftauchen soll, soll der Rückgabewert von \texttt{comp(\&a, \&b)} gleich \texttt{-1} sein. Falls dagegen \texttt{b} vor \texttt{a} sortiert werden soll, so muss \texttt{+1} zurückgegeben werden. Schließlich wird \texttt{comp} den Wert \texttt{0} zurückgeben, wenn \texttt{a} und \texttt{b} gleichwertig sind. (\emph{Gleichwertig} bedeutet in diesem Kontext nicht zwingend \emph{gleich}. Wir könnten zum Beispiel Zahlen nach ihrer Quersumme sortieren. Für diese Sortierung sind die Zahlen \texttt{19} und \texttt{91} dann gleichwertig, nicht aber gleich.)
 
 Die \href{https://en.cppreference.com/w/c/algorithm/qsort}{cpp-Referenz} teilt uns die Signatur der Funktion \texttt{qsort} mit:
 
@@ -864,12 +868,12 @@ void qsort( void * ptr, size_t count, size_t size,
 Betrachten wir die einzelnen Parameter:
 \begin{itemize}
 \item Der erste Parameter \texttt{ptr} ist ein Pointer auf ein beliebiges Array und daher vom Typ
-		\mintinline{c}{void *}. 
-\item Mit \texttt{count} wird die Zahl der Elemente des Arrays beschrieben. (Der Typ 
+		\mintinline{c}{void *}.
+\item Mit \texttt{count} wird die Zahl der Elemente des Arrays beschrieben. (Der Typ
 		\mintinline{c}{size_t} ist ein Alias (ein alternativer Name) für \mintinline{c}{unsigned int}.)
 \item Der Wert \texttt{size} beschreibt den Speicherbedarf \emph{eines} Elements des Arrays. Wir
-		brauchen diese Information, da \texttt{qsort} \ua für \mintinline{c}{int}-, 
-		\mintinline{c}{double}- oder \mintinline{c}{char}-Arrays funktionieren soll, die allesamt 
+		brauchen diese Information, da \texttt{qsort} \ua für \mintinline{c}{int}-,
+		\mintinline{c}{double}- oder \mintinline{c}{char}-Arrays funktionieren soll, die allesamt
 		unterschiedlichen Speicherbedarf haben.
 \item Die letzte Zeile schließlich benennt den Parameter \texttt{comp}, der eine Vergleichsfunktion
 		benennt. Diese Funktion wird einen \mintinline{c}{int} zurück geben, und nimmt zwei
@@ -886,11 +890,11 @@ Mit diesen Informationen können wir das (leicht abgewandelte) Beispiel von der 
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 #include <stdlib.h>
- 
+
 int comp_ascending(const void* a, const void* b) {
     int arg1 = *(const int *) a;
     int arg2 = *(const int *) b;
- 
+
     if (arg1 < arg2) return -1;
     if (arg1 > arg2) return  1;
     return 0;
@@ -903,18 +907,18 @@ int comp_descending(const void* a, const void* b) {
 int main(void) {
     int ints[] = { -2, 99, 0, -743, 2, 4 };
     int size = sizeof(ints) / sizeof(*ints);
-    
+
     printf("Aufsteigende Sortierung:\n");
     qsort(ints, size, sizeof(int), comp_ascending);
-    
+
     for (int i = 0; i < size; i++) {
         printf("%d ", ints[i]);
     }
     printf("\n");
-    
+
     printf("Absteigende Sortierung:\n");
     qsort(ints, size, sizeof(int), comp_descending);
-    
+
     for (int i = 0; i < size; i++) {
         printf("%d ", ints[i]);
     }
@@ -926,9 +930,9 @@ int main(void) {
 \begin{cmdbox}[Ausführungsbeispiel: \texttt{qsort} mit zwei Sortiermethoden]
 \begin{minted}{text}
 Aufsteigende Sortierung:
--743 -2 0 2 4 99 
+-743 -2 0 2 4 99
 Absteigende Sortierung:
-99 4 2 0 -2 -743 
+99 4 2 0 -2 -743
 \end{minted}
 \end{cmdbox}
 

@@ -1,10 +1,10 @@
 \chapter{Dateneingabe} \label{chp:Input}
 \epigraph{On two occasions I have been asked, \enquote{Pray, Mr. Babbage, if you put into the machine wrong figures, will the right answers come out?} ... I am not able rightly to apprehend the kind of confusion of ideas that could provoke such a question.}{Charles Babbage, Passages from the Life of a Philosopher}
 
-In den letzten Kapiteln haben wir gesehen, wie wir in der Sprache C einfache Berechnungen anweisen können. Die Daten, mit denen gerechnet wurde, standen dabei jedoch schon vor Start des Programmes fest. Hier nun sollen einfache Mittel vorgestellt werden, die Usereingaben und damit Interaktivität ermöglichen.
+In den letzten Kapiteln haben wir gesehen, wie wir in der Sprache C einfache Berechnungen realisieren können. Die Daten, mit denen gerechnet wurde, standen dabei jedoch schon vor Start des Programmes fest. Im folgenden sollen einfache Mittel vorgestellt werden, die Usereingaben und damit Interaktivität ermöglichen.
 
 \section{Dateneingabe mit \texttt{scanf}}
-Der Befehl \texttt{scanf} dient dazu, Tastatureingaben von der Konsole einzulesen, in verschiedene Datenformate umzurechnen und dann als solche im Speicher abzulegen. Der Befehel ist deklariert im Header \texttt{stdio.h} (also ähnlich wie wie auch \texttt{printf}). Betrachten wir das folgende Beispiel:
+Die Funktion \texttt{scanf} dient dazu, Tastatureingaben von der Konsole einzulesen, in verschiedene Datenformate umzurechnen und dann als solche im Speicher abzulegen. Die Funktion ist deklariert im Header \texttt{stdio.h} (wie auch \texttt{printf}). Betrachten wir das folgende Beispiel:
 
 \begin{codebox}[Beispiel: Eine Ganzzahl mit \texttt{scanf} einlesen]
 \begin{minted}[linenos]{c}
@@ -12,18 +12,18 @@ Der Befehl \texttt{scanf} dient dazu, Tastatureingaben von der Konsole einzulese
 
 int main () {
    int Ganzzahl = -1;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%d", &Ganzzahl);
-   
+
    printf("Ihre Eingabe war: %d\n", Ganzzahl);
 }
 \end{minted}
 \end{codebox}
 
-Wie gewohnt haben wir den Header \texttt{stdio.h} in Zeile 1 geladen und können so die Befehle \texttt{printf} und \texttt{scanf} benutzen. In Zeile 4 deklarieren wir eine Variable \texttt{Ganzzahl}, und initialisieren sie mit dem Startwert \texttt{-1}. Nach der Aufforderung an den Benutzer unseres Programms (Zeile 6) lesen wir jetzt mit \texttt{scanf} einen Wert in den Speicher:
+Wie gewohnt haben wir den Header \texttt{stdio.h} in Zeile 1 geladen und können nun die Funktionen \texttt{printf} und \texttt{scanf} verwenden. In Zeile 4 deklarieren wir eine Variable \texttt{Ganzzahl} und initialisieren sie mit dem Startwert \texttt{-1}. Nach der Aufforderung an den Benutzer unseres Programms (Zeile 6) lesen wir jetzt mit \texttt{scanf} einen Wert in den Speicher:
 
-Ähnlich wie \texttt{printf} nimmt \texttt{scanf} als erstes Argument einen \emph{Formatstring} an. Dieser beschreibt, welche Art von Werten erwartet wird, und benutzt dieselben Codes wie \texttt{printf}. (Siehe Tabelle \ref{tab:FormatIn} im Anhang für Details). Das folgende Argument ist die \emph{Adresse, an die der eingelesene Wert geschrieben werden soll}. Wir benutzen den Adress-Operator \texttt{\&}, um dem Compiler mitzuteilen, dass der eingelesene Wert in der Variablen \texttt{Ganzzahl} abgelegt werden soll. Hier überschreiben wir also den Wert von \texttt{Ganzzahl} mit der Eingabe des Users, interpretiert als \mintinline{c}{int} (vorgegeben durch das Formatierungszeichen \texttt{\%d}).
+Ähnlich wie \texttt{printf} nimmt \texttt{scanf} als erstes Argument einen \emph{Formatstring} an. Dieser beschreibt, welche Art von Werten erwartet wird, und benutzt dieselben Formatierungszeichen wie \texttt{printf} (siehe Tabelle \ref{tab:FormatIn} im Anhang für Details). Das folgende Argument ist die \emph{Adresse, an die der eingelesene Wert geschrieben werden soll}. Wir benutzen den Adress-Operator \texttt{\&}, um dem Compiler mitzuteilen, dass der eingelesene Wert an der Adresse der Variable \texttt{Ganzzahl} abgelegt werden soll. Hier überschreiben wir also den Wert von \texttt{Ganzzahl} mit der Eingabe des Users, interpretiert als \mintinline{c}{int} (vorgegeben durch das Formatierungszeichen \texttt{\%d}).
 
 In der Ausführung kann dies so aussehen:
 \begin{cmdbox}[Ausführungsbeispiel: Eine Ganzzahl mit \texttt{scanf} einlesen]
@@ -52,15 +52,15 @@ Während der Code einen Ganzzahl-Wert erwartet (\texttt{\%d}), hat der User eine
 
 \begin{cmdbox}[Ausführungsbeispiel: Eine Ganzzahl mit \texttt{scanf} einlesen]
 \begin{minted}{text}
-"Bitte geben Sie eine Ganzzahl ein:
+Bitte geben Sie eine Ganzzahl ein:
 a
 Ihre Eingabe war: -1
 \end{minted}
 \end{cmdbox}
-Der Buchstabe \texttt{a} kann nicht als Ganzzahl interpretiert werden; daher bricht der Befehl \texttt{scanf} hier ab, und der Startwert \texttt{-1} wird nicht überschrieben.
+Der Buchstabe \texttt{a} kann nicht als Ganzzahl interpretiert werden. Der Startwert \texttt{-1} wird nicht überschrieben.
 
 \begin{hintbox}[Fehlerhafte Usereingaben erwarten]
-Als ProgrammiererIn sollten Sie immer davon ausgehen, dass die Anwender Ihrer Programme Fehler machen werden. Diese Fehler sollen von Ihrem Programm \emph{abgefangen} werden können. Wir werden in Kapitel \ref{chp:Conditions} lernen, wie wir Teile unseres Codes nur unter bestimmten Bedingungen ausführen lassen. Um solche Bedingungen zu formulieren müssen jedoch geeignete (definierte) Startbedingungen vorliegen. Im Beispiel oben könnte geprüft werden, ob der Wert von \texttt{Ganzzahl} nach dem Eingabeversuch immer noch \texttt{-1} ist und eine entsprechende \emph{Fehlerbehandlung} für diesen Fall nachgeschalten werden. (Natürlich ist es möglich, dass ein Anwender genau den Wert \texttt{-1} eingeben will. Welche Startwerte sinnvoll sind und wie die Fehlerbehandlung aussehen kann, hängt vom jeweiligen Kontext ab.) Behalten Sie in jedem Fall den Gedanken, dass fehlerhafte Usereingaben häufig sind und von ihnen \enquote{vorhergesehen} werden sollten. Aus diesem Grund ist es sinnvoll, hier einen Startwert für die Variable \texttt{Ganzzahl} festzulegen, auch wenn dieser quasi sofort überschrieben wird.
+Als ProgrammiererIn sollten Sie immer davon ausgehen, dass die Anwender Ihrer Programme Fehler machen werden. Diese Fehler sollen von Ihrem Programm \emph{abgefangen} werden können. Wir werden in Kapitel \ref{chp:Conditions} lernen, wie wir Teile unseres Codes nur unter bestimmten Bedingungen ausführen lassen. Um solche Bedingungen zu formulieren müssen jedoch geeignete (definierte) Startbedingungen vorliegen. Im Beispiel oben könnte geprüft werden, ob der Wert von \texttt{Ganzzahl} nach dem Eingabeversuch immer noch \texttt{-1} ist und eine entsprechende \emph{Fehlerbehandlung} für diesen Fall nachgeschalten werden. Natürlich ist es möglich, dass ein Anwender genau den Wert \texttt{-1} eingeben will. Welche Startwerte sinnvoll sind und wie die Fehlerbehandlung aussehen kann, hängt vom jeweiligen Kontext ab. Behalten Sie in jedem Fall den Gedanken, dass fehlerhafte Usereingaben häufig sind und von Ihnen \enquote{vorhergesehen} werden sollten. Aus diesem Grund ist es sinnvoll hier einen Startwert für die Variable \texttt{Ganzzahl} festzulegen, auch wenn dieser quasi sofort überschrieben wird.
 \end{hintbox}
 
 Betrachten wir weiter das folgende Beispiel:
@@ -71,10 +71,10 @@ Betrachten wir weiter das folgende Beispiel:
 
 int main () {
    int Ganzzahl = -1;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%f", &Ganzzahl);
-   
+
    printf("Ihre Eingabe war: %d\n", Ganzzahl);
 }
 \end{minted}
@@ -87,7 +87,7 @@ Der Compiler kann diesen (fehlerhaften) Code umsetzen, gibt aber eine entspreche
 \begin{cmdbox}[Compiler-Warnung: Fehlerhafte Typisierung mit \texttt{scanf}]
 \begin{minted}{text}
 myProgram.c: In function ‘main’:
-myProgram.c:7:12: warning: format ‘%f’ expects argument of type ‘float *’, but 
+myProgram.c:7:12: warning: format ‘%f’ expects argument of type ‘float *’, but
 argument 2 has type ‘int *’ [-Wformat=]
     scanf("%f", &Ganzzahl);
            ~^   ~~~~~~~~~
@@ -106,8 +106,7 @@ Ihre Eingabe war: 1065353216
 \end{cmdbox}
 
 Noch schwerwiegender wird der Fehler, wenn wir statt dem Formatierungscode \texttt{\%f} für \mintinline{c}{float} mit \texttt{\%lf} einen \mintinline{c}{double}-Wert einlesen.
-
-Variablen des Typs \mintinline{c}{int} und \mintinline{c}{float} sind 32bit breit\footnote{zumindest auf den heute üblichen Rechnern}. Ein \mintinline{c}{double}-Wert dagegen ist 64bit breit. Beim Einlesen wird also \enquote{über die Grenzen des reservierten Speicherbereichs hinaus geschrieben}. Der Effekt hiervor ist absolut \emph{undefiniertes Verhalten}. Im \enquote{besten Fall} wird der \enquote{zu viel beschriebene} Speicherplatz nicht benötigt und das Programm läuft ohne größere Nebeneffekte weiter. Es ist aber auch möglich, dass in andere reservierte Bereiche hinein geschrieben wird (\emph{bleeding}) und so andere Variablen geändert werden:
+Variablen des Typs \mintinline{c}{int} und \mintinline{c}{float} sind 32 Bit breit\footnote{zumindest auf den heute üblichen Rechnern}. Ein \mintinline{c}{double}-Wert dagegen ist 64 Bit breit. Beim Einlesen wird also \enquote{über die Grenzen des reservierten Speicherbereichs hinaus geschrieben}. Der Effekt hiervon ist absolut \emph{undefiniertes Verhalten}. Im \enquote{besten Fall} wird der \enquote{zu viel beschriebene} Speicherplatz nicht benötigt und das Programm läuft ohne größere Nebeneffekte weiter. Es ist aber auch möglich, dass in andere reservierte Bereiche hinein geschrieben wird (\emph{bleeding}) und so andere Variablen geändert werden:
 
 \begin{warnbox}[Beispiel: Fehler bei \texttt{scanf}: bleeding, leftupper=7mm]
 \begin{minted}[linenos]{c}
@@ -115,17 +114,17 @@ Variablen des Typs \mintinline{c}{int} und \mintinline{c}{float} sind 32bit brei
 
 int main () {
    int x = 10;
-   int y = 10;
-   
+   int y = 10;  // Adresse von y entspricht Adresse von x + 4 !
+
    printf("Bitte geben Sie eine Zahl ein:\n");
    scanf("%lf", &x);
-   
+
    printf("(x, y) = (%d, %d)\n", x, y);
 }
 \end{minted}
 \end{warnbox}
 
-Die beiden Variablen \texttt{x} und \texttt{y} werden im Speicher \enquote{nebeneinander} angelegt. Schreiben wir über die Grenzen von \texttt{x} hinaus, so ändern wir auch \texttt{y}:
+Die beiden Variablen \texttt{x} und \texttt{y} werden im Speicher direkt aufeinander folgend angelegt. Schreiben wir über die Grenzen von \texttt{x} hinaus, so ändern wir auch \texttt{y}:
 
 \begin{cmdbox}[Ausführungsbeispiel: Fehler bei \texttt{scanf}: bleeding]
 \begin{minted}{text}
@@ -135,7 +134,7 @@ Bitte geben Sie eine Zahl ein:
 \end{minted}
 \end{cmdbox}
 
-Im schlimmsten Fall überschreiben Sie Speicherbereiche, in dem ihr Code abgelegt ist und erzeugen so vollkommen chaotisches Verhalten. In den meisten Fällen stürzt Ihr Programm einfach ab (\emph{Segfault}).
+Im schlimmsten Fall resultiert unvorhersagbares Laufzeit-Verhalten oder Absturz des Programms wegen Speicherzugriffsfehler (\emph{Segmentation fault} bzw. kurz \emph{Segfault}).
 
 \begin{warnbox}[Typisierung]
 Achten Sie extrem genau auf richtige Typisierung wann immer Sie mit Adressen (Operator \texttt{\&}) arbeiten. Fehler dieser Art sind in großen Projekten extrem schwierig zu finden und führen zu instabilem Code. Beachten Sie insbesondere alle Warnungen, die der Compiler ausgibt.
@@ -150,10 +149,10 @@ Wie bei \texttt{printf} darf der Formatstring bei \texttt{scanf} auch mehrere Pl
 int main () {
    int    x = 0;
    double y = 0;
-   
+
    printf("Bitte geben Sie eine Ganzahl und eine Fließkommazahl ein:\n");
    scanf("%d %lf", &x, &y);
-   
+
    printf("(x, y) = (%d, %lf)\n", x, y);
 }
 \end{minted}
@@ -182,10 +181,10 @@ Wichtig ist, dass \texttt{scanf} eine \emph{Adresse} erwartet. Ein häufiger Feh
 
 int main () {
    int Ganzzahl = 0;
-   
+
    printf("Bitte geben Sie eine Ganzzahl ein:\n");
    scanf("%d", Ganzzahl);
-   
+
    printf("Ihre Eingabe war: %d\n", Ganzzahl);
 }
 \end{minted}
@@ -197,7 +196,7 @@ Der Compiler gibt eine entsprechende Warnung aus:
 \begin{cmdbox}[Compilerwarnung: Ungültige Adresse übergeben]
 \begin{minted}{text}
 myProgram.c: In function ‘main’:
-myProgram.c:7:12: warning: format ‘%d’ expects argument of type ‘int *’, 
+myProgram.c:7:12: warning: format ‘%d’ expects argument of type ‘int *’,
 but argument 2 has type ‘int’ [-Wformat=]
     scanf("%d", Ganzzahl);
            ~^
@@ -217,7 +216,7 @@ Speicherzugriffsfehler (Speicherabzug geschrieben)
 
 \section{Ausblick: Eingabe in C++}
 \begin{plusbox}
-Wie schon bei der Textausgabe kann alles oben gesagte auch in C++ angewandt werden. Es bietet sich jedoch an, auch hier wieder \emph{Streams} zu verwenden. Das folgende Beispiel zeigt, wie mit den Mitteln der \texttt{iostream}-Bibliothek Wert eingelesen werden können.
+Wie schon bei der Textausgabe kann alles oben gesagte auch in C++ angewandt werden. Es bietet sich jedoch an, auch hier wieder \emph{Streams} zu verwenden. Das folgende Beispiel zeigt, wie mit den Mitteln der \texttt{iostream}-Bibliothek Werte eingelesen werden können.
 
 \begin{codebox}[Beispiel: Eingabe mehrerer Werte mit \texttt{scanf}]
 \begin{minted}[linenos]{c++}
@@ -227,14 +226,14 @@ int main () {
    int    x = 0,
           y = 0;
    double z = 0;
-   
+
    std::cout << "Bitte geben Sie eine Ganzahl ein:" << std::endl;
    std::cin  >> x;
-   
+
    std::cout << "Bitte geben Sie eine Ganzahl ";
    std::cout << "und eine Fließkommazahl ein:" << std::endl;
    std::cin  >> y >> z;
-   
+
    std::cout << "Ihre erste Eingabe war: " << x << std::endl;
    std::cout << "Ihre zweite Eingabe war: ";
    std::cout << y << ", " << z << std::endl;

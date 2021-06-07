@@ -6,9 +6,10 @@ Damit ein Prozessor eine Information verarbeiten kann, muss diese in Form von Ke
 Wir wollen uns hier vertieft mit der Datenstruktur von Zahlen im Speicher beschäftigen, um im weiteren die Arbeitsweise vieler Befehle genau zu verstehen.
 
 \section{Daten im Speicher}
-\subsection{Registerbreite und Vorzeichen bei Zahlen}\label{sec:DataRepresentation}
+%\subsection{Registerbreite und Vorzeichen bei Zahlen}\label{sec:DataRepresentation}
+\subsection{Wertemenge und Vorzeichen bei Zahlen}\label{sec:DataRepresentation}
 \label{sec:Datawidth}
-In Abschnitt \ref{sec:BinaryNumbers} haben wir bereits gesehen wie positive Ganzzahlen und Schriftzeichen als binäre Werte dargestellt werden können. Ein Prozessor kann jedoch nur Einheiten von je 8 Bits (also ganze \emph{Bytes}) behandeln. Eine Gruppe aus 8 Bits kann einen von $2^8 = 256$ Werten darstellen, also beispielsweise den Zahlenbereich von 0 bis 255. Soll mit größeren Werte gearbeitet werden, müssen mehrere Bytes zu einer Einheit zusammengefasst werden. Zwei Bytes (16 Bits) erlauben also $2^{16} = 65\,536$ verschiedene Werte, bei 4 Bytes (32 Bits) sind dies bereits $2^{32} = 4\,294\,967\,296$ verschiedene Werte. Natürlich muss dem Compiler mitgeteilt werden, wie viele Bytes zu einer Einheit zusammengefasst werden. Dies geschieht über den \emph{Datentyp}. Wir haben bereits den Datentyp \mintinline{c}{int} kennengelernt. Eine Variable vom Typ \mintinline{c}{int} ist eine Ganzzahl, deren genaue Größe von der \emph{Architektur des Zielsystems} abhängt, also von der Art des Rechners, auf dem der Compiler läuft. Der Compiler entscheidet hier also, um ein möglichst effizient laufendes Programm zu erstellen. Üblicherweise werden \mintinline{c}{int}s als 32bit-Variablen umgesetzt; für bestimmte Microcontroller oder ältere Prozessoren kann dies aber auch als 16bit-Wert interpretiert werden. Neben \mintinline{c}{int} gibt es außerdem noch \mintinline{c}{short int} (16 bit), \mintinline{c}{char} (8 bit), \mintinline{c}{long int} (32 bit, auch auf älteren Prozessoren), und \mintinline{c}{long long int} (64 bit). Wo es wichtig ist, die \emph{Registerbreite} einer Ganzzahl-Variable exakt zu kennen, stehen noch andere Datentypen zur Verfügung -- Siehe die Tabellen \ref{tab:DatatypesStd} und \ref{tab:DatatypesExt} im Anhang.
+In Abschnitt \ref{sec:BinaryNumbers} haben wir bereits gesehen wie positive Ganzzahlen und Schriftzeichen als binäre Werte dargestellt werden können. Ein Prozessor kann i.d.R. jedoch nur Einheiten von je 8 Bits (also ganze \emph{Bytes}) bzw. $2^n\cdot8$ Bits behandeln. Eine Gruppe aus 8 Bits kann einen von $2^8 = 256$ Werten darstellen, also beispielsweise den Zahlenbereich von 0 bis 255. Soll mit größeren Werte gearbeitet werden, müssen mehrere Bytes zu einer Einheit zusammengefasst werden. Zwei Bytes (16 Bits) erlauben also $2^{16} = 65\,536$ verschiedene Werte, bei 4 Bytes (32 Bits) sind dies bereits $2^{32} = 4\,294\,967\,296$ verschiedene Werte. Natürlich muss dem Compiler mitgeteilt werden, wie viele Bytes zu einer Einheit zusammengefasst werden. Dies geschieht über den \emph{Datentyp}. Wir haben bereits den Datentyp \mintinline{c}{int} kennengelernt. Eine Variable vom Typ \mintinline{c}{int} ist eine Ganzzahl, deren genaue Größe von der \emph{Architektur des Zielsystems} abhängt, also von der Art des Rechners, auf dem der Compiler läuft. Der Compiler entscheidet hier also, um ein möglichst effizient laufendes Programm zu erstellen. Üblicherweise werden \mintinline{c}{int}s als 32-bit-Variablen umgesetzt; für bestimmte Microcontroller oder ältere Prozessoren kann dies aber auch als 16-bit-Wert interpretiert werden. Neben \mintinline{c}{int} gibt es außerdem noch \mintinline{c}{short int} (16 bit), \mintinline{c}{char} (8 bit), \mintinline{c}{long int} (32 bit, auch auf älteren Prozessoren), und \mintinline{c}{long long int} (64 bit). Wo es wichtig ist, die \emph{Registerbreite} einer Ganzzahl-Variable exakt zu kennen, stehen noch andere Datentypen zur Verfügung -- Siehe die Tabellen \ref{tab:DatatypesStd} und \ref{tab:DatatypesExt} im Anhang.
 
 Negative Zahlen werden durch die Behandlung des Bits mit der höchsten Wertigkeit als \emph{Vorzeichen-Bits} dargestellt. Das bedeutet, dass ein Bit die Information positiv/negativ enthält anstatt zum normalen Teil der Zahl zu gehören. Um zu vermeiden, dass es eine \enquote{positive Null} gibt, die verschieden von der \enquote{negativen Null} ist, wird die Wertigkeit des Vorzeichenbits von der gesamten Zahl abgezogen. Dieses schwierig in Worte zu fassende Konzept wird klarer, wenn wir es anhand eines Beispiels betrachten:
 
@@ -29,7 +30,7 @@ Negative Zahlen werden durch die Behandlung des Bits mit der höchsten Wertigkei
   \node (s2) at (5, 4.3) {\tiny 2};
   \node (s1) at (6, 4.3) {\tiny 1};
   \node (s0) at (7, 4.3) {\tiny 0};
-  
+
   \node (n7) at (0, 4) {1};
   \node (n6) at (1, 4) {0};
   \node (n5) at (2, 4) {1};
@@ -38,7 +39,7 @@ Negative Zahlen werden durch die Behandlung des Bits mit der höchsten Wertigkei
   \node (n2) at (5, 4) {0};
   \node (n1) at (6, 4) {1};
   \node (n0) at (7, 4) {0};
-  
+
   \node (e7) at (8.5, 0.0) {$\mathtt{-1 \times 2^7 = -128}$};
   \node (e6) at (8.5, 0.5) {$\mathtt{ 0 \times 2^6 = ~~~0}$};
   \node (e5) at (8.5, 1.0) {$\mathtt{ 1 \times 2^5 = ~~32}$};
@@ -47,7 +48,7 @@ Negative Zahlen werden durch die Behandlung des Bits mit der höchsten Wertigkei
   \node (e2) at (8.5, 2.5) {$\mathtt{ 0 \times 2^2 = ~~~0}$};
   \node (e1) at (8.5, 3.0) {$\mathtt{ 1 \times 2^1 = ~~~2}$};
   \node (e0) at (8.5, 3.5) {$\mathtt{ 0 \times 2^0 = ~~~0}$};
-  
+
   \draw[flow] (n7.south) |- (e7.west);
   \draw[flow] (n6.south) |- (e6.west);
   \draw[flow] (n5.south) |- (e5.west);
@@ -88,12 +89,12 @@ KursteilnehmerInnen, die sich weiter für den Aufbau von Fließkommawerten inter
 
 
 \subsection{Adressierung -- Pointer} \label{sec:Pointer}
-Man kann sich den Arbeitsspeicher als langes Band von kleinen, nummerierten Speicherzellen vorstellen. Jede Zelle fässt genau ein Byte. Um einen Wert zu lesen oder zu schreiben muss dem Prozessor die Nummer der Zelle mitgeteilt werden, die verändert wird. Diese Nummer wird \emph{Adresse} oder \emph{Pointer} genannt. Wenn wir im Code Variablen benutzen, übersetzt der Compiler diese in Adressen. Für die einfachsten Aufgaben kann der Compiler die Speicherverwaltung komplett übernehmen. Wir werden jedoch schon in Kapitel \ref{chp:Input} Situationen kennen lernen, wo wir diese Speicherstruktur kennen müssen. 
+Man kann sich den Arbeitsspeicher als langes Band von kleinen, nummerierten Speicherzellen vorstellen. Jede Zelle fässt genau ein Byte. Um einen Wert zu lesen oder zu schreiben muss dem Prozessor die Nummer der Zelle mitgeteilt werden, die verändert wird. Diese Nummer wird \emph{Adresse} oder \emph{Pointer} genannt. Wenn wir im Code Variablen benutzen, übersetzt der Compiler diese in Adressen. Für die einfachsten Aufgaben kann der Compiler die Speicherverwaltung komplett übernehmen. Wir werden jedoch schon in Kapitel \ref{chp:Input} Situationen kennen lernen, wo wir diese Speicherstruktur kennen müssen.
 
 \begin{tcolorbox}[title=Speicherbild]
 \begin{center}
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={text width=8mm,
       text height=4mm, draw=black, inner sep=1mm},
     ld/.style={draw=blue,shorten >=2pt,->}
@@ -108,18 +109,18 @@ Man kann sich den Arbeitsspeicher als langes Band von kleinen, nummerierten Spei
   \node (labelMem) at (8,  1) {Symbole im Code};
   \node (labelMem) at (8,  0) {Werte im Speicher};
   \node (labelMem) at (8, -1) {Adressen};
-  
+
   \node (a1) [below=2mm of c1]            {\tiny 0x27ff};
   \node (a2) [below=2mm of c2, color=red] {\tiny 0x2800};
   \node (a3) [below=2mm of c3]            {\tiny 0x2801};
   \node (a4) [below=2mm of c4]            {\tiny 0x2802};
   \node (a5) [below=2mm of c5]            {\tiny 0x2803};
   \node (a6) [below=2mm of c6]            {\tiny 0x2804};
-  
+
   \node (ptr) [below=8mm of c1] {\scriptsize Adresse von \texttt{x}};
   \node (vc2) [above=6mm of c1] {\scriptsize Variable \texttt{x}};
   \node (vc0) [above=2mm of c1] {\scriptsize Variable \texttt{y}};
-  
+
   \draw [ld] (ptr.east) .. controls +(0.3,0) .. (a2.south);
   \draw [ld] (vc0.east) .. controls +(0.4,0) .. (c2.north);
   \draw [ld] (vc2.east) .. controls +(2.4,0) .. (c4.north);
@@ -127,7 +128,7 @@ Man kann sich den Arbeitsspeicher als langes Band von kleinen, nummerierten Spei
 \end{center}
 \end{tcolorbox}
 
-Adressen sind Zahlen und können damit auch im Speicher als binäre Werte abgebildet werden. Abhängig von der \emph{Prozessorarchitektur} handelt es sich dabei um 32bit- oder 64bit-Ganzzahlen. Aus technischen Gründen werden diese meist nicht als \emph{Dezimalzahlen} sondern als \emph{Hexadezimalzahlen} angegeben (\ie mit den \enquote{Ziffern} \texttt{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F}. Siehe Abschnitt \ref{sec:NumSystems} für weitere Details hierzu.
+Adressen sind Zahlen und können damit auch im Speicher als binäre Werte abgebildet werden. Abhängig von der \emph{Prozessorarchitektur} handelt es sich dabei um 32-bit oder 64-bit Ganzzahlen. Meist werden diese nicht als \emph{Dezimalzahlen}, sondern als \emph{Hexadezimalzahlen} angegeben (\ie mit den \enquote{Ziffern} \texttt{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F}. Siehe Abschnitt \ref{sec:NumSystems} für weitere Details hierzu.
 
 Neben der Information, wo im Speicher eine bestimmte Information liegt, muss natürlich auch bekannt sein, wie diese zu interpretieren ist. Daher wird an dieser Stelle zu jedem Datentyp ein zugehöriger \emph{Pointer} eingeführt, also ein Datentyp, der die Adresse einer Information enthält.
 
@@ -164,7 +165,7 @@ Pointer können \emph{dereferenziert} werden; das heißt, anstatt mit der Adress
 int main () {
    int   normaleVariable = 5;
    int * pointer = &normaleVariable;
-   
+
    printf("normaleVariable = %d\n", normaleVariable);
    printf("*pointer        = %d\n", *pointer);
    printf("Adresse von normaleVariable: %p\n", pointer);
@@ -190,7 +191,7 @@ normaleVariable = 8
 \end{cmdbox}
 
 \begin{warnbox}[Große Bedeutung von Pointern in C]
-In der Sprache C ist der Umgang mit Pointern unumgänglich. Verinnerlichen Sie daher die soebenen gezeigten Konzepte; wir werden hierauf immer wieder aufbauen.
+In der Sprache C ist der Umgang mit Pointern üblich, aber zugleich auch eine der größten Fehlerquellen. Verinnerlichen Sie daher die soebenen gezeigten Konzepte; wir werden hierauf immer wieder aufbauen.
 \end{warnbox}
 
 \FloatBarrier
@@ -213,7 +214,7 @@ Für Elektronik-Anwendungen ist es oft nötig, einzelne Schalter an- oder auszus
 
 Dazu stehen uns die Operatoren \texttt{\~}, \texttt{\&}, \texttt{|}, \texttt{\^}, \texttt{<{}<} und \texttt{>{}>} zur Verfügung.
 
-Die \emph{bitweise Negation} (NOT) \texttt{\~} kehrt jedes Bit um. Betrachten wir die vorzeichenlose 8-Bit-Zahl \texttt{42} (\texttt{00101010}). Das Ergebnis der Negation ist der Wert \texttt{213} (Binärzahl \texttt{11010101}). Als Code lässt sich das wie folgt umsetzen:
+Die \emph{bitweise Negation} (NOT, auch \emph{1er Komplement} genannt) \texttt{\~} kehrt jedes Bit um. Betrachten wir die vorzeichenlose 8-Bit-Zahl \texttt{42} (\texttt{00101010}). Das Ergebnis der Negation ist der Wert \texttt{213} (Binärzahl \texttt{11010101}). Als Code lässt sich das wie folgt umsetzen:
 \begin{codebox}[Beispiel: Bitweise Negation]
 \begin{minted}[linenos]{c}
 int main () {
@@ -252,7 +253,7 @@ int main () {
 \end{minted}
 \end{codebox}
 
-Die Negation benötigt nur ein \emph{Argument} (Wert, mit dem gearbeitet wird), und wird daher \emph{unärer Operator} genannt. Für AND, OR und XOR sind zwei Werte nötig, weswegen diese als \emph{binäre Operatoren} bezweichnet werden. Die Argumente können auch komplexe Ausdrücke sein, also Ergebnisse von Berechnungen:
+Die Negation benötigt nur ein \emph{Argument} (Wert, mit dem gearbeitet wird), und wird daher \emph{unärer Operator} genannt. Für AND, OR und XOR sind zwei Werte nötig, weswegen diese als \emph{binäre Operatoren} bezeichnet werden. Die Argumente können auch komplexe Ausdrücke sein, also Ergebnisse von Berechnungen:
 \begin{codebox}[Beispiel: Bitweise Operatoren]
 \begin{minted}[linenos]{c}
 int main () {
@@ -278,7 +279,10 @@ Dies löst folgende Veränderung aus:
      0 1 0 1 0 1 0 0    84       0 0 1 0 1 0 1 0    42
 \end{minted}
 \end{codebox}
-Bei einem Bitshift nach links werden die Bits am rechten Ende des Bitmusters mit nullen aufgefüllt. Stellen, die am linken Ende über die Registerbreite der aufnehmenden Variable hinaus verschoben werden, gehen verloren. Alles eben gesagte gilt analog für den Bitshift nach rechts.
+Bei einem Bitshift nach links werden die Bits am rechten Ende des Bitmusters mit nullen aufgefüllt.
+%Stellen, die am linken Ende über die Registerbreite der aufnehmenden Variable hinaus verschoben werden, gehen verloren.
+Stellen, die über das linke Ende hinaus verschoben werden, gehen verloren.
+Alles eben gesagte gilt analog für den Bitshift nach rechts.
 
 \begin{hintbox}[Multiplikation mit Zweierpotenzen]
 Ein Bitshift um \texttt{n} Stellen nach links entspricht der Multiplikation mit der Zahl $2^{n}$.
@@ -288,7 +292,7 @@ Dies gilt nur für Ganzzahlen, nicht aber für Fließkommazahlen.
 \end{hintbox}
 
 \section{Typecasting} \label{sec:Casting}
-Es ist gelegentlich notwendig, einen Wert von einem Datentyp in einen anderen umzuwandeln ohne dabei seine Interpretation zu ändern. (Beispielsweise also sollte die Ganzzahl \texttt{3} in die Fließkommazahl \texttt{3.0} umgewandelt werden.) Bei einer solchen Umwandlung ändert sich das Bitmuster, nicht aber der mit diesem Muster dargestellte Wert.
+Es ist gelegentlich notwendig, einen Wert von einem Datentyp in einen anderen umzuwandeln. Bei einer solchen Umwandlung kann sich das Bitmuster ändern, beispielsweise wenn die Ganzzahl \texttt{3} in die Fließkommazahl \texttt{3.0} umgewandelt wird.
 
 Eine solche Umwandlung wird als \emph{Typecasting} bezeichnet. Die Syntax hierzu ist simpel:
 \begin{codebox}[Syntax: Typecasting]
@@ -308,7 +312,7 @@ int main () {
 \end{codebox}
 
 \begin{hintbox}[Reihenfolge der Operationen]
-Der Compiler arbeitet \enquote{von links nach rechts}, beachtet aber, dass manche Operationen \enquote{Vorrang} vor anderen haben (\eg Punkt-vor-Strich). Im Obigen Beispiel wird also zuerst der Typecast der Variablen \texttt{x} durchgeführt, und dann der zum \mintinline{c}{double} konvertierte Wert von \texttt{x} durch \texttt{y} geteilt. Damit erhält \texttt{z} den Wert \texttt{1.2}.
+Der Compiler arbeitet \enquote{von links nach rechts}, beachtet aber, dass manche Operationen \enquote{Vorrang} vor anderen haben (\eg Punkt-vor-Strich). Im obigen Beispiel wird also zuerst der Typecast der Variablen \texttt{x} durchgeführt, und dann der zum \mintinline{c}{double} konvertierte Wert von \texttt{x} durch \texttt{y} geteilt. Damit erhält \texttt{z} den Wert \texttt{1.2}.
 
 Im folgenden Beispiel dagegen erhält \texttt{z} den Wert 1.0:
 \begin{codebox}[Beispiel: Fehlerhaftes Typecasting int zu double]
@@ -332,11 +336,11 @@ Gleich zu Beginn dieses Kurses in Abschnitt \ref{sec:BinaryNumbers} haben wir da
 \texttt{0 1 2 3 4 5 6 7 8 9 A B C D E F}
 \end{center}
 
-Um eine Zahl als \emph{hexadezimal} zu kennzeichnen wird häufig der Präfix \texttt{0x} vorangestellt. Der Ausdruck \texttt{0x10} beschreibt also die \emph{Dezimalzahl} 16\footnote{Andere verbreitete Schreibweisen sind \texttt{10h}, \texttt{$10_{16}$} oder \texttt{$10_{hex}$}}. Groß- und Kleinschreibung wird hier nicht unterschieden, es gilt \texttt{0xab} = \texttt{0XAB}.
+Um eine Zahl als \emph{hexadezimal} zu kennzeichnen wird häufig der Präfix \texttt{0x} vorangestellt. Der Ausdruck\footnote{Andere verbreitete Schreibweisen sind \texttt{10h}, \texttt{$10_{16}$} oder \texttt{$10_{hex}$}} \texttt{0x10} entspricht also der \emph{Dezimalzahl} 16. Groß- und Kleinschreibung wird hier nicht unterschieden, es gilt \texttt{0xab} = \texttt{0XAB}.
 
 Die weiteren Informationen in diesem Abschnitt sind für besonders interessierte KursteilnehmerInnen gedacht und müssen für den Kurserfolg nicht im Detail verstanden werden. Sie werden diese Idee aber in der IT-Welt immer wieder antreffen und Nutzen aus dem Verständnis ziehen.
 
-Das Hexadezimalsystem wird immer da verwendet, wo die \emph{Registerbreite} eines Wertes im Speicher Relevanz hat\footnote{Historische Bedeutung hat in diesem Kontext auch noch das \emph{Oktalsystem}, das die Ziffern \texttt{0..7} verwendet. Heute lebt es fast nur noch in dem Witz fort: \emph{Why do programmers confuse Halloween and Christmas? Because Oct 31 = Dec 25...}}. Wir haben bereits gehört, dass ein Computer nur Einheiten zu jeweils 8 Bit behandeln kann. Ein Byte, also eine Gruppe von 8 Bit erlaubt, wie in Abschnitt \ref{sec:Datawidth} erwähnt, 256 verschiedene Werte. Im Hexadezimalsystem wird daraus der \enquote{runde} Wert \texttt{0x100}. Ähnlich ist die Zahl der mit 16 Bit darstellbaren Zahlen gleich \texttt{0x10000} und für 32 bit erhalten wir \texttt{0x100000000} verschiedene Möglichkeiten. Dies ist kein Zufall -- Die Zahl 16 (also die Basis des Hexadezimalsystems) ist eine Potenz der Zahl 2 (also der Basis des Binärsystems). Es besteht eine \enquote{direkte Verwandschaft} zwischen Binärzahlen und Hexadezimalzahlen.
+Die Darstellung von Zahlen bzw. allgemeiner von Bitfolgen im Hexadezimalsystem ist mitunter von Vorteil\footnote{Historische Bedeutung hat in diesem Kontext auch noch das \emph{Oktalsystem}, das die Ziffern \texttt{0..7} verwendet. Heute lebt es fast nur noch in dem Witz fort: \emph{Why do programmers confuse Halloween and Christmas? Because Oct 31 = Dec 25...}}. Wir haben bereits gehört, dass ein Computer nur Gruppen von Bits behandeln kann. Ein Byte, also eine Gruppe von 8 Bit erlaubt, wie in Abschnitt \ref{sec:Datawidth} erwähnt, 256 verschiedene Werte. Im Hexadezimalsystem wird daraus der \enquote{runde} Wert \texttt{0x100}. Ähnlich ist die Zahl der mit 16 Bit darstellbaren Zahlen gleich \texttt{0x10000} und für 32 bit erhalten wir \texttt{0x100000000} verschiedene Möglichkeiten. Dies ist kein Zufall -- Die Zahl 16 (also die Basis des Hexadezimalsystems) ist eine Potenz der Zahl 2 (also der Basis des Binärsystems). Es besteht eine \enquote{direkte Verwandschaft} zwischen Binärzahlen und Hexadezimalzahlen.
 
 Eine Zahl, die mit $n$ Bit dargestellt wird, kann also mit $\frac{n}{4}$ Hexadezimal-Ziffern geschrieben werden. Dies ist offensichtlich praktischer als lange Ketten von 1en und 0en zu schreiben.
 
@@ -347,12 +351,14 @@ Siehe auch \url{https://de.wikipedia.org/wiki/Additive_Farbmischung}
 \end{hintbox}
 
 \begin{hintbox}[Zweier-Potenzen in der Computerwelt]
-\emph{Alles} in der Computertechnik ist um Potenzen der Zahl 2 aufgebaut. Wir finden 32bit und 64bit-Betriebssysteme, USB-Sticks mit 2, 4, 8 oder 16 GB, oder sogar Bildschirmauflösungen wie 1024x768 Pixel. Diese Zahlen kommen derartig häufig vor, dass sie von TechnikerInnen bereits als \enquote{runde Zahlen} wahrgenommen werden. So feierte beispielsweise Randall Munroe, Author des Webcomics \href{https://www.xkcd.com/}{xkcd} seinen eintausendsten Strip mit dieser Veröffentlichung:
+\emph{Alles} in der Computertechnik ist um Potenzen der Zahl 2 aufgebaut.
+%Wir finden 32-bit und 64-bit-Betriebssysteme, USB-Sticks mit 2, 4, 8 oder 16 GB, oder sogar Bildschirmauflösungen wie 1024x768 Pixel.
+Diese Zahlen kommen derartig häufig vor, dass sie von TechnikerInnen bereits als \enquote{runde Zahlen} wahrgenommen werden. So feierte beispielsweise Randall Munroe, Author des Webcomics \href{https://www.xkcd.com/}{xkcd} seinen eintausendsten Strip mit dieser Veröffentlichung:
 
 \begin{center}
 \includegraphics[width=.9\linewidth]{./gfx/xkcd-1000}
 \end{center}
 \captionof{figure}
-	[Dezimale und Binäre runde Zahlen]
-	{Dezimale und Binäre runde Zahlen. Quelle: \url{https://www.xkcd.com/1000/}}
+	[Dezimale und binäre runde Zahlen]
+	{Dezimale und binäre runde Zahlen. Quelle: \url{https://www.xkcd.com/1000/}}
 \end{hintbox}

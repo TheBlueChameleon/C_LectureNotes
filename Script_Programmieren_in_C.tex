@@ -41,7 +41,7 @@
 % gfx
 \usepackage{wrapfig}
 \usepackage{graphicx}
-\usepackage[bf]{caption} 
+\usepackage[bf]{caption}
 	\captionsetup{format=plain}
 \usepackage{placeins}
 \usepackage[table]{xcolor}
@@ -54,7 +54,7 @@
 	\definecolor{chameleonblue3}{RGB}{48,132,149}
 	\definecolor{chameleonblue4}{RGB}{0,98,90}
 	\definecolor{grey}{RGB}{128,128,128}
-	
+
 \usepackage{tikz}
 	\usetikzlibrary{positioning}
 	\usetikzlibrary{matrix}
@@ -62,7 +62,7 @@
 	\usetikzlibrary{backgrounds}
 	\usetikzlibrary{calc}
 	\usetikzlibrary{decorations.pathreplacing}
-	\tikzstyle{every picture}+=[remember picture] 
+	\tikzstyle{every picture}+=[remember picture]
 \usepackage{adjustbox}
 
 % tcolorboxes
@@ -126,7 +126,7 @@
 		 arc=0pt,
 		 outer arc=0pt
 		}
-    
+
 % tables
 \usepackage{tabularx}
 \usepackage{booktabs}
@@ -149,8 +149,8 @@
 \usepackage[
 	citecolor=black,
 	colorlinks=true,
-	linkcolor=black, 
-	anchorcolor=black, 
+	linkcolor=black,
+	anchorcolor=black,
 	urlcolor=black,
 	breaklinks=true
 ]{hyperref}
@@ -180,7 +180,8 @@
 %
 \newcommand{\myName}{Stefan Hartinger\xspace}
 \newcommand{\myVersionTime}{April 2019}
-\newcommand{\currentPeriod}{Wintersemester 2020/21\xspace}
+%\newcommand{\currentPeriod}{Wintersemester 2020/21\xspace}
+\newcommand{\currentPeriod}{Sommersemester 2021\xspace}
 \newcommand{\myTitle}{Programmieren in C und C++\xspace}
 \newcommand{\mySubtitle}{Begleitscript zur Vorlesung im \currentPeriod\xspace}
 
@@ -226,37 +227,37 @@
 
 %==============================================================================%
 % THE REAL STUFF
-%	
+%
 \begin{document}
 	\begin{titlepage}
 		\centering
-		\makeatletter						
+		\makeatletter
 		% activate some weird special mode that enables the use of \@title and other macros
-		
+
 		\Huge \textsc{\@title}
-					
+
 		\vspace{6\tabcolsep}
-		
+
 		\LARGE \textsc{\@subtitle}
 
 		\vspace{6\tabcolsep}
-			
+
 		\large
 		Stand \@date\\
-		%			
+		%
 		\vspace{7\tabcolsep}
-			
+
 		\includegraphics[width=.3\paperwidth]{./gfx/urlogo}
-				
+
 		\vspace{6\tabcolsep}
-			
+
 		\large
 		Universität Regensburg \\
 		Fakultät Physik
 
 		\makeatother			% deactivate special mode for \@title, etc.
 	\end{titlepage}
-	
+
 	{
 		\pagestyle{empty}
 		\renewcommand*{\chapterpagestyle}{empty}
@@ -268,7 +269,7 @@
 
 		\clearpage
 	}
-	
+
 	\setcounter{page}{1}
 
 	\include{01_WhatIsCPU}
@@ -289,8 +290,8 @@
 	\include{16_Recursion}
 	\include{17_LinkedLists}
 	\include{18_CPP}
-	
+
 	\include{99_Appendix}
-	
-	\listoffigures	
+
+	\listoffigures
 \end{document}

@@ -20,13 +20,13 @@ struct Name {
 
 Wie üblich ist \texttt{Name} dabei eine alphanumerische Zeichenkette aus bis zu 40 Zeichen, die einen eindeutigen Namen beschreibt, \ie die nicht schon eine Variable im aktuellen Scope oder eine Funktion benennt.
 
-\texttt{Datentyp} ist ein beliebiger Datentyp wie \mintinline{c}{int}, inclusive Pointern oder anderen \mintinline{c}{struct}s.
+\texttt{Datentyp} ist ein beliebiger Datentyp wie \eg \mintinline{c}{int}. Ebenso erlaubt sind Zeiger auf Datentypen oder auch andere \mintinline{c}{struct}s bzw. Zeiger darauf.
 
 Die \texttt{Feldname}n sind alphanumerische Zeichenketten von bis zu 40 Zeichen Länge, die jedoch \emph{nicht} global eindeutig sein müssen: eine \mintinline{c}{struct} öffnet ihren eigenen Scope (vgl. die \{geschweiften Klammern\}, in die die Scope-Felder eingeschlossen sind).
 
 Grundsätzlich kann eine \mintinline{c}{struct} an jeder Stelle im Programm angelegt werden; sie ist dann wie gewohnt nur für den aktuellen Scope gültig. Meist wird die Definition einer \mintinline{c}{struct} im gesamten Programm gebraucht; man setzt sie daher üblicherweise global, also vor/außerhalb der \mintinline{c}{main}.
 
-Mit dieser Defintion einer \mintinline{c}{struct} kann man nun Variablen dieses Typs anlegen. Eine Variable eines solchen Typs kann man sich als Spalte einer solchen Tabelle vorstellen. Eine solche Variable wird in einem sinnvollen Scope (\eg in der \texttt{main}) deklariert mit der Syntax:
+Mit dieser Definition einer \mintinline{c}{struct} kann man nun Variablen dieses Typs anlegen. Eine Variable eines solchen Typs kann man sich als Spalte einer solchen Tabelle vorstellen. Eine solche Variable wird deklariert mit der Syntax:
 
 \begin{codebox}[Syntax: Deklaration einer \texttt{struct}]
 \begin{minted}{c}
@@ -69,7 +69,7 @@ int main () {
 \end{tcolorbox}
 \end{tcbraster}
 
-% include gfx: Rows with type names; 
+% include gfx: Rows with type names;
 
 \subsection{Direkter Zugriff auf \mintinline{c}{struct}-Elemente}
 Im obigen Beispiel haben wir die \mintinline{c}{struct} definiert und Variablen des Typs \mintinline{c}{struct Karteieintrag} deklariert. Um nun die einzelnen Felder anzusprechen (\ie die Tabellen-Elemente zu lesen und zu schreiben) bedienen wir uns der Syntax \texttt{Variable.Feldname}. Achten hier auf die Unterscheidung zwischen \emph{Datentyp} (\eg \mintinline{c}{struct Karteieintrag}), \emph{Variable} (\eg \texttt{Cessi}) und \emph{Feldname} (\eg \texttt{vorname}).
@@ -88,7 +88,7 @@ struct Karteieintrag {                 // Deklaration Datentyp
 
 int main () {
   struct Karteieintrag Cessi, Chami;   // Deklaration Variablen
-  
+
   strcpy(Cessi.vorname,  "Ce");        // Zugriffe auf Feldelemente in 'Cessi'
   strcpy(Cessi.nachname, "Saurus");
   Cessi.geburtsjahr  = 1897;
@@ -109,7 +109,7 @@ int main () {
 
 Anstatt nun also mit zwei mal fünf getrennten Variablen hantieren zu müssen, können wir nun fünf Werte \enquote{als Paket} behandeln; ein solches Paket darf beispielsweise als Parameter einer Funktion übergeben. Vergleichen Sie die beiden folgenden Funktionen sowie ihre Aufrufe:
 
-\begin{codebox}[Beispiel: Vergleich: Funktion mit \texttt{struct}-Parameter und getrennte Variablen]
+\begin{codebox}[Beispiel: Vergleich Funktion mit \texttt{struct}-Parameter und getrennte Variablen]
 \begin{minted}[linenos]{c}
 #include <stdio.h>
 #include <string.h>
@@ -146,7 +146,7 @@ void KarteiZeigenStruct (struct Karteieintrag person) {
 
 int main () {
   struct Karteieintrag Cessi, Chami;
-  
+
   /* Eintragen von Werten in Variablen 'Cessi', 'Chami' */
 \end{minted}
 \end{codebox}
@@ -159,15 +159,15 @@ int main () {
     Cessi.geburtsmonat,
     Cessi.geburtstag
   );
-  
+
   printf("\n");
-  
-  KarteiZeigenStruct(Chami); 
+
+  KarteiZeigenStruct(Chami);
 }
 \end{minted}
 \end{codebox}
 
-\begin{cmdbox}[Ausgabebeispiel: Vergleich: Funktion mit \texttt{struct}-Parameter und getrennte Variablen]
+\begin{cmdbox}[Ausgabebeispiel: Vergleich Funktion mit \texttt{struct}-Parameter und getrennte Variablen]
 \begin{minted}{text}
 Vorname:        Ce
 Nachname:       Saurus
@@ -308,7 +308,7 @@ typedef int (*funcPtr_comp) (const void *, const void *);
  * void qsort( void * ptr, size_t count, size_t size,
  *             int (*comp)(const void *, const void *) );
  */
-void qsort (void * ptr, size_t count, size_t size, 
+void qsort (void * ptr, size_t count, size_t size,
             funcPtr_comp comp);
 \end{minted}
 \end{codebox}
@@ -318,7 +318,7 @@ Die Originaldefinition erlaubt zwar, direkt Rückgabetyp und Typ der Parameter z
 \mintinline{c}{struct}s können auch Pointer auf Instanzen desselben Typs enthalten:
 \begin{codebox}[Beispiel: \texttt{struct} mit Referenz auf Instanz gleichen Typs]
 \begin{minted}[linenos]{c}
-struct linkedList{
+struct linkedList {
   double              content;
   struct linkedList * next;
 };
@@ -340,7 +340,7 @@ Um für solche Strukturen dennoch den Komfort von \mintinline{c}{typedef} nutzen
 
 \begin{codebox}[Beispiel: \texttt{typedef} und \texttt{struct} mit Referenz auf Instanz gleichen Typs (korrekt)]
 \begin{minted}[linenos]{c}
-typedef struct LL_struct {
+typedef struct LL_struct {   // linkedList struct
   double             content;
   struct LL_struct * next;   // okay: struct LL_struct kann aufgelöst werden
 } linkedList;                // Symbol linkedList steht ab hier zur Verfügung.
@@ -361,7 +361,7 @@ Haben wir einen Pointer auf eine \mintinline{c}{struct}, so muss für einen Feld
 int main () {
    Karteieintrag        Tiny;
   pKarteieintrag ptr = &Tiny;
-  
+
   printf("Jahr: %4d\n", (*ptr).geburtsjahr);
 }
 \end{minted}
@@ -375,7 +375,7 @@ Diese umständliche Form kann durch den kombinierten \emph{Pointer-Feldzugriffs-
 int main () {
    Karteieintrag        Tiny;
   pKarteieintrag ptr = &Tiny;
-  
+
   printf("Jahr: %4d\n", ptr->geburtsjahr);
 }
 \end{minted}
@@ -388,7 +388,7 @@ Selbstverständlich können auch die Feldelemente einer \mintinline{c}{struct} s
 /* Definition von Karteieintrag und pKarteieintrag wie im vorigen Kapitel */
 int main () {
   Karteieintrag Tiny;
-  
+
   printf("Erster Buchstabe von Tinys Vornamen: %c\n", *Tiny.vorname);
 }
 \end{minted}
@@ -400,7 +400,7 @@ Ebenso verhält es sich mit dem Array-Index-Zugriffsoperator \texttt{[]}:
 /* Definition von Karteieintrag und pKarteieintrag wie im vorigen Kapitel */
 int main () {
   Karteieintrag        Tiny;
-  
+
   printf("Erster Buchstabe von Tinys Vornamen: %c\n", Tiny.vorname[0]);
 }
 \end{minted}
@@ -415,7 +415,7 @@ Ist die Variable, über die die \mintinline{c}{struct} angesprochen wird, selbst
 int main () {
    Karteieintrag        Tiny;
   pKarteieintrag ptr = &Tiny;
-  
+
   printf("Erster Buchstabe von Tinys Vornamen: %c\n", *ptr->vorname   );
   printf("Erster Buchstabe von Tinys Vornamen: %c\n",  ptr->vorname[0]);
 }
@@ -449,19 +449,19 @@ int main () {
   listeGeburtstage[0].geburtsjahr  = 1897;
   listeGeburtstage[0].geburtsmonat =    9;
   listeGeburtstage[0].geburtstag   =   30;
-  
+
   strcpy(listeGeburtstage[1].vorname,  "Lisl");
   strcpy(listeGeburtstage[1].nachname, "Kohlenstoff");
   listeGeburtstage[1].geburtsjahr  = 1996;
   listeGeburtstage[1].geburtsmonat =    9;
   listeGeburtstage[1].geburtstag   =   26;
-  
+
   strcpy(listeGeburtstage[2].vorname,  "Tiny");
   strcpy(listeGeburtstage[2].nachname, "Mürrisch");
   listeGeburtstage[2].geburtsjahr  = 1994;
   listeGeburtstage[2].geburtsmonat =    2;
   listeGeburtstage[2].geburtstag   =    3;
-    
+
   printf("Erster Buchstabe Vorname 3: %c\n", *listeGeburtstage[2].vorname    );
   printf("Erster Buchstabe Vorname 3: %c\n",  listeGeburtstage[2]->vorname[0]);
 }
@@ -472,21 +472,21 @@ Machen Sie sich hier nochmal die Bedeutung der einzelnen Symbole klar:
 \begin{itemize}
 \item \texttt{Karteieintrag} ist ein \emph{Datentyp} und beschreibt nur die Struktur einer Variable; das
 	Symbol selbst beschreibt aber keine Werte.
-\item \texttt{pKarteieintrag} ist ebenfalls ein \emph{Datentyp}. Er beschreibt aber keine 
+\item \texttt{pKarteieintrag} ist ebenfalls ein \emph{Datentyp}. Er beschreibt aber keine
 	\mintinline{c}{struct}, sondern einen \emph{Pointer} darauf, \ie die Information, wo im Speicher die
 	tatsächliche Instanz der \mintinline{c}{struct} zu finden ist. Verbunden mit dieser Adresse ist die
-	Information,  welche Art von Werten an der angegebenen Speicherstelle zu finden sind -- eben die 
+	Information,  welche Art von Werten an der angegebenen Speicherstelle zu finden sind -- eben die
 	\mintinline{c}{struct} \texttt{Karteieintrag}.
 \item \texttt{geburtstag} ist ein Element der \mintinline{c}{struct Karteieintrag}, und damit ohne
 	Kontext ein nicht deklariertes Symbol. Nur in Verwendung mit Instanzen von \texttt{Karteieintrag}
 	kann dieses Symbol gebraucht werden.
 \item \texttt{listeGeburtstage} ist ein Array vom Typ \texttt{Karteieintrag} und damit eine Variable vom
-	Typ \texttt{pKarteieintrag}. In dieser Variablen ist nur eine Zahl gespeichert, die die Adresse des 
+	Typ \texttt{pKarteieintrag}. In dieser Variablen ist nur eine Zahl gespeichert, die die Adresse des
 	ersten Elements des Arrays im Speicher angibt.
 \item \texttt{listeGeburtstage[0]} ist nun tatsächlich ein Objekt vom Typ \texttt{Karteieintrag}, \ie
 	eine Sammlung von fünf Variablen. Man spricht auch von einer \emph{Instanz} von
 	\texttt{Karteieintrag}. Es handelt sich um das erste Element der Liste. Dieser Ausdruck kann \eg an
-	Funktionen übergeben werden, die als Argument ein Objekt vom Typ \texttt{Karteieintrag} erwarten 
+	Funktionen übergeben werden, die als Argument ein Objekt vom Typ \texttt{Karteieintrag} erwarten
 	(wie im vorigen \emph{Beispiel: Vergleich: Funktion mit \texttt{struct}-Parameter und getrennte
 	 Variablen} die Funktion \texttt{KarteiZeigenStruct}.)
 \item \texttt{listeGeburtstage[1].geburtsjahr} ist ein \mintinline{c}{int}-Wert. Er gehört zu der
@@ -509,11 +509,11 @@ Wir können uns Instanzen von \mintinline{c}{struct}s ähnlich vorstellen wie Ar
 \begin{tcolorbox}[title=Speicherbild]
 \begin{center}
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={
        text width =7mm,
-       text height=4mm, 
-       draw=black, 
+       text height=4mm,
+       draw=black,
        inner sep=0.5mm
     },
     ld/.style={
@@ -547,29 +547,29 @@ Wir können uns Instanzen von \mintinline{c}{struct}s ähnlich vorstellen wie Ar
   \node (p03) at ( 2.4,0.5)      {\ttfamily \tiny 0x198C};
   \node (p04) at ( 3.2,0.5)      {\ttfamily \tiny 0x198D};
   \node (p05) at ( 4.0,0.5)      {\ttfamily \tiny 0x198E};
-  
+
   \node (p06) at ( 5.6,0.5)      {\ttfamily \tiny 0x19BC};
   \node (p06) at ( 6.4,0.5)      {\ttfamily \tiny 0x19BD};
   \node (p06) at ( 7.2,0.5)      {\ttfamily \tiny 0x19BE};
   \node (p06) at ( 8.0,0.5)      {\ttfamily \tiny 0x19BF};
   \node (p06) at ( 8.8,0.5)      {\ttfamily \tiny 0x19C0};
-  
+
   \node (p06) at (10.4,0.5)      {\ttfamily \tiny 0x19EE};
   \node (p06) at (11.2,0.5)      {\ttfamily \tiny 0x19EF};
   \node (p06) at (12.0,0.5)      {\ttfamily \tiny 0x19F0};
   \node (p06) at (12.8,0.5)      {\ttfamily \tiny 0x19F1};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt]
-  		( 0.4, 0.3) -- ( 5.2, 0.3) node [midway, yshift=-0.5cm] 
+  		( 0.4, 0.3) -- ( 5.2, 0.3) node [midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Feld \texttt{vorname}};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt]
-  		( 5.2, 0.3) -- (10.0, 0.3) node [midway, yshift=-0.5cm] 
+  		( 5.2, 0.3) -- (10.0, 0.3) node [midway, yshift=-0.5cm]
 		(braceArrayPreResize) {Feld \texttt{nachname}};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt]
-  		(10.0, 0.3) -- (13.2, 0.3) node [midway, yshift=-0.5cm] 
-		(braceArrayPreResize) {Feld \texttt{geburtsjahr}};		
+  		(10.0, 0.3) -- (13.2, 0.3) node [midway, yshift=-0.5cm]
+		(braceArrayPreResize) {Feld \texttt{geburtsjahr}};
 \end{tikzpicture}
 \end{center}
 \end{tcolorbox}
@@ -588,7 +588,7 @@ struct Karteieintrag {
 
 int main () {
   struct Karteieintrag Tiny;
-  
+
   printf("%lu\n", sizeof(Karteieintrag));
   printf("%lu\n", sizeof(Tiny));
 }
@@ -618,16 +618,16 @@ typedef struct {
 } Punkt2D;
 
 int vergleichPunkt2D (Punkt2D a, Punkt2D b) {
-  /* Vergleich nach Kriterium 'Entfernung zum Nullpunkt' 
+  /* Vergleich nach Kriterium 'Entfernung zum Nullpunkt'
    * Rückgabewerte:
    *  0, wenn a und b gleich weit entfernt
    * -1, wenn a näher am Nullpunkt als b
    * +1, wenn b näher am Nullpunkt als a
    */
-  
+
   double la = hypot(a.x, a.y),   // hypot: definiert in math.h
          lb = hypot(b.x, b.y);   // berechnet sqrt(a.x * a.x  +  b.x * b.x)
-  
+
   if (la == lb) {return 0;}
   else          {return la < lb  ?  -1  :  +1;}
 }
@@ -669,12 +669,12 @@ typedef struct {
 
 int main () {
   Datum tag;
-  // tag = {1989, 3, 29};  Fehler: Initiaizer-Syntax außerhalb von Deklaration
+  // tag = {1989, 3, 29};  Fehler: Initializer-Syntax außerhalb von Deklaration
 }
 \end{minted}
 \end{codebox}
 
-Dies liegt daran, dass mit diesem abhängig vom Kontext sehr unterschiedliche Ergebnisse erzielt werden. Enthält die \mintinline{c}{struct} ein \mintinline{c}{char}-Array fester Größe (wie im obigen Beispiel das \mintinline{c}{struct Karteieintrag}: Die Felder \mintinline{c}{vorname} und \mintinline{c}{nachname} sind beide \mintinline{c}{char}-Arrays der Größe \texttt{50}), so wird ein String-Literal (ein Ausdrucke in \texttt{"}doppelten Anführungszeichen\texttt{"}) direkt in das Array kopiert; allgemeinen Pointern dagegen wird die Adresse des Literals selbst zugewisen.
+Dies liegt daran, dass mit diesem abhängig vom Kontext sehr unterschiedliche Ergebnisse erzielt werden. Enthält die \mintinline{c}{struct} ein \mintinline{c}{char}-Array fester Größe (wie im obigen Beispiel das \mintinline{c}{struct Karteieintrag}: Die Felder \mintinline{c}{vorname} und \mintinline{c}{nachname} sind beide \mintinline{c}{char}-Arrays der Größe \texttt{50}), so wird ein String-Literal (ein Ausdruck in \texttt{"}doppelten Anführungszeichen\texttt{"}) direkt in das Array kopiert; allgemeinen Pointern dagegen wird die Adresse des Literals selbst zugewisen.
 
 \begin{codebox}[Beispiel: Initializer-Syntax bei Strings]
 \begin{minted}[linenos]{c}
@@ -693,7 +693,7 @@ typedef struct {
 int main () {
   twoStrings x = {"Pure Vernunft Darf Niemals Siegen",   // constSizeArray
                   "Pure Vernunft Darf Niemals Siegen"};  // charPointer
-  
+
   printf("Startadresse der Instanz:\t%p\n"  , (void *)(&x));
   printf("Adresse von constSizeArray:\t%p\n", (void *)(x.constSizeArray));
   printf("Adresse von charPointer:\t%p\n",    (void *)(x.charPointer));
@@ -709,9 +709,9 @@ Adresse von charPointer:        0x562bd763b808
 \end{minted}
 \end{cmdbox}
 
-Das erste String Literal (Zeile 9) soll dem Feld \texttt{constSizeArray} zugewiesen werden, für das ab Beginn der \mintinline{c}{struct}-Instanz 50 Byte frei gehalten werden. Die Zeichenkette wird auf genau diese Speicherstelle kopiert. In den Zeilen 12 und 13 wird daher auch dieselbe Adresse für \texttt{\&x} (die Adresse der Instanz \texttt{x}) und für \texttt{x.constSizeArray} (die Adresse des \mintinline{c}{char}-Arrays \texttt{x.constSizeArray}) ausgegeben. Zeiel 14 nennt dagegen eine ganz andere Adresse, da für das Feld \texttt{charPointer} lediglich eine Adresse speichert, nicht aber den String selbst. Entsprechend wird hier die \emph{Adresse des String-Literals} abgelegt; wir können uns dies vorstellen als \emph{die Adresse des String-Literals im Code}.
+Das erste String Literal (Zeile 9) soll dem Feld \texttt{constSizeArray} zugewiesen werden, für das ab Beginn der \mintinline{c}{struct}-Instanz 50 Byte frei gehalten werden. Die Zeichenkette wird auf genau diese Speicherstelle kopiert. In den Zeilen 12 und 13 wird daher auch dieselbe Adresse für \texttt{\&x} (die Adresse der Instanz \texttt{x}) und für \texttt{x.constSizeArray} (die Adresse des \mintinline{c}{char}-Arrays \texttt{x.constSizeArray}) ausgegeben. Zeile 14 nennt dagegen eine ganz andere Adresse, da für das Feld \texttt{charPointer} lediglich eine Adresse speichert, nicht aber den String selbst. Entsprechend wird hier die \emph{Adresse des String-Literals} abgelegt; wir können uns dies vorstellen als \emph{die Adresse des String-Literals im Code}.
 
-Diese letzten Überlegungen waren vermutlich schwer zu verfolgen; bitte entnehmen Sie diesem Abschnitt, dass die Initializer-Syntax im allgemeinen eine schnelle Wertzuweisung zu \mintinline{c}{struct}-Instanzen erlaubt, dass aber beim Umgang mit Arrays Vorsicht geboten ist. Wo Sie sich nicht sicher sind, können Sie jederzeit die zuerst gezeigten expliziten Wertzuweisungen benutzen.
+Diese letzten Überlegungen waren vermutlich schwer zu verfolgen; bitte entnehmen Sie diesem Abschnitt, dass die Initializer-Syntax im Allgemeinen eine schnelle Wertzuweisung zu \mintinline{c}{struct}-Instanzen erlaubt, dass aber beim Umgang mit Arrays Vorsicht geboten ist. Wo Sie sich nicht sicher sind, können Sie jederzeit die zuerst gezeigten expliziten Wertzuweisungen benutzen.
 
 \section{Casting-Interface: \mintinline{c}{union}s}
 \mintinline{c}{union}s sind \mintinline{c}{struct}s, bei denen alle Felder auf dieselbe Speicheradresse gelegt werden. Das bedeutet, dass man über verschiedene Bezeichner dieselben Werte bearbeiten kann. Dies kann für manche Elektronik-Anwendungen nützlich sein, in denen Datenpakete in anderen \enquote{Einheiten} versandt und empfangen werden als sie das Steuerprogramm verarbeitet.
@@ -729,13 +729,13 @@ typedef union {
 
 int main () {
   intUnion u;
-  
+
   for (int i=254; i<260; i++) {
     u.i = i;
-    
+
     printf("Integer: %d\n", u.i);
     for (int n=0; n<4; n++) {
-       printf("  Byte %d: %02hhx", n, u.c[n]);
+       printf("  Byte %d: %02x", n, u.c[n]);
     }
     printf("\n");
   }
@@ -763,11 +763,11 @@ Integer: 259
 \begin{tcolorbox}[title=Speicherbild]
 \begin{center}
 \begin{tikzpicture}
-  [ 
+  [
     cell/.style={
        text width =8mm,
-       text height=4mm, 
-       draw=black, 
+       text height=4mm,
+       draw=black,
        inner sep  =1mm
     },
     ld/.style={
@@ -789,25 +789,25 @@ Integer: 259
   \node (p03) at ( 3.0,0.5)      {\ttfamily \tiny 0x198C};
   \node (p04) at ( 4.0,0.5)      {\ttfamily \tiny 0x198D};
   \node (p05) at ( 5.0,0.5)      {\ttfamily \tiny 0x198E};
-  
+
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt]
-  		( 0.5, -0.3) -- ( 4.5, -0.3) node [midway, yshift=-0.5cm] 
+  		( 0.5, -0.3) -- ( 4.5, -0.3) node [midway, yshift=-0.5cm]
 		(braceArrayPreResize) {\texttt{u.i} = 65535};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt]
-  		( 0.5, 0.3) -- ( 1.5, 0.3) node [midway, yshift=-0.5cm] 
+  		( 0.5, 0.3) -- ( 1.5, 0.3) node [midway, yshift=-0.5cm]
 		(braceArrayPreResize) {\scriptsize \texttt{u.c[0]}};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt]
-  		( 1.5, 0.3) -- ( 2.5, 0.3) node [midway, yshift=-0.5cm] 
+  		( 1.5, 0.3) -- ( 2.5, 0.3) node [midway, yshift=-0.5cm]
 		(braceArrayPreResize) {\scriptsize \texttt{u.c[1]}};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt]
-  		( 2.5, 0.3) -- ( 3.5, 0.3) node [midway, yshift=-0.5cm] 
+  		( 2.5, 0.3) -- ( 3.5, 0.3) node [midway, yshift=-0.5cm]
 		(braceArrayPreResize) {\scriptsize \texttt{u.c[2]}};
 
   \draw [decorate, decoration={brace,amplitude=7pt, mirror}, xshift=-0pt, yshift=0pt]
-  		( 3.5, 0.3) -- ( 4.5, 0.3) node [midway, yshift=-0.5cm] 
+  		( 3.5, 0.3) -- ( 4.5, 0.3) node [midway, yshift=-0.5cm]
 		(braceArrayPreResize) {\scriptsize \texttt{u.c[3]}};
 \end{tikzpicture}
 \end{center}
@@ -827,7 +827,7 @@ typedef enum {
 \end{codebox}
 \texttt{Symbol0} steht dann für den Wert \texttt{0}, \texttt{Symbol1} für \texttt{1} und so fort.
 
-Betrachten Sie den folgenden Code: Es wird geprüft, welche von zwei Karten den Höheren Rang im Spiel hat, wobei \emph{Herz} als Trumpffarbe zählt. Sticht eine Karte \texttt{k1} eine andere Karte \texttt{k2}, so ist das Ergebnis \texttt{-1}; wenn \texttt{k2} den höheren Rang hat, wird \texttt{+1} zurückgegeben. Bei Gleichheit wird die Funktion zu \texttt{0} ausgewertet\footnote{Sie sehen hier eine Verwendung von \mintinline{c}{goto}. Wie erwähnt sollte der Gebrauch dieses Befehls sehr stark hinterfragt werden. An dieser Stelle führt die Alternative -- eine \mintinline{c}{if-else if}-Konstruktion mit verketteten Bedingungen -- jedoch zu einer weniger schnell erfassbaren Struktur. Versuchen Sie gerne als Übung, eine Funktion mit gleicher Wirkung ohne \mintinline{c}{goto} zu schreiben, und vergleichen Sie das Ergebnis.}.
+Betrachten Sie den folgenden Code: Es wird geprüft, welche von zwei Karten den höheren Rang im Spiel hat, wobei \emph{Herz} als Trumpffarbe zählt. Sticht eine Karte \texttt{k1} eine andere Karte \texttt{k2}, so ist das Ergebnis \texttt{-1}; wenn \texttt{k2} den höheren Rang hat, wird \texttt{+1} zurückgegeben. Bei Gleichheit wird die Funktion zu \texttt{0} ausgewertet\footnote{Sie sehen hier eine Verwendung von \mintinline{c}{goto}. Wie erwähnt sollte der Gebrauch dieses Befehls sehr stark hinterfragt werden. An dieser Stelle führt die Alternative -- eine \mintinline{c}{if-else if}-Konstruktion mit verketteten Bedingungen -- jedoch zu einer weniger schnell erfassbaren Struktur. Versuchen Sie gerne als Übung, eine Funktion mit gleicher Wirkung ohne \mintinline{c}{goto} zu schreiben, und vergleichen Sie das Ergebnis.}.
 \begin{codebox}[Beispiel: Deklaration einer \texttt{struct}]
 \begin{minted}[linenos]{c}
 typedef enum {Herz, Karo, Kreuz, Pik} Kartenfarbe;
@@ -842,9 +842,9 @@ int vergleicheKarten (Karte k1, Karte k2) {
     if (k2.Farbe == Herz) {goto vergleicheKartenWerte;}
     else                  {return -1;}
   }
-  
+
   if   (k2.Farbe == Herz) {return  1;}
-  
+
   vergleicheKartenWerte:
   if (k1.Wert == k2.Wert) {return 0;}
   else                    {return k1.Wert > k2.Wert  ?  -1  :  1;}
@@ -858,7 +858,7 @@ Intern wird das Feld \texttt{Farbe} als \mintinline{c}{unsigned int} angelegt, u
 \begin{plusbox}
 In C++ sind \mintinline{c}{struct}s das zentrale Element; sie werden dort um viele Konzepte erweitert. Aus Feinheiten, die hier nicht behandelt werden können, benutzt man in C++ eher das Schlüsselwort \mintinline{c++}{class}, das im Wesentlichen dieselbe Wirkung hat wie das hier gezeigte \mintinline{c}{struct}.
 
-Wir bilden alle \emph{Objekte} als solche \mintinline{c++}{class} ab und ordnen ihnen \emph{Methoden} zu, \ie Funktionen, die mit den Feldern einer \mintinline{c++}{class} arbeiten. Ein \emph{Objekt} ist eine nahezu beliebige gedankliche Einheit von Werten, die untereinander in einem funktionalen Zusammenhang stehen. \emph{Methoden} stehen nicht mehr \enquote{neben} der \mintinline{c++}{class}, sondern sind gänzlich in diese eingebunden. Über ein Schlüsselwort \mintinline{c++}{this} \enquote{sieht} die Methode alle Felder, die zu einer Instanz der \mintinline{c++}{class} gehören.
+Wir bilden alle \emph{Objekte} als solche \mintinline{c++}{class} ab und ordnen ihnen \emph{Methoden} zu, \ie Funktionen, die mit den Feldern einer \mintinline{c++}{class} arbeiten\footnote{Umgangsprachlich wird oft die Bezeichnung \emph{Methode} aufgeführt. Im C++ Standard ist allerdings nicht die Rede von Methoden, sondern von \emph{Member Functions} bzw. \emph{Member Data}.}. Ein \emph{Objekt} ist eine nahezu beliebige gedankliche Einheit von Werten, die untereinander in einem funktionalen Zusammenhang stehen. \emph{Methoden} stehen nicht mehr \enquote{neben} der \mintinline{c++}{class}, sondern sind gänzlich in diese eingebunden. Über ein Schlüsselwort \mintinline{c++}{this} \enquote{sieht} die Methode alle Felder, die zu einer Instanz der \mintinline{c++}{class} gehören.
 
 Klassen erlauben \emph{Zugriffskontrolle}, verbieten also das direkte Lesen und Schreiben von bestimmten Feldern. Nur die Methoden einer Klasse können alle Felder bearbeiten. Auf diese Weise soll ein versehentliches Ändern von Werten und damit das Entstehen von inkonsistenten (unsinnigen) Zuständen verhindern.
 
